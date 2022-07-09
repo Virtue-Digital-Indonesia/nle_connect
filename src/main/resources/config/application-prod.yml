@@ -35,7 +35,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
-    password:
+    password: root
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -55,20 +55,6 @@ spring:
     password:
   thymeleaf:
     cache: true
-  sleuth:
-    # https://github.com/spring-projects/spring-framework/issues/27844#issuescomment-1002866885
-    # https://github.com/spring-cloud/spring-cloud-sleuth/issues/2094
-    async:
-      enabled: false
-    enabled: false
-    sampler:
-      probability: 1 # report 100% of traces
-  zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
-    base-url: http://localhost:9411
-    enabled: false
-    locator:
-      discovery:
-        enabled: true
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
@@ -119,7 +105,7 @@ jhipster:
         # - In the JHipster Registry (which includes a Spring Cloud Config server)
         # - In a separate `application-prod.yml` file, in the same folder as your executable JAR file
         # - In the `JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET` environment variable
-        base64-secret: ZDFiODY4ZGUyNmNlMjViNmI5NTQzMDZjMzg3ZWQ2YzRkZGQyYTQ4YmYyYWVlNTQ5NWVlZTBjZmQ5ZWUzZmVkNmIzZTAzN2M4OTFmYTMyY2NjNmY1M2ZkMzYyNTI0YzIwMGEwNWM3NjdmNzI3ZjhiODYyZjRjZWI1ZGFkYjNiZjQ=
+        base64-secret: OTdiYTU1OTE1Y2E0ZjRjN2U0NTI2MTI2YjY4NDc4NjEwMWIyY2NmZGY4YTVjOTc0YzBmNDZlZDA5OGVlYmVlMzYzNGU3MTkyMjUzNGIzZGJlZjBhNmIzNGYzZWM1YmY5NjNhMzg4MTQyOTFhYTA0NGExNTNhNDBiZmRhNWNjZjA=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
