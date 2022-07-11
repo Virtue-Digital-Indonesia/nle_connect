@@ -307,7 +307,7 @@
     </dependencies>
 
     <build>
-        <finalName>nlebackend.jar</finalName>
+        <finalName>nlebackend</finalName>
         <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
             <plugin>

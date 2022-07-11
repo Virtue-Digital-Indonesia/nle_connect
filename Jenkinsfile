@@ -57,7 +57,7 @@ pipeline {
         stage('Packaging') {
             steps {
                 script {
-                    sh "./mvnw -ntp verify -P-webapp -Pprod -DskipTests" archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                    sh "./mvnw -ntp verify -P-webapp -Pprod -DskipTests"
                 }
             }
         }
@@ -65,7 +65,11 @@ pipeline {
         stage('Build docker image') {
             steps {
                 script {
-                    sh "docker image build --build-arg JAR_FILE=nlebackend-${shortGitCommit}.jar -t nlebackend:${shortGitCommit} ."
+                    sh """
+                        cp Dockerfile target/
+                        cd target/
+                        docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
+                    """
                 }
             }
         }
