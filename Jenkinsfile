@@ -1,12 +1,24 @@
 #!/usr/bin/env groovy
 
 node {
+    environment {
+        shortGitCommit = env.GIT_COMMIT.take(7)
+    }
+
     stage('checkout') {
         checkout scm
     }
 
     stage('check java') {
         sh "java -version"
+    }
+
+    stage('Bump Version') {
+        steps {
+            script {
+                sh "./mvnw versions:set -DnewVersion=${shortGitCommit}"
+            }
+        }
     }
 
     stage('clean') {
@@ -33,10 +45,19 @@ node {
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
     }
 
-    def dockerImage
-    stage('publish docker') {
-        // A pre-requisite to this step is to setup authentication to the docker registry
-        // https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#authentication-methods
-        sh "./mvnw -ntp -Pprod verify jib:build"
+    stage('Build docker image') {
+        sh "docker image build --build-arg JAR_FILE=nlebackend-${shortGitCommit}.jar -t nlebackend:${shortGitCommit} ."
     }
+
+    stage('Stop current backend') {
+        sh """
+            docker container stop nlebackend
+            docker container rm nlebackend
+        """
+    }
+
+    stage('Start backend with new version') {
+        sh "docker container run --name nlebackend -p 8081:8080 nlebackend:${shortGitCommit}"
+    }
+
 }
