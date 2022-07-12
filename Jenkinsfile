@@ -78,8 +78,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker container stop nlebackend
-                        docker container rm nlebackend
+                        docker ps -q --filter "name=nlebackend" | grep -q . && docker stop nlebackend && docker rm -fv nlebackend
                     """
                 }
             }
