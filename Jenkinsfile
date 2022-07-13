@@ -62,13 +62,17 @@ pipeline {
             }
         }
 
-        stage('Build docker image') {
+        stage('Build docker image & update compose file') {
             steps {
                 script {
                     sh """
                         cp Dockerfile target/
                         cd target/
                         docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
+                        cd ../
+                        export VERSION=${shortGitCommit}
+                        cd src/main/docker/
+                        envsubst < docker-compose-template.yml > docker-compose.yml
                     """
                 }
             }
@@ -78,7 +82,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker ps -aq --filter "name=nlebackend" | grep -q . && docker stop nlebackend && docker rm -fv nlebackend
+                        cd src/main/docker/
+                        docker-compose down
                     """
                 }
             }
@@ -87,7 +92,10 @@ pipeline {
         stage('Start backend with new version') {
             steps {
                 script {
-                    sh "docker container run --name nlebackend -p 8081:8080 --network nle-network nlebackend:${shortGitCommit}"
+                    sh """
+                        cd src/main/docker/
+                        docker-compose up -d
+                    """
                 }
             }
         }
