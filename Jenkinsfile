@@ -87,7 +87,7 @@ pipeline {
         stage('Start backend with new version') {
             steps {
                 script {
-                    sh "docker container run --name nlebackend -p 8081:8080 nlebackend:${shortGitCommit}"
+                    sh "docker container run --name nlebackend -p 8081:8080 --network nle-network nlebackend:${shortGitCommit}"
                 }
             }
         }
