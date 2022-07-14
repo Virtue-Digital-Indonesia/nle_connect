@@ -14,7 +14,6 @@
     <property name="datetimeType" value="datetime(6)" dbms="mysql, mariadb"/>
     <property name="datetimeType" value="datetime" dbms="oracle, mssql, postgresql, h2"/>
 
-    <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220714050017_added_entity_DepoOwnerAccount.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220714052500_added_entity_VerificationToken.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->

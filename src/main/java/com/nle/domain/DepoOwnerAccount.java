@@ -1,7 +1,11 @@
 package com.nle.domain;
 
+import com.nle.constant.AccountStatus;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,6 +47,12 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
 
     @Column(name = "organization_name")
     private String organizationName;
+
+    @Column(name = "account_status")
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accountStatus;
+
+
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -174,6 +184,14 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
 
     public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

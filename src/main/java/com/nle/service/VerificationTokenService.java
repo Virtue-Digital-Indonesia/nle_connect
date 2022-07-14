@@ -59,4 +59,8 @@ public interface VerificationTokenService {
     void delete(Long id);
 
     VerificationToken createVerificationToken(DepoOwnerAccount depoOwnerAccount, VerificationType type);
+
+    VerificationToken checkVerificationToken(String token);
+
+    VerificationToken findByToken(String token);
 }

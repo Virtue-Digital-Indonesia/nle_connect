@@ -1,8 +1,14 @@
 package com.nle.web.rest;
 
+import com.nle.constant.AccountStatus;
 import com.nle.domain.DepoOwnerAccount;
+import com.nle.domain.VerificationToken;
+import com.nle.repository.DepoOwnerAccountRepository;
+import com.nle.repository.VerificationTokenRepository;
 import com.nle.service.DepoOwnerAccountService;
+import com.nle.service.VerificationTokenService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
+import com.nle.web.rest.vm.ActiveDto;
 import com.nle.web.rest.vm.CheckExistDto;
 import com.nle.web.rest.vm.DepoOwnerAccountCreateDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,10 +46,19 @@ public class DepoOwnerAccountResource {
 
     private final DepoOwnerAccountService depoOwnerAccountService;
 
+    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+
+    private final VerificationTokenRepository verificationTokenRepository;
+
+    private final VerificationTokenService verificationTokenService;
+
     public DepoOwnerAccountResource(
-        DepoOwnerAccountService depoOwnerAccountService
-    ) {
+        DepoOwnerAccountService depoOwnerAccountService,
+        DepoOwnerAccountRepository depoOwnerAccountRepository, VerificationTokenRepository verificationTokenRepository, VerificationTokenService verificationTokenService) {
         this.depoOwnerAccountService = depoOwnerAccountService;
+        this.depoOwnerAccountRepository = depoOwnerAccountRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.verificationTokenService = verificationTokenService;
     }
 
     /**
@@ -87,5 +102,19 @@ public class DepoOwnerAccountResource {
             return ResponseEntity.ok().body(new CheckExistDto(true));
         }
         return ResponseEntity.ok().body(new CheckExistDto(false));
+    }
+
+    // active depo owner account API
+    @GetMapping(value = "/activate/{token}")
+    public ActiveDto activeCustomer(@PathVariable String token) {
+        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token);
+        // active user
+        DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
+        depoOwnerAccount.setAccountStatus(AccountStatus.ACTIVE);
+        depoOwnerAccountRepository.save(depoOwnerAccount);
+        log.info("Customer " + depoOwnerAccount.getFullName() + " has been active.");
+        // remove verification token
+        verificationTokenRepository.delete(verificationToken);
+        return new ActiveDto(AccountStatus.ACTIVE.name());
     }
 }

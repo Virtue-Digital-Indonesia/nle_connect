@@ -1,5 +1,6 @@
 package com.nle.service.impl;
 
+import com.nle.constant.AccountStatus;
 import com.nle.constant.VerificationType;
 import com.nle.domain.DepoOwnerAccount;
 import com.nle.domain.VerificationToken;
@@ -64,6 +65,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccountDTO.setPassword(passwordEncoder.encode(depoOwnerAccountDTO.getPassword()));
         // map to entity
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountMapper.toEntity(depoOwnerAccountDTO);
+        depoOwnerAccount.setAccountStatus(AccountStatus.INACTIVE);
         // save to db
         depoOwnerAccount = depoOwnerAccountRepository.save(depoOwnerAccount);
         VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount, VerificationType.ACTIVE_ACCOUNT);

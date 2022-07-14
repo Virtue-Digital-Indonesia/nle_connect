@@ -3,6 +3,8 @@ package com.nle.service.impl;
 import com.nle.constant.VerificationType;
 import com.nle.domain.DepoOwnerAccount;
 import com.nle.domain.VerificationToken;
+import com.nle.exception.BadRequestException;
+import com.nle.exception.ResourceNotFoundException;
 import com.nle.repository.VerificationTokenRepository;
 import com.nle.service.VerificationTokenService;
 import com.nle.service.dto.VerificationTokenDTO;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -108,5 +111,24 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         verificationToken.setDepoOwnerAccount(depoOwnerAccount);
         // save VerificationToken
         return verificationTokenRepository.save(verificationToken);
+    }
+
+    @Override
+    public VerificationToken checkVerificationToken(String token) {
+        VerificationToken verificationToken = this.findByToken(token);
+        if (null == verificationToken) {
+            throw new ResourceNotFoundException("Active token does not exist");
+        }
+        // check expired token
+        long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), verificationToken.getExpiryDate());
+        if (seconds < 0) {
+            throw new BadRequestException("Your token has expired.");
+        }
+        return verificationToken;
+    }
+
+    @Override
+    public VerificationToken findByToken(String token) {
+        return verificationTokenRepository.findByToken(token);
     }
 }
