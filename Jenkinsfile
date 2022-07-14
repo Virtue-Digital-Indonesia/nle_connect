@@ -57,7 +57,7 @@ pipeline {
         stage('Packaging') {
             steps {
                 script {
-                    sh "./mvnw -ntp verify -P-webapp -Pprod -DskipTests"
+                    sh "./mvnw -ntp verify -P-webapp -Pdev -DskipTests"
                 }
             }
         }
