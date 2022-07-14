@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
  */
 @Entity
 @Table(name = "depo_owner_account")
-public class DepoOwnerAccount implements Serializable {
+public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -37,18 +37,6 @@ public class DepoOwnerAccount implements Serializable {
 
     @Column(name = "organization_name")
     private String organizationName;
-
-    @Column(name = "created_by")
-    private String createdBy;
-
-    @Column(name = "created_date")
-    private Instant createdDate;
-
-    @Column(name = "last_modified_by")
-    private String lastModifiedBy;
-
-    @Column(name = "last_modified_date")
-    private Instant lastModifiedDate;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
