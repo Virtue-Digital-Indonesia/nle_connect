@@ -13,8 +13,11 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import com.nle.web.rest.vm.DepoOwnerAccountCreateDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,13 +67,12 @@ public class DepoOwnerAccountResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/depo-owner-accounts")
-    public ResponseEntity<DepoOwnerAccountDTO> createDepoOwnerAccount(@Valid @RequestBody DepoOwnerAccountDTO depoOwnerAccountDTO)
+    public ResponseEntity<DepoOwnerAccountDTO> createDepoOwnerAccount(@Valid @RequestBody DepoOwnerAccountCreateDTO depoOwnerAccountDTO)
         throws URISyntaxException {
         log.debug("REST request to save DepoOwnerAccount : {}", depoOwnerAccountDTO);
-        if (depoOwnerAccountDTO.getId() != null) {
-            throw new BadRequestAlertException("A new depoOwnerAccount cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        DepoOwnerAccountDTO result = depoOwnerAccountService.save(depoOwnerAccountDTO);
+        DepoOwnerAccountDTO ownerAccountDTO = new DepoOwnerAccountDTO();
+        BeanUtils.copyProperties(depoOwnerAccountDTO, ownerAccountDTO);
+        DepoOwnerAccountDTO result = depoOwnerAccountService.save(ownerAccountDTO);
         return ResponseEntity
             .created(new URI("/api/depo-owner-accounts/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -94,10 +96,10 @@ public class DepoOwnerAccountResource {
     ) throws URISyntaxException {
         log.debug("REST request to update DepoOwnerAccount : {}, {}", id, depoOwnerAccountDTO);
         if (depoOwnerAccountDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "id null");
         }
         if (!Objects.equals(id, depoOwnerAccountDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "id invalid");
         }
 
         if (!depoOwnerAccountRepository.existsById(id)) {

@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.nle.web.rest.TestUtil;
 import org.junit.jupiter.api.Test;
 
-class DepoOwnerAccountDTOTest {
+class DepoOwnerAccountCreateDTOTest {
 
     @Test
     void dtoEqualsVerifier() throws Exception {

@@ -1,9 +1,9 @@
 package com.nle.service.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Objects;
-import javax.validation.constraints.*;
 
 /**
  * A DTO for the {@link com.nle.domain.DepoOwnerAccount} entity.
@@ -26,13 +26,6 @@ public class DepoOwnerAccountDTO implements Serializable {
 
     private String organizationName;
 
-    private String createdBy;
-
-    private Instant createdDate;
-
-    private String lastModifiedBy;
-
-    private Instant lastModifiedDate;
 
     public Long getId() {
         return id;
@@ -82,37 +75,6 @@ public class DepoOwnerAccountDTO implements Serializable {
         this.organizationName = organizationName;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public Instant getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Instant lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -145,10 +107,6 @@ public class DepoOwnerAccountDTO implements Serializable {
             ", password='" + getPassword() + "'" +
             ", fullName='" + getFullName() + "'" +
             ", organizationName='" + getOrganizationName() + "'" +
-            ", createdBy='" + getCreatedBy() + "'" +
-            ", createdDate='" + getCreatedDate() + "'" +
-            ", lastModifiedBy='" + getLastModifiedBy() + "'" +
-            ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             "}";
     }
 }
