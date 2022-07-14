@@ -1,16 +1,26 @@
 package com.nle.domain;
 
+import com.nle.constant.VerificationType;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.Instant;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 /**
  * A VerificationToken.
  */
 @Entity
 @Table(name = "verification_token")
-public class VerificationToken implements Serializable {
+public class VerificationToken extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,23 +35,12 @@ public class VerificationToken implements Serializable {
 
     @NotNull
     @Column(name = "expiry_date", nullable = false)
-    private Instant expiryDate;
+    private LocalDateTime expiryDate;
 
     @NotNull
     @Column(name = "token_type", nullable = false)
-    private String tokenType;
-
-    @Column(name = "created_by")
-    private String createdBy;
-
-    @Column(name = "created_date")
-    private Instant createdDate;
-
-    @Column(name = "last_modified_by")
-    private String lastModifiedBy;
-
-    @Column(name = "last_modified_date")
-    private Instant lastModifiedDate;
+    @Enumerated(EnumType.STRING)
+    private VerificationType tokenType;
 
     @ManyToOne
     private DepoOwnerAccount depoOwnerAccount;
@@ -74,82 +73,30 @@ public class VerificationToken implements Serializable {
         this.token = token;
     }
 
-    public Instant getExpiryDate() {
+    public LocalDateTime getExpiryDate() {
         return this.expiryDate;
     }
 
-    public VerificationToken expiryDate(Instant expiryDate) {
+    public VerificationToken expiryDate(LocalDateTime expiryDate) {
         this.setExpiryDate(expiryDate);
         return this;
     }
 
-    public void setExpiryDate(Instant expiryDate) {
+    public void setExpiryDate(LocalDateTime expiryDate) {
         this.expiryDate = expiryDate;
     }
 
-    public String getTokenType() {
+    public VerificationType getTokenType() {
         return this.tokenType;
     }
 
-    public VerificationToken tokenType(String tokenType) {
+    public VerificationToken tokenType(VerificationType tokenType) {
         this.setTokenType(tokenType);
         return this;
     }
 
-    public void setTokenType(String tokenType) {
+    public void setTokenType(VerificationType tokenType) {
         this.tokenType = tokenType;
-    }
-
-    public String getCreatedBy() {
-        return this.createdBy;
-    }
-
-    public VerificationToken createdBy(String createdBy) {
-        this.setCreatedBy(createdBy);
-        return this;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Instant getCreatedDate() {
-        return this.createdDate;
-    }
-
-    public VerificationToken createdDate(Instant createdDate) {
-        this.setCreatedDate(createdDate);
-        return this;
-    }
-
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getLastModifiedBy() {
-        return this.lastModifiedBy;
-    }
-
-    public VerificationToken lastModifiedBy(String lastModifiedBy) {
-        this.setLastModifiedBy(lastModifiedBy);
-        return this;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public Instant getLastModifiedDate() {
-        return this.lastModifiedDate;
-    }
-
-    public VerificationToken lastModifiedDate(Instant lastModifiedDate) {
-        this.setLastModifiedDate(lastModifiedDate);
-        return this;
-    }
-
-    public void setLastModifiedDate(Instant lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 
     public DepoOwnerAccount getDepoOwnerAccount() {

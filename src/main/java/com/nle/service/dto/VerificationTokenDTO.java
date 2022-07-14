@@ -1,9 +1,8 @@
 package com.nle.service.dto;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.Objects;
-import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 /**
  * A DTO for the {@link com.nle.domain.VerificationToken} entity.
@@ -16,20 +15,10 @@ public class VerificationTokenDTO implements Serializable {
     private String token;
 
     @NotNull
-    private Instant expiryDate;
+    private LocalDateTime expiryDate;
 
     @NotNull
     private String tokenType;
-
-    private String createdBy;
-
-    private Instant createdDate;
-
-    private String lastModifiedBy;
-
-    private Instant lastModifiedDate;
-
-    private DepoOwnerAccountDTO depoOwnerAccount;
 
     public Long getId() {
         return id;
@@ -47,11 +36,11 @@ public class VerificationTokenDTO implements Serializable {
         this.token = token;
     }
 
-    public Instant getExpiryDate() {
+    public LocalDateTime getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Instant expiryDate) {
+    public void setExpiryDate(LocalDateTime expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -63,80 +52,13 @@ public class VerificationTokenDTO implements Serializable {
         this.tokenType = tokenType;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public Instant getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Instant lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public DepoOwnerAccountDTO getDepoOwnerAccount() {
-        return depoOwnerAccount;
-    }
-
-    public void setDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccount) {
-        this.depoOwnerAccount = depoOwnerAccount;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof VerificationTokenDTO)) {
-            return false;
-        }
-
-        VerificationTokenDTO verificationTokenDTO = (VerificationTokenDTO) o;
-        if (this.id == null) {
-            return false;
-        }
-        return Objects.equals(this.id, verificationTokenDTO.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.id);
-    }
-
-    // prettier-ignore
     @Override
     public String toString() {
         return "VerificationTokenDTO{" +
-            "id=" + getId() +
-            ", token='" + getToken() + "'" +
-            ", expiryDate='" + getExpiryDate() + "'" +
-            ", tokenType='" + getTokenType() + "'" +
-            ", createdBy='" + getCreatedBy() + "'" +
-            ", createdDate='" + getCreatedDate() + "'" +
-            ", lastModifiedBy='" + getLastModifiedBy() + "'" +
-            ", lastModifiedDate='" + getLastModifiedDate() + "'" +
-            ", depoOwnerAccount=" + getDepoOwnerAccount() +
-            "}";
+            "id=" + id +
+            ", token='" + token + '\'' +
+            ", expiryDate=" + expiryDate +
+            ", tokenType='" + tokenType + '\'' +
+            '}';
     }
 }

@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
+@EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
 public class NlebackendApp {
 
     private static final Logger log = LoggerFactory.getLogger(NlebackendApp.class);
@@ -43,7 +43,7 @@ public class NlebackendApp {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         if (
             activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) &&
-            activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)
+                activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)
         ) {
             log.error(
                 "You have misconfigured your application! It should not run " + "with both the 'dev' and 'prod' profiles at the same time."
@@ -51,7 +51,7 @@ public class NlebackendApp {
         }
         if (
             activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT) &&
-            activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_CLOUD)
+                activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_CLOUD)
         ) {
             log.error(
                 "You have misconfigured your application! It should not " + "run with both the 'dev' and 'cloud' profiles at the same time."
@@ -86,10 +86,10 @@ public class NlebackendApp {
         }
         log.info(
             "\n----------------------------------------------------------\n\t" +
-            "Application '{}' is running! Access URLs:\n\t" +
-            "Local: \t\t{}://localhost:{}{}\n\t" +
-            "External: \t{}://{}:{}{}\n\t" +
-            "Profile(s): \t{}\n----------------------------------------------------------",
+                "Application '{}' is running! Access URLs:\n\t" +
+                "Local: \t\t{}://localhost:{}{}\n\t" +
+                "External: \t{}://{}:{}{}\n\t" +
+                "Profile(s): \t{}\n----------------------------------------------------------",
             env.getProperty("spring.application.name"),
             protocol,
             serverPort,

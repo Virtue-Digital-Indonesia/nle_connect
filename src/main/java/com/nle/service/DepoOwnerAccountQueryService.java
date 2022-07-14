@@ -1,13 +1,11 @@
 package com.nle.service;
 
-import com.nle.domain.*; // for static metamodels
 import com.nle.domain.DepoOwnerAccount;
+import com.nle.domain.DepoOwnerAccount_;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.service.criteria.DepoOwnerAccountCriteria;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.mapper.DepoOwnerAccountMapper;
-import java.util.List;
-import javax.persistence.criteria.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -16,6 +14,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.service.QueryService;
+
+import java.util.List;
 
 /**
  * Service for executing complex queries for {@link DepoOwnerAccount} entities in the database.
@@ -43,6 +43,7 @@ public class DepoOwnerAccountQueryService extends QueryService<DepoOwnerAccount>
 
     /**
      * Return a {@link List} of {@link DepoOwnerAccountDTO} which matches the criteria from the database.
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the matching entities.
      */
@@ -55,8 +56,9 @@ public class DepoOwnerAccountQueryService extends QueryService<DepoOwnerAccount>
 
     /**
      * Return a {@link Page} of {@link DepoOwnerAccountDTO} which matches the criteria from the database.
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
-     * @param page The page, which should be returned.
+     * @param page     The page, which should be returned.
      * @return the matching entities.
      */
     @Transactional(readOnly = true)
@@ -68,6 +70,7 @@ public class DepoOwnerAccountQueryService extends QueryService<DepoOwnerAccount>
 
     /**
      * Return the number of matching entities in the database.
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the number of matching entities.
      */
@@ -80,6 +83,7 @@ public class DepoOwnerAccountQueryService extends QueryService<DepoOwnerAccount>
 
     /**
      * Function to convert {@link DepoOwnerAccountCriteria} to a {@link Specification}
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the matching {@link Specification} of the entity.
      */

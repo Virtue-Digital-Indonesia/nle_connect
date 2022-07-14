@@ -1,6 +1,10 @@
 package com.nle.service;
 
+import com.nle.constant.VerificationType;
+import com.nle.domain.DepoOwnerAccount;
+import com.nle.domain.VerificationToken;
 import com.nle.service.dto.VerificationTokenDTO;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -53,4 +57,6 @@ public interface VerificationTokenService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    VerificationToken createVerificationToken(DepoOwnerAccount depoOwnerAccount, VerificationType type);
 }

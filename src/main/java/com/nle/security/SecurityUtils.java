@@ -15,7 +15,8 @@ import java.util.stream.Stream;
  */
 public final class SecurityUtils {
 
-    private SecurityUtils() {}
+    private SecurityUtils() {
+    }
 
     /**
      * Get the login of the current user.
