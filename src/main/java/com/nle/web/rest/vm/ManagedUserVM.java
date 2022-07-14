@@ -1,6 +1,7 @@
 package com.nle.web.rest.vm;
 
 import com.nle.service.dto.AdminUserDTO;
+
 import javax.validation.constraints.Size;
 
 /**
