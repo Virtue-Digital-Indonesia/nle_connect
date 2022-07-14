@@ -6,25 +6,20 @@ import java.util.Objects;
 import javax.validation.constraints.*;
 
 /**
- * A DTO for the {@link com.nle.domain.DepoOwnerAccount} entity.
+ * A DTO for the {@link com.nle.domain.VerificationToken} entity.
  */
-public class DepoOwnerAccountDTO implements Serializable {
+public class VerificationTokenDTO implements Serializable {
 
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$")
-    private String companyEmail;
+    private String token;
 
     @NotNull
-    private String phoneNumber;
+    private Instant expiryDate;
 
     @NotNull
-    private String password;
-
-    private String fullName;
-
-    private String organizationName;
+    private String tokenType;
 
     private String createdBy;
 
@@ -34,6 +29,8 @@ public class DepoOwnerAccountDTO implements Serializable {
 
     private Instant lastModifiedDate;
 
+    private DepoOwnerAccountDTO depoOwnerAccount;
+
     public Long getId() {
         return id;
     }
@@ -42,44 +39,28 @@ public class DepoOwnerAccountDTO implements Serializable {
         this.id = id;
     }
 
-    public String getCompanyEmail() {
-        return companyEmail;
+    public String getToken() {
+        return token;
     }
 
-    public void setCompanyEmail(String companyEmail) {
-        this.companyEmail = companyEmail;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public Instant getExpiryDate() {
+        return expiryDate;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setExpiryDate(Instant expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
-    public String getPassword() {
-        return password;
+    public String getTokenType() {
+        return tokenType;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getOrganizationName() {
-        return organizationName;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
     }
 
     public String getCreatedBy() {
@@ -114,20 +95,28 @@ public class DepoOwnerAccountDTO implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public DepoOwnerAccountDTO getDepoOwnerAccount() {
+        return depoOwnerAccount;
+    }
+
+    public void setDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccount) {
+        this.depoOwnerAccount = depoOwnerAccount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DepoOwnerAccountDTO)) {
+        if (!(o instanceof VerificationTokenDTO)) {
             return false;
         }
 
-        DepoOwnerAccountDTO depoOwnerAccountDTO = (DepoOwnerAccountDTO) o;
+        VerificationTokenDTO verificationTokenDTO = (VerificationTokenDTO) o;
         if (this.id == null) {
             return false;
         }
-        return Objects.equals(this.id, depoOwnerAccountDTO.id);
+        return Objects.equals(this.id, verificationTokenDTO.id);
     }
 
     @Override
@@ -138,17 +127,16 @@ public class DepoOwnerAccountDTO implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "DepoOwnerAccountDTO{" +
+        return "VerificationTokenDTO{" +
             "id=" + getId() +
-            ", companyEmail='" + getCompanyEmail() + "'" +
-            ", phoneNumber='" + getPhoneNumber() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", fullName='" + getFullName() + "'" +
-            ", organizationName='" + getOrganizationName() + "'" +
+            ", token='" + getToken() + "'" +
+            ", expiryDate='" + getExpiryDate() + "'" +
+            ", tokenType='" + getTokenType() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
+            ", depoOwnerAccount=" + getDepoOwnerAccount() +
             "}";
     }
 }

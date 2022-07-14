@@ -1,11 +1,13 @@
 package com.nle.service;
 
+import com.nle.domain.*; // for static metamodels
 import com.nle.domain.DepoOwnerAccount;
-import com.nle.domain.DepoOwnerAccount_;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.service.criteria.DepoOwnerAccountCriteria;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.mapper.DepoOwnerAccountMapper;
+import java.util.List;
+import javax.persistence.criteria.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -14,8 +16,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.service.QueryService;
-
-import java.util.List;
 
 /**
  * Service for executing complex queries for {@link DepoOwnerAccount} entities in the database.

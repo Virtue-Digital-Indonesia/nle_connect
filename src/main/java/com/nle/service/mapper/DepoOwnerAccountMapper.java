@@ -2,7 +2,7 @@ package com.nle.service.mapper;
 
 import com.nle.domain.DepoOwnerAccount;
 import com.nle.service.dto.DepoOwnerAccountDTO;
-import org.mapstruct.Mapper;
+import org.mapstruct.*;
 
 /**
  * Mapper for the entity {@link DepoOwnerAccount} and its DTO {@link DepoOwnerAccountDTO}.

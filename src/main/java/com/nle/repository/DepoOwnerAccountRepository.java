@@ -1,8 +1,7 @@
 package com.nle.repository;
 
 import com.nle.domain.DepoOwnerAccount;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 /**

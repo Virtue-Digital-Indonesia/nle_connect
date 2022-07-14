@@ -6,11 +6,11 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 /**
- * A DepoOwnerAccount.
+ * A VerificationToken.
  */
 @Entity
-@Table(name = "depo_owner_account")
-public class DepoOwnerAccount implements Serializable {
+@Table(name = "verification_token")
+public class VerificationToken implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,23 +20,16 @@ public class DepoOwnerAccount implements Serializable {
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$")
-    @Column(name = "company_email", nullable = false, unique = true)
-    private String companyEmail;
+    @Column(name = "token", nullable = false, unique = true)
+    private String token;
 
     @NotNull
-    @Column(name = "phone_number", nullable = false, unique = true)
-    private String phoneNumber;
+    @Column(name = "expiry_date", nullable = false)
+    private Instant expiryDate;
 
     @NotNull
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "full_name")
-    private String fullName;
-
-    @Column(name = "organization_name")
-    private String organizationName;
+    @Column(name = "token_type", nullable = false)
+    private String tokenType;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -50,13 +43,16 @@ public class DepoOwnerAccount implements Serializable {
     @Column(name = "last_modified_date")
     private Instant lastModifiedDate;
 
+    @ManyToOne
+    private DepoOwnerAccount depoOwnerAccount;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
         return this.id;
     }
 
-    public DepoOwnerAccount id(Long id) {
+    public VerificationToken id(Long id) {
         this.setId(id);
         return this;
     }
@@ -65,76 +61,50 @@ public class DepoOwnerAccount implements Serializable {
         this.id = id;
     }
 
-    public String getCompanyEmail() {
-        return this.companyEmail;
+    public String getToken() {
+        return this.token;
     }
 
-    public DepoOwnerAccount companyEmail(String companyEmail) {
-        this.setCompanyEmail(companyEmail);
+    public VerificationToken token(String token) {
+        this.setToken(token);
         return this;
     }
 
-    public void setCompanyEmail(String companyEmail) {
-        this.companyEmail = companyEmail;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getPhoneNumber() {
-        return this.phoneNumber;
+    public Instant getExpiryDate() {
+        return this.expiryDate;
     }
 
-    public DepoOwnerAccount phoneNumber(String phoneNumber) {
-        this.setPhoneNumber(phoneNumber);
+    public VerificationToken expiryDate(Instant expiryDate) {
+        this.setExpiryDate(expiryDate);
         return this;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setExpiryDate(Instant expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
-    public String getPassword() {
-        return this.password;
+    public String getTokenType() {
+        return this.tokenType;
     }
 
-    public DepoOwnerAccount password(String password) {
-        this.setPassword(password);
+    public VerificationToken tokenType(String tokenType) {
+        this.setTokenType(tokenType);
         return this;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return this.fullName;
-    }
-
-    public DepoOwnerAccount fullName(String fullName) {
-        this.setFullName(fullName);
-        return this;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getOrganizationName() {
-        return this.organizationName;
-    }
-
-    public DepoOwnerAccount organizationName(String organizationName) {
-        this.setOrganizationName(organizationName);
-        return this;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
     }
 
     public String getCreatedBy() {
         return this.createdBy;
     }
 
-    public DepoOwnerAccount createdBy(String createdBy) {
+    public VerificationToken createdBy(String createdBy) {
         this.setCreatedBy(createdBy);
         return this;
     }
@@ -147,7 +117,7 @@ public class DepoOwnerAccount implements Serializable {
         return this.createdDate;
     }
 
-    public DepoOwnerAccount createdDate(Instant createdDate) {
+    public VerificationToken createdDate(Instant createdDate) {
         this.setCreatedDate(createdDate);
         return this;
     }
@@ -160,7 +130,7 @@ public class DepoOwnerAccount implements Serializable {
         return this.lastModifiedBy;
     }
 
-    public DepoOwnerAccount lastModifiedBy(String lastModifiedBy) {
+    public VerificationToken lastModifiedBy(String lastModifiedBy) {
         this.setLastModifiedBy(lastModifiedBy);
         return this;
     }
@@ -173,13 +143,26 @@ public class DepoOwnerAccount implements Serializable {
         return this.lastModifiedDate;
     }
 
-    public DepoOwnerAccount lastModifiedDate(Instant lastModifiedDate) {
+    public VerificationToken lastModifiedDate(Instant lastModifiedDate) {
         this.setLastModifiedDate(lastModifiedDate);
         return this;
     }
 
     public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public DepoOwnerAccount getDepoOwnerAccount() {
+        return this.depoOwnerAccount;
+    }
+
+    public void setDepoOwnerAccount(DepoOwnerAccount depoOwnerAccount) {
+        this.depoOwnerAccount = depoOwnerAccount;
+    }
+
+    public VerificationToken depoOwnerAccount(DepoOwnerAccount depoOwnerAccount) {
+        this.setDepoOwnerAccount(depoOwnerAccount);
+        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
@@ -189,10 +172,10 @@ public class DepoOwnerAccount implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DepoOwnerAccount)) {
+        if (!(o instanceof VerificationToken)) {
             return false;
         }
-        return id != null && id.equals(((DepoOwnerAccount) o).id);
+        return id != null && id.equals(((VerificationToken) o).id);
     }
 
     @Override
@@ -204,13 +187,11 @@ public class DepoOwnerAccount implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "DepoOwnerAccount{" +
+        return "VerificationToken{" +
             "id=" + getId() +
-            ", companyEmail='" + getCompanyEmail() + "'" +
-            ", phoneNumber='" + getPhoneNumber() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", fullName='" + getFullName() + "'" +
-            ", organizationName='" + getOrganizationName() + "'" +
+            ", token='" + getToken() + "'" +
+            ", expiryDate='" + getExpiryDate() + "'" +
+            ", tokenType='" + getTokenType() + "'" +
             ", createdBy='" + getCreatedBy() + "'" +
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
