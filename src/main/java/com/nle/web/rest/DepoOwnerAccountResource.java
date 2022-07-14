@@ -6,15 +6,8 @@ import com.nle.service.DepoOwnerAccountService;
 import com.nle.service.criteria.DepoOwnerAccountCriteria;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.web.rest.errors.BadRequestAlertException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.nle.web.rest.vm.DepoOwnerAccountCreateDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,11 +16,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * REST controller for managing {@link com.nle.domain.DepoOwnerAccount}.
@@ -66,6 +73,7 @@ public class DepoOwnerAccountResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new depoOwnerAccountDTO, or with status {@code 400 (Bad Request)} if the depoOwnerAccount has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(description = "Register new Depo owner account", operationId = "createDepoOwnerAccount", summary = "Register new Depo owner account")
     @PostMapping("/depo-owner-accounts")
     public ResponseEntity<DepoOwnerAccountDTO> createDepoOwnerAccount(@Valid @RequestBody DepoOwnerAccountCreateDTO depoOwnerAccountDTO)
         throws URISyntaxException {
@@ -89,6 +97,7 @@ public class DepoOwnerAccountResource {
      * or with status {@code 500 (Internal Server Error)} if the depoOwnerAccountDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(description = "Update Depo owner account", operationId = "updateDepoOwnerAccount", summary = "Update Depo owner account")
     @PutMapping("/depo-owner-accounts/{id}")
     public ResponseEntity<DepoOwnerAccountDTO> updateDepoOwnerAccount(
         @PathVariable(value = "id", required = false) final Long id,
@@ -114,48 +123,13 @@ public class DepoOwnerAccountResource {
     }
 
     /**
-     * {@code PATCH  /depo-owner-accounts/:id} : Partial updates given fields of an existing depoOwnerAccount, field will ignore if it is null
-     *
-     * @param id the id of the depoOwnerAccountDTO to save.
-     * @param depoOwnerAccountDTO the depoOwnerAccountDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated depoOwnerAccountDTO,
-     * or with status {@code 400 (Bad Request)} if the depoOwnerAccountDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the depoOwnerAccountDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the depoOwnerAccountDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/depo-owner-accounts/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<DepoOwnerAccountDTO> partialUpdateDepoOwnerAccount(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody DepoOwnerAccountDTO depoOwnerAccountDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to partial update DepoOwnerAccount partially : {}, {}", id, depoOwnerAccountDTO);
-        if (depoOwnerAccountDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, depoOwnerAccountDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!depoOwnerAccountRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<DepoOwnerAccountDTO> result = depoOwnerAccountService.partialUpdate(depoOwnerAccountDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, depoOwnerAccountDTO.getId().toString())
-        );
-    }
-
-    /**
      * {@code GET  /depo-owner-accounts} : get all the depoOwnerAccounts.
      *
      * @param pageable the pagination information.
      * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of depoOwnerAccounts in body.
      */
+    @Operation(description = "Get list of Depo owner account", operationId = "getAllDepoOwnerAccounts", summary = "Get list of Depo owner account")
     @GetMapping("/depo-owner-accounts")
     public ResponseEntity<List<DepoOwnerAccountDTO>> getAllDepoOwnerAccounts(
         DepoOwnerAccountCriteria criteria,
@@ -168,23 +142,12 @@ public class DepoOwnerAccountResource {
     }
 
     /**
-     * {@code GET  /depo-owner-accounts/count} : count all the depoOwnerAccounts.
-     *
-     * @param criteria the criteria which the requested entities should match.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
-     */
-    @GetMapping("/depo-owner-accounts/count")
-    public ResponseEntity<Long> countDepoOwnerAccounts(DepoOwnerAccountCriteria criteria) {
-        log.debug("REST request to count DepoOwnerAccounts by criteria: {}", criteria);
-        return ResponseEntity.ok().body(depoOwnerAccountQueryService.countByCriteria(criteria));
-    }
-
-    /**
      * {@code GET  /depo-owner-accounts/:id} : get the "id" depoOwnerAccount.
      *
      * @param id the id of the depoOwnerAccountDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the depoOwnerAccountDTO, or with status {@code 404 (Not Found)}.
      */
+    @Operation(description = "Get Depo owner account by Id", operationId = "getDepoOwnerAccount", summary = "Get Depo owner account by Id")
     @GetMapping("/depo-owner-accounts/{id}")
     public ResponseEntity<DepoOwnerAccountDTO> getDepoOwnerAccount(@PathVariable Long id) {
         log.debug("REST request to get DepoOwnerAccount : {}", id);
@@ -198,6 +161,7 @@ public class DepoOwnerAccountResource {
      * @param id the id of the depoOwnerAccountDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @Operation(description = "Delete Depo owner account by Id", operationId = "getDepoOwnerAccount", summary = "Delete Depo owner account by Id")
     @DeleteMapping("/depo-owner-accounts/{id}")
     public ResponseEntity<Void> deleteDepoOwnerAccount(@PathVariable Long id) {
         log.debug("REST request to delete DepoOwnerAccount : {}", id);
