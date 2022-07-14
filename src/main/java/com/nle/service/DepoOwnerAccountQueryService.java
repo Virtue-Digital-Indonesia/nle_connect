@@ -112,15 +112,8 @@ public class DepoOwnerAccountQueryService extends QueryService<DepoOwnerAccount>
             if (criteria.getCreatedBy() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getCreatedBy(), DepoOwnerAccount_.createdBy));
             }
-            if (criteria.getCreatedDate() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getCreatedDate(), DepoOwnerAccount_.createdDate));
-            }
             if (criteria.getLastModifiedBy() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getLastModifiedBy(), DepoOwnerAccount_.lastModifiedBy));
-            }
-            if (criteria.getLastModifiedDate() != null) {
-                specification =
-                    specification.and(buildRangeSpecification(criteria.getLastModifiedDate(), DepoOwnerAccount_.lastModifiedDate));
             }
         }
         return specification;

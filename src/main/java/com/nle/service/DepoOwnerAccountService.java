@@ -1,5 +1,6 @@
 package com.nle.service;
 
+import com.nle.domain.DepoOwnerAccount;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -55,4 +56,8 @@ public interface DepoOwnerAccountService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail);
+
+    Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber);
 }

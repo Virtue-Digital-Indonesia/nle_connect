@@ -1,8 +1,10 @@
 package com.nle.service.impl;
 
 import com.nle.domain.DepoOwnerAccount;
+import com.nle.exception.PhoneNumberAlreadyUsedException;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.service.DepoOwnerAccountService;
+import com.nle.exception.EmailAlreadyUsedException;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.mapper.DepoOwnerAccountMapper;
 import java.util.Optional;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,18 +29,35 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
 
     private final DepoOwnerAccountMapper depoOwnerAccountMapper;
 
+    private final PasswordEncoder passwordEncoder;
+
     public DepoOwnerAccountServiceImpl(
         DepoOwnerAccountRepository depoOwnerAccountRepository,
-        DepoOwnerAccountMapper depoOwnerAccountMapper
-    ) {
+        DepoOwnerAccountMapper depoOwnerAccountMapper,
+        PasswordEncoder passwordEncoder) {
         this.depoOwnerAccountRepository = depoOwnerAccountRepository;
         this.depoOwnerAccountMapper = depoOwnerAccountMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public DepoOwnerAccountDTO save(DepoOwnerAccountDTO depoOwnerAccountDTO) {
         log.debug("Request to save DepoOwnerAccount : {}", depoOwnerAccountDTO);
+        // check email exist or not
+        Optional<DepoOwnerAccount> companyEmail = this.findByCompanyEmail(depoOwnerAccountDTO.getCompanyEmail());
+        if (companyEmail.isPresent()) {
+            throw new EmailAlreadyUsedException();
+        }
+        // check phone number
+        Optional<DepoOwnerAccount> phoneNumber = this.findByPhoneNumber(depoOwnerAccountDTO.getPhoneNumber());
+        if (phoneNumber.isPresent()) {
+            throw new PhoneNumberAlreadyUsedException();
+        }
+        // encoded password
+        depoOwnerAccountDTO.setPassword(passwordEncoder.encode(depoOwnerAccountDTO.getPassword()));
+        // map to entity
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountMapper.toEntity(depoOwnerAccountDTO);
+        // save to db
         depoOwnerAccount = depoOwnerAccountRepository.save(depoOwnerAccount);
         return depoOwnerAccountMapper.toDto(depoOwnerAccount);
     }
@@ -83,5 +103,15 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     public void delete(Long id) {
         log.debug("Request to delete DepoOwnerAccount : {}", id);
         depoOwnerAccountRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail) {
+        return depoOwnerAccountRepository.findByCompanyEmail(companyEmail);
+    }
+
+    @Override
+    public Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber) {
+        return depoOwnerAccountRepository.findByPhoneNumber(phoneNumber);
     }
 }

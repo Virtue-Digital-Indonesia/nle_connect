@@ -1,17 +1,13 @@
 package com.nle.service.criteria;
 
-import java.io.Serializable;
-import java.util.Objects;
 import org.springdoc.api.annotations.ParameterObject;
 import tech.jhipster.service.Criteria;
-import tech.jhipster.service.filter.BooleanFilter;
-import tech.jhipster.service.filter.DoubleFilter;
 import tech.jhipster.service.filter.Filter;
-import tech.jhipster.service.filter.FloatFilter;
-import tech.jhipster.service.filter.InstantFilter;
-import tech.jhipster.service.filter.IntegerFilter;
 import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.service.filter.StringFilter;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Criteria class for the {@link com.nle.domain.DepoOwnerAccount} entity. This class is used
@@ -41,15 +37,12 @@ public class DepoOwnerAccountCriteria implements Serializable, Criteria {
 
     private StringFilter createdBy;
 
-    private InstantFilter createdDate;
-
     private StringFilter lastModifiedBy;
-
-    private InstantFilter lastModifiedDate;
 
     private Boolean distinct;
 
-    public DepoOwnerAccountCriteria() {}
+    public DepoOwnerAccountCriteria() {
+    }
 
     public DepoOwnerAccountCriteria(DepoOwnerAccountCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
@@ -59,9 +52,7 @@ public class DepoOwnerAccountCriteria implements Serializable, Criteria {
         this.fullName = other.fullName == null ? null : other.fullName.copy();
         this.organizationName = other.organizationName == null ? null : other.organizationName.copy();
         this.createdBy = other.createdBy == null ? null : other.createdBy.copy();
-        this.createdDate = other.createdDate == null ? null : other.createdDate.copy();
         this.lastModifiedBy = other.lastModifiedBy == null ? null : other.lastModifiedBy.copy();
-        this.lastModifiedDate = other.lastModifiedDate == null ? null : other.lastModifiedDate.copy();
         this.distinct = other.distinct;
     }
 
@@ -175,20 +166,6 @@ public class DepoOwnerAccountCriteria implements Serializable, Criteria {
         this.createdBy = createdBy;
     }
 
-    public InstantFilter getCreatedDate() {
-        return createdDate;
-    }
-
-    public InstantFilter createdDate() {
-        if (createdDate == null) {
-            createdDate = new InstantFilter();
-        }
-        return createdDate;
-    }
-
-    public void setCreatedDate(InstantFilter createdDate) {
-        this.createdDate = createdDate;
-    }
 
     public StringFilter getLastModifiedBy() {
         return lastModifiedBy;
@@ -203,21 +180,6 @@ public class DepoOwnerAccountCriteria implements Serializable, Criteria {
 
     public void setLastModifiedBy(StringFilter lastModifiedBy) {
         this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public InstantFilter getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public InstantFilter lastModifiedDate() {
-        if (lastModifiedDate == null) {
-            lastModifiedDate = new InstantFilter();
-        }
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(InstantFilter lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 
     public Boolean getDistinct() {
@@ -239,16 +201,14 @@ public class DepoOwnerAccountCriteria implements Serializable, Criteria {
         final DepoOwnerAccountCriteria that = (DepoOwnerAccountCriteria) o;
         return (
             Objects.equals(id, that.id) &&
-            Objects.equals(companyEmail, that.companyEmail) &&
-            Objects.equals(phoneNumber, that.phoneNumber) &&
-            Objects.equals(password, that.password) &&
-            Objects.equals(fullName, that.fullName) &&
-            Objects.equals(organizationName, that.organizationName) &&
-            Objects.equals(createdBy, that.createdBy) &&
-            Objects.equals(createdDate, that.createdDate) &&
-            Objects.equals(lastModifiedBy, that.lastModifiedBy) &&
-            Objects.equals(lastModifiedDate, that.lastModifiedDate) &&
-            Objects.equals(distinct, that.distinct)
+                Objects.equals(companyEmail, that.companyEmail) &&
+                Objects.equals(phoneNumber, that.phoneNumber) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(fullName, that.fullName) &&
+                Objects.equals(organizationName, that.organizationName) &&
+                Objects.equals(createdBy, that.createdBy) &&
+                Objects.equals(lastModifiedBy, that.lastModifiedBy) &&
+                Objects.equals(distinct, that.distinct)
         );
     }
 
@@ -262,9 +222,7 @@ public class DepoOwnerAccountCriteria implements Serializable, Criteria {
             fullName,
             organizationName,
             createdBy,
-            createdDate,
             lastModifiedBy,
-            lastModifiedDate,
             distinct
         );
     }
@@ -280,9 +238,7 @@ public class DepoOwnerAccountCriteria implements Serializable, Criteria {
             (fullName != null ? "fullName=" + fullName + ", " : "") +
             (organizationName != null ? "organizationName=" + organizationName + ", " : "") +
             (createdBy != null ? "createdBy=" + createdBy + ", " : "") +
-            (createdDate != null ? "createdDate=" + createdDate + ", " : "") +
             (lastModifiedBy != null ? "lastModifiedBy=" + lastModifiedBy + ", " : "") +
-            (lastModifiedDate != null ? "lastModifiedDate=" + lastModifiedDate + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";
     }

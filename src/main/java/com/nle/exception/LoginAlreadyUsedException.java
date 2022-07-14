@@ -1,4 +1,6 @@
-package com.nle.web.rest.errors;
+package com.nle.exception;
+
+import com.nle.web.rest.errors.ErrorConstants;
 
 public class LoginAlreadyUsedException extends BadRequestAlertException {
 

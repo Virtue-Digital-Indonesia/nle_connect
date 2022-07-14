@@ -1,9 +1,15 @@
 package com.nle.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.time.Instant;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 /**
  * A DepoOwnerAccount.
@@ -20,7 +26,7 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$")
+    @Pattern(regexp = "^[_A-Za-z\\d-+]+(.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(.[A-Za-z\\d]+)*(.[A-Za-z]{2,})$")
     @Column(name = "company_email", nullable = false, unique = true)
     private String companyEmail;
 
@@ -131,16 +137,16 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
         this.createdBy = createdBy;
     }
 
-    public Instant getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return this.createdDate;
     }
 
-    public DepoOwnerAccount createdDate(Instant createdDate) {
+    public DepoOwnerAccount createdDate(LocalDateTime createdDate) {
         this.setCreatedDate(createdDate);
         return this;
     }
 
-    public void setCreatedDate(Instant createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -157,16 +163,16 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
         this.lastModifiedBy = lastModifiedBy;
     }
 
-    public Instant getLastModifiedDate() {
+    public LocalDateTime getLastModifiedDate() {
         return this.lastModifiedDate;
     }
 
-    public DepoOwnerAccount lastModifiedDate(Instant lastModifiedDate) {
+    public DepoOwnerAccount lastModifiedDate(LocalDateTime lastModifiedDate) {
         this.setLastModifiedDate(lastModifiedDate);
         return this;
     }
 
-    public void setLastModifiedDate(Instant lastModifiedDate) {
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 

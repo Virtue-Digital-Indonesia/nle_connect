@@ -1,5 +1,8 @@
-package com.nle.web.rest.errors;
+package com.nle.exception;
 
+import com.nle.web.rest.errors.ErrorConstants;
+import com.nle.web.rest.errors.FieldErrorVM;
+import com.nle.web.rest.errors.InvalidPasswordException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -117,18 +120,13 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleEmailAlreadyUsedException(com.nle.service.EmailAlreadyUsedException ex, NativeWebRequest request) {
-        EmailAlreadyUsedException problem = new EmailAlreadyUsedException();
-        return create(
-            problem,
-            request,
-            HeaderUtil.createFailureAlert(applicationName, false, problem.getEntityName(), problem.getErrorKey(), problem.getMessage())
-        );
+    public ResponseEntity<Problem> handleEmailAlreadyUsedException(EmailAlreadyUsedException ex, NativeWebRequest request) {
+        return create(ex, request);
     }
 
     @ExceptionHandler
     public ResponseEntity<Problem> handleUsernameAlreadyUsedException(
-        com.nle.service.UsernameAlreadyUsedException ex,
+        UsernameAlreadyUsedException ex,
         NativeWebRequest request
     ) {
         LoginAlreadyUsedException problem = new LoginAlreadyUsedException();
@@ -140,7 +138,7 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleInvalidPasswordException(com.nle.service.InvalidPasswordException ex, NativeWebRequest request) {
+    public ResponseEntity<Problem> handleInvalidPasswordException(com.nle.exception.InvalidPasswordException ex, NativeWebRequest request) {
         return create(new InvalidPasswordException(), request);
     }
 

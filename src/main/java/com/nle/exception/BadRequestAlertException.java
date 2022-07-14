@@ -1,5 +1,6 @@
-package com.nle.web.rest.errors;
+package com.nle.exception;
 
+import com.nle.web.rest.errors.ErrorConstants;
 import org.zalando.problem.AbstractThrowableProblem;
 import org.zalando.problem.Status;
 

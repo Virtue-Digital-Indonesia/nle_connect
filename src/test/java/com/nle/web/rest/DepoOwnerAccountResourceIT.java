@@ -12,6 +12,7 @@ import com.nle.service.criteria.DepoOwnerAccountCriteria;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.mapper.DepoOwnerAccountMapper;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
@@ -52,14 +53,14 @@ class DepoOwnerAccountResourceIT {
     private static final String DEFAULT_CREATED_BY = "AAAAAAAAAA";
     private static final String UPDATED_CREATED_BY = "BBBBBBBBBB";
 
-    private static final Instant DEFAULT_CREATED_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_CREATED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final LocalDateTime DEFAULT_CREATED_DATE = LocalDateTime.now();
+    private static final LocalDateTime UPDATED_CREATED_DATE = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final String DEFAULT_LAST_MODIFIED_BY = "AAAAAAAAAA";
     private static final String UPDATED_LAST_MODIFIED_BY = "BBBBBBBBBB";
 
-    private static final Instant DEFAULT_LAST_MODIFIED_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_LAST_MODIFIED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final LocalDateTime DEFAULT_LAST_MODIFIED_DATE = LocalDateTime.now();
+    private static final LocalDateTime UPDATED_LAST_MODIFIED_DATE = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final String ENTITY_API_URL = "/api/depo-owner-accounts";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";

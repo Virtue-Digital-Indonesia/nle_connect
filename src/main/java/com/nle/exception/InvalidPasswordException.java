@@ -1,4 +1,4 @@
-package com.nle.service;
+package com.nle.exception;
 
 public class InvalidPasswordException extends RuntimeException {
 

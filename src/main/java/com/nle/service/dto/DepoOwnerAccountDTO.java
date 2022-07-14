@@ -1,5 +1,7 @@
 package com.nle.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -20,6 +22,7 @@ public class DepoOwnerAccountDTO implements Serializable {
     private String phoneNumber;
 
     @NotNull
+    @JsonIgnore
     private String password;
 
     private String fullName;
