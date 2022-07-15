@@ -35,7 +35,7 @@ pipeline {
         stage('Packaging') {
             steps {
                 script {
-                    sh "./mvnw -ntp verify -DskipTests"
+                    sh "./mvnw clean install -DskipTests"
                 }
             }
         }
