@@ -58,4 +58,8 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
+    public boolean isActivated() {
+        return AccountStatus.ACTIVE == accountStatus;
+    }
+
 }

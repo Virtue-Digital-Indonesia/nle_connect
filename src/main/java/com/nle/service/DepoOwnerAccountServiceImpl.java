@@ -3,9 +3,8 @@ package com.nle.service;
 import com.nle.constant.AccountStatus;
 import com.nle.constant.VerificationType;
 import com.nle.entity.DepoOwnerAccount;
-import com.nle.entity.EmailAlreadyUsedException;
-import com.nle.entity.PhoneNumberAlreadyUsedException;
 import com.nle.entity.VerificationToken;
+import com.nle.exception.CommonException;
 import com.nle.mapper.DepoOwnerAccountMapper;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.service.dto.DepoOwnerAccountDTO;
@@ -38,12 +37,12 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         // check email exist or not
         Optional<DepoOwnerAccount> companyEmail = this.findByCompanyEmail(depoOwnerAccountDTO.getCompanyEmail());
         if (companyEmail.isPresent()) {
-            throw new EmailAlreadyUsedException();
+            throw new CommonException("Email is already in use!");
         }
         // check phone number
         Optional<DepoOwnerAccount> phoneNumber = this.findByPhoneNumber(depoOwnerAccountDTO.getPhoneNumber());
         if (phoneNumber.isPresent()) {
-            throw new PhoneNumberAlreadyUsedException();
+            throw new CommonException("Phone number is already in use!");
         }
         // encoded password
         depoOwnerAccountDTO.setPassword(passwordEncoder.encode(depoOwnerAccountDTO.getPassword()));

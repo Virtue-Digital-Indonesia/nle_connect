@@ -4,10 +4,14 @@ import com.nle.constant.AccountStatus;
 import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
 import com.nle.controller.dto.DepoOwnerAccountCreateDTO;
+import com.nle.controller.dto.JWTToken;
+import com.nle.controller.dto.LoginDto;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
+import com.nle.security.jwt.JWTFilter;
+import com.nle.security.jwt.TokenProvider;
 import com.nle.service.DepoOwnerAccountService;
 import com.nle.service.VerificationTokenService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
@@ -16,7 +20,13 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +54,10 @@ public class DepoOwnerController {
     private final VerificationTokenRepository verificationTokenRepository;
 
     private final VerificationTokenService verificationTokenService;
+
+    private final TokenProvider tokenProvider;
+
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Operation(description = "Register new Depo owner account", operationId = "createDepoOwnerAccount", summary = "Register new Depo owner account")
     @PostMapping("/register/depo-owner-accounts")
@@ -80,8 +94,9 @@ public class DepoOwnerController {
         return ResponseEntity.ok().body(new CheckExistDto(false));
     }
 
+    @Operation(description = "Active Depo owner user by verification token", operationId = "activeDepoOwner", summary = "Active Depo owner user by verification token")
     @GetMapping(value = "/activate/{token}")
-    public ActiveDto activeCustomer(@PathVariable String token) {
+    public ActiveDto activeDepoOwner(@PathVariable String token) {
         VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token);
         // active user
         DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
@@ -91,5 +106,20 @@ public class DepoOwnerController {
         // remove verification token
         verificationTokenRepository.delete(verificationToken);
         return new ActiveDto(AccountStatus.ACTIVE.name());
+    }
+
+    @Operation(description = "Authenticate Depo owner user by company email and password", operationId = "activeDepoOwner", summary = "Authenticate Depo owner user by company email and password")
+    @PostMapping("/authenticate")
+    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginDto loginDto) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+            loginDto.getCompanyEmail(),
+            loginDto.getPassword()
+        );
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = tokenProvider.createToken(authentication);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
     }
 }
