@@ -18,6 +18,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
+import static com.nle.constant.AppConstant.Pattern.EMAIL_PATTERN;
+
 /**
  * A DepoOwnerAccount.
  */
@@ -36,7 +38,7 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "^[_A-Za-z\\d-+]+(.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(.[A-Za-z\\d]+)*(.[A-Za-z]{2,})$")
+    @Pattern(regexp = EMAIL_PATTERN)
     @Column(name = "company_email", nullable = false, unique = true)
     private String companyEmail;
 

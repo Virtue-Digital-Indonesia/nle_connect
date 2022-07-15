@@ -4,18 +4,23 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
+import static com.nle.constant.AppConstant.Pattern.EMAIL_PATTERN;
+import static com.nle.constant.AppConstant.Pattern.NAME_PATTERN;
+import static com.nle.constant.AppConstant.Pattern.PHONE_NUMBER_PATTERN;
+
 public class DepoOwnerAccountCreateDTO implements Serializable {
 
-    @NotNull
-    @Pattern(regexp = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$")
+    @Pattern(regexp = EMAIL_PATTERN, message = "Email is not valid!")
     private String companyEmail;
 
     @NotNull
+    @Pattern(regexp = PHONE_NUMBER_PATTERN, message = "Phone Number is not valid!")
     private String phoneNumber;
 
     @NotNull
     private String password;
 
+    @Pattern(regexp = NAME_PATTERN, message = "Full name is not valid!")
     private String fullName;
 
     private String organizationName;
