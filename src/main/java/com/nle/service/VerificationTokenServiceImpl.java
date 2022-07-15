@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -61,5 +62,10 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     @Override
     public VerificationToken findByToken(String token) {
         return verificationTokenRepository.findByToken(token);
+    }
+
+    @Override
+    public Optional<VerificationToken> findByEmailAndType(String email, VerificationType verificationType) {
+        return verificationTokenRepository.findByDepoOwnerAccount_CompanyEmailAndTokenType(email, verificationType);
     }
 }

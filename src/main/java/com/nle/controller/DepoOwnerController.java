@@ -2,6 +2,7 @@ package com.nle.controller;
 
 import com.nle.config.AppConfig;
 import com.nle.constant.AccountStatus;
+import com.nle.constant.VerificationType;
 import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
 import com.nle.controller.dto.DepoOwnerAccountCreateDTO;
@@ -9,6 +10,8 @@ import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.LoginDto;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
+import com.nle.exception.ApiResponse;
+import com.nle.exception.ResourceNotFoundException;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
 import com.nle.security.jwt.JWTFilter;
@@ -16,6 +19,7 @@ import com.nle.security.jwt.TokenProvider;
 import com.nle.service.DepoOwnerAccountService;
 import com.nle.service.VerificationTokenService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
+import com.nle.service.email.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -61,6 +65,8 @@ public class DepoOwnerController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     private final AppConfig appConfig;
+
+    private final EmailService emailService;
 
     @Operation(description = "Register new Depo owner account", operationId = "createDepoOwnerAccount", summary = "Register new Depo owner account")
     @PostMapping("/register/depo-owner-accounts")
@@ -112,7 +118,7 @@ public class DepoOwnerController {
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appConfig.getUrl().getSuccessRedirectUrl())).build();
     }
 
-    @Operation(description = "Authenticate Depo owner user by company email and password", operationId = "activeDepoOwner", summary = "Authenticate Depo owner user by company email and password")
+    @Operation(description = "Authenticate Depo owner user by company email and password", operationId = "authorize", summary = "Authenticate Depo owner user by company email and password")
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -125,5 +131,23 @@ public class DepoOwnerController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+    }
+
+    @Operation(description = "Resend activation code via registered email", operationId = "resendActivationCode", summary = "Resend activation code via registered email")
+    @GetMapping(value = "/register/resend/{email}")
+    public ApiResponse resendActivationCode(@PathVariable String email) {
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(email);
+        if (depoOwnerAccount.isEmpty()) {
+            throw new ResourceNotFoundException("Depo account with email : " + email + " doesn't exist");
+        }
+        // find all old active token then remove them
+        Optional<VerificationToken> oldToken = verificationTokenService.findByEmailAndType(email, VerificationType.ACTIVE_ACCOUNT);
+        oldToken.ifPresent(verificationToken -> verificationTokenService.delete(verificationToken.getId()));
+        // create new token then send email
+        VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount.get(), VerificationType.ACTIVE_ACCOUNT);
+        // send email
+        emailService.sendDepoOwnerActiveEmail(depoOwnerAccount.get(), verificationToken.getToken());
+        return new ApiResponse(HttpStatus.CREATED, "Resend activation code successfully", "");
+
     }
 }

@@ -4,6 +4,8 @@ import com.nle.constant.VerificationType;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
 
+import java.util.Optional;
+
 public interface VerificationTokenService {
     void delete(Long id);
 
@@ -12,4 +14,6 @@ public interface VerificationTokenService {
     VerificationToken checkVerificationToken(String token);
 
     VerificationToken findByToken(String token);
+
+    Optional<VerificationToken> findByEmailAndType(String email, VerificationType verificationType);
 }
