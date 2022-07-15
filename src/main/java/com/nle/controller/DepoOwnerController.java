@@ -66,7 +66,7 @@ public class DepoOwnerController {
         log.debug("REST request to save DepoOwnerAccount : {}", depoOwnerAccountDTO);
         DepoOwnerAccountDTO ownerAccountDTO = new DepoOwnerAccountDTO();
         BeanUtils.copyProperties(depoOwnerAccountDTO, ownerAccountDTO);
-        DepoOwnerAccountDTO result = depoOwnerAccountService.save(ownerAccountDTO);
+        DepoOwnerAccountDTO result = depoOwnerAccountService.createDepoOwnerAccount(ownerAccountDTO);
         return ResponseEntity
             .created(new URI("/api/depo-owner-accounts/" + result.getId()))
             .body(result);

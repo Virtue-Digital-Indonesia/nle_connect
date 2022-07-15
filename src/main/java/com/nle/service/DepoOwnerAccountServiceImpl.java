@@ -36,7 +36,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     private final NotificationService notificationService;
 
     @Override
-    public DepoOwnerAccountDTO save(DepoOwnerAccountDTO depoOwnerAccountDTO) {
+    public DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO) {
         log.debug("Request to save DepoOwnerAccount : {}", depoOwnerAccountDTO);
         // check email exist or not
         Optional<DepoOwnerAccount> companyEmail = this.findByCompanyEmail(depoOwnerAccountDTO.getCompanyEmail());

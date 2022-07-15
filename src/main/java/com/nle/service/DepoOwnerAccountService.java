@@ -9,7 +9,7 @@ import java.util.Optional;
  * Service Interface for managing {@link DepoOwnerAccountDTO}.
  */
 public interface DepoOwnerAccountService {
-    DepoOwnerAccountDTO save(DepoOwnerAccountDTO depoOwnerAccountDTO);
+    DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO);
 
     Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail);
 
