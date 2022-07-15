@@ -20,7 +20,7 @@ public class DepoOwnerAccountCreateDTO implements Serializable {
     @NotNull
     private String password;
 
-    @Pattern(regexp = NAME_PATTERN, message = "Full name is not valid!")
+    @NotNull
     private String fullName;
 
     private String organizationName;
