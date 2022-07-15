@@ -4,6 +4,10 @@ app:
       base64-secret: OTdiYTU1OTE1Y2E0ZjRjN2U0NTI2MTI2YjY4NDc4NjEwMWIyY2NmZGY4YTVjOTc0YzBmNDZlZDA5OGVlYmVlMzYzNGU3MTkyMjUzNGIzZGJlZjBhNmIzNGYzZWM1YmY5NjNhMzg4MTQyOTFhYTA0NGExNTNhNDBiZmRhNWNjZjA=
       token-validity-in-seconds: 86400
       secret: 5BQ0aAFGyyTC7HVEUHic
+    aws:
+      credentials:
+        access-key: "AKIAWJCGQ2JNB7LRYTOY"
+        secret-key: "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"
   springdoc:
     name:  Nlebackend API
     url: http://api.nle-connect.id/
@@ -23,7 +27,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://mysql:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: root
     hikari:
