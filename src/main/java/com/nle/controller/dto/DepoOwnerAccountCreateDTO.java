@@ -5,7 +5,6 @@ import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 import static com.nle.constant.AppConstant.Pattern.EMAIL_PATTERN;
-import static com.nle.constant.AppConstant.Pattern.NAME_PATTERN;
 import static com.nle.constant.AppConstant.Pattern.PHONE_NUMBER_PATTERN;
 
 public class DepoOwnerAccountCreateDTO implements Serializable {

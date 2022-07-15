@@ -11,5 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AppConfig {
     private Security security;
     private SpringDocProperties springdoc;
+    private String activeUrl;
 }
 

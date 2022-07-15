@@ -43,7 +43,6 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, response, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-
     @ExceptionHandler(DataAccessException.class)
     @ResponseBody
     public ResponseEntity<Object> handleDataAccessException(WebRequest req, DataAccessException ex) {

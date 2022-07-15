@@ -8,11 +8,10 @@ import com.nle.exception.CommonException;
 import com.nle.mapper.DepoOwnerAccountMapper;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.service.dto.DepoOwnerAccountDTO;
-import com.nle.service.mail.NotificationService;
+import com.nle.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +32,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
 
     private final VerificationTokenService verificationTokenService;
 
-    private final NotificationService notificationService;
+    private final EmailService emailService;
 
     @Override
     public DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO) {
@@ -57,12 +56,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccount = depoOwnerAccountRepository.save(depoOwnerAccount);
         VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount, VerificationType.ACTIVE_ACCOUNT);
         // send activation email
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("noreply@transporta.id");
-        simpleMailMessage.setTo(depoOwnerAccountDTO.getCompanyEmail());
-        simpleMailMessage.setSubject("test subject");
-        simpleMailMessage.setText("Your token: " + verificationToken.getToken());
-        notificationService.sendMailMessage(simpleMailMessage);
+        emailService.sendDepoOwnerActiveEmail(depoOwnerAccount, verificationToken.getToken());
         return depoOwnerAccountMapper.toDto(depoOwnerAccount);
     }
 

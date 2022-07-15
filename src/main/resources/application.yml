@@ -15,6 +15,7 @@ app:
     title: Nlebackend API
     description: Nlebackend API documentation
     version: 0.0.1
+  activeUrl: http://localhost:8080/api/activate/
 spring:
   devtools:
     restart:
