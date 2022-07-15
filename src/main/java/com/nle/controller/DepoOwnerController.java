@@ -1,5 +1,6 @@
 package com.nle.controller;
 
+import com.nle.config.AppConfig;
 import com.nle.constant.AccountStatus;
 import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
@@ -59,6 +60,8 @@ public class DepoOwnerController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    private final AppConfig appConfig;
+
     @Operation(description = "Register new Depo owner account", operationId = "createDepoOwnerAccount", summary = "Register new Depo owner account")
     @PostMapping("/register/depo-owner-accounts")
     public ResponseEntity<DepoOwnerAccountDTO> createDepoOwnerAccount(@Valid @RequestBody DepoOwnerAccountCreateDTO depoOwnerAccountDTO)
@@ -96,7 +99,7 @@ public class DepoOwnerController {
 
     @Operation(description = "Active Depo owner user by verification token", operationId = "activeDepoOwner", summary = "Active Depo owner user by verification token")
     @GetMapping(value = "/activate/{token}")
-    public ActiveDto activeDepoOwner(@PathVariable String token) {
+    public ResponseEntity<Void> activeDepoOwner(@PathVariable String token) {
         VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token);
         // active user
         DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
@@ -105,7 +108,8 @@ public class DepoOwnerController {
         log.info("Customer " + depoOwnerAccount.getFullName() + " has been active.");
         // remove verification token
         verificationTokenRepository.delete(verificationToken);
-        return new ActiveDto(AccountStatus.ACTIVE.name());
+        // redirect to login page
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appConfig.getUrl().getSuccessRedirectUrl())).build();
     }
 
     @Operation(description = "Authenticate Depo owner user by company email and password", operationId = "activeDepoOwner", summary = "Authenticate Depo owner user by company email and password")

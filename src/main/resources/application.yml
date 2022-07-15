@@ -15,7 +15,11 @@ app:
     title: Nlebackend API
     description: Nlebackend API documentation
     version: 0.0.1
-  activeUrl: http://localhost:8080/api/activate/
+  url:
+    active-url: http://localhost:8080/api/activate/
+    success-redirect-url: http://nle-connect.id/sign-in
+    failed-redirect-url: http://nle-connect.id/sign-in
+
 spring:
   devtools:
     restart:

@@ -37,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendDepoOwnerActiveEmail(DepoOwnerAccount depoOwnerAccount, String token) {
         Map<String, String> params = new HashMap<>();
         params.put("fullName", depoOwnerAccount.getFullName());
-        params.put("activeUrl", appConfig.getActiveUrl() + token);
+        params.put("activeUrl", appConfig.getUrl().getActiveUrl() + token);
         // get email template content from DB
         EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.ACTIVE_DEPO_OWNER);
         EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, depoOwnerAccount.getCompanyEmail());

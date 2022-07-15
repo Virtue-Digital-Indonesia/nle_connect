@@ -2,6 +2,7 @@ package com.nle.config;
 
 
 import com.nle.config.springdoc.SpringDocProperties;
+import com.nle.config.url.Url;
 import com.nle.security.jwt.dto.Security;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,6 +12,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AppConfig {
     private Security security;
     private SpringDocProperties springdoc;
-    private String activeUrl;
+    private Url url;
 }
 
