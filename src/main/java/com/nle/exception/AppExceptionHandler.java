@@ -24,9 +24,17 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, apiResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, req);
     }
 
-    @ExceptionHandler(value = {CommonException.class, ResourceNotFoundException.class})
+    @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseBody
-    public ResponseEntity<Object> handleBusinessException(WebRequest req, ResourceNotFoundException ex) {
+    public ResponseEntity<Object> handleResourceNotFoundException(WebRequest req, ResourceNotFoundException ex) {
+        logger.error(ex.getMessage(), ex);
+        ApiResponse apiResponse = new ApiResponse(HttpStatus.NOT_FOUND, ex.getMessage(), ex.getMessage());
+        return handleExceptionInternal(ex, apiResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, req);
+    }
+
+    @ExceptionHandler(CommonException.class)
+    @ResponseBody
+    public ResponseEntity<Object> handleCommonException(WebRequest req, CommonException ex) {
         logger.error(ex.getMessage(), ex);
         ApiResponse apiResponse = new ApiResponse(HttpStatus.NOT_FOUND, ex.getMessage(), ex.getMessage());
         return handleExceptionInternal(ex, apiResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, req);
