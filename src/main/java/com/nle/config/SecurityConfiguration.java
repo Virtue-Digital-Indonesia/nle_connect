@@ -33,6 +33,7 @@ public class SecurityConfiguration {
         return web -> web.ignoring()
             .antMatchers(HttpMethod.OPTIONS, "/**")
             .antMatchers("/resources/**")
+            .antMatchers("/v3/api-docs/**")
             .antMatchers("/swagger-ui/**");
     }
 
@@ -59,9 +60,9 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/api/web/**").authenticated()
+                .antMatchers("/api/register/**", "/api/activate/**", "/api/authenticate").permitAll()
             .anyRequest()
-                .permitAll()
+                .authenticated()
             .and()
             .apply(securityConfigurerAdapter());
         // @formatter:on

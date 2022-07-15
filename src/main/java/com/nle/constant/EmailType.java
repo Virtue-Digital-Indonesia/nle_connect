@@ -4,5 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum EmailType {
-    ACTIVE_DEPO_OWNER
+    ACTIVE_DEPO_OWNER,
+    ACTIVE_DEPO_WORKER
 }

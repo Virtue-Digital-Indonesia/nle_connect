@@ -43,8 +43,11 @@ public class VerificationToken extends AbstractAuditingEntity implements Seriali
     @Enumerated(EnumType.STRING)
     private VerificationType tokenType;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     private DepoOwnerAccount depoOwnerAccount;
+
+    @ManyToOne(optional = true)
+    private DepoWorkerAccount depoWorkerAccount;
 
     public Long getId() {
         return id;
@@ -84,5 +87,13 @@ public class VerificationToken extends AbstractAuditingEntity implements Seriali
 
     public void setDepoOwnerAccount(DepoOwnerAccount depoOwnerAccount) {
         this.depoOwnerAccount = depoOwnerAccount;
+    }
+
+    public DepoWorkerAccount getDepoWorkerAccount() {
+        return depoWorkerAccount;
+    }
+
+    public void setDepoWorkerAccount(DepoWorkerAccount depoWorkerAccount) {
+        this.depoWorkerAccount = depoWorkerAccount;
     }
 }

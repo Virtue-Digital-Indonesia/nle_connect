@@ -1,4 +1,4 @@
-package com.nle.service;
+package com.nle.service.depoOwner;
 
 import com.nle.constant.AccountStatus;
 import com.nle.constant.VerificationType;
@@ -7,6 +7,7 @@ import com.nle.entity.VerificationToken;
 import com.nle.exception.CommonException;
 import com.nle.mapper.DepoOwnerAccountMapper;
 import com.nle.repository.DepoOwnerAccountRepository;
+import com.nle.service.VerificationTokenService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.email.EmailService;
 import lombok.RequiredArgsConstructor;

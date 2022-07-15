@@ -45,6 +45,17 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendDepoWorkerActiveEmail(String workerEmail, String activationCode) {
+        Map<String, String> params = new HashMap<>();
+        params.put("workerEmail", workerEmail);
+        params.put("activationCode", activationCode);
+        // get email template content from DB
+        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.ACTIVE_DEPO_WORKER);
+        EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, workerEmail);
+        sendSimpleEmail(emailDTO);
+    }
+
+    @Override
     @Async
     public void sendSimpleEmail(EmailDTO emailDTO) {
         MimeMessage message = javaMailSender.createMimeMessage();

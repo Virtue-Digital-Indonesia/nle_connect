@@ -1,4 +1,4 @@
-package com.nle.service;
+package com.nle.service.depoOwner;
 
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.service.dto.DepoOwnerAccountDTO;

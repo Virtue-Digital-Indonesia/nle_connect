@@ -8,4 +8,6 @@ public interface EmailService {
     void sendSimpleEmail(EmailDTO emailDTO);
 
     void sendDepoOwnerActiveEmail(DepoOwnerAccount depoOwnerAccount, String token);
+
+    void sendDepoWorkerActiveEmail(String workerEmail, String activationCode);
 }

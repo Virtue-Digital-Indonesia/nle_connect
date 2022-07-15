@@ -3,22 +3,26 @@ package com.nle.controller;
 import com.nle.config.AppConfig;
 import com.nle.constant.AccountStatus;
 import com.nle.constant.VerificationType;
-import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
 import com.nle.controller.dto.DepoOwnerAccountCreateDTO;
+import com.nle.controller.dto.DepoWorkerInvitationReqDto;
 import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.LoginDto;
 import com.nle.entity.DepoOwnerAccount;
+import com.nle.entity.DepoWorkerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.exception.ApiResponse;
+import com.nle.exception.CommonException;
 import com.nle.exception.ResourceNotFoundException;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
 import com.nle.security.jwt.JWTFilter;
 import com.nle.security.jwt.TokenProvider;
-import com.nle.service.DepoOwnerAccountService;
 import com.nle.service.VerificationTokenService;
+import com.nle.service.depoOwner.DepoOwnerAccountService;
+import com.nle.service.depoWorker.DepoWorkerAccountService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
+import com.nle.service.dto.DepoWorkerAccountDTO;
 import com.nle.service.email.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +71,8 @@ public class DepoOwnerController {
     private final AppConfig appConfig;
 
     private final EmailService emailService;
+
+    private final DepoWorkerAccountService depoWorkerAccountService;
 
     @Operation(description = "Register new Depo owner account", operationId = "createDepoOwnerAccount", summary = "Register new Depo owner account")
     @PostMapping("/register/depo-owner-accounts")
@@ -148,6 +154,15 @@ public class DepoOwnerController {
         // send email
         emailService.sendDepoOwnerActiveEmail(depoOwnerAccount.get(), verificationToken.getToken());
         return new ApiResponse(HttpStatus.CREATED, "Resend activation code successfully", "");
+    }
 
+    @Operation(description = "Send invitation email to worker", operationId = "sendInvitation", summary = "Send invitation email to worker")
+    @PostMapping(value = "/send-invitation")
+    public ResponseEntity<DepoWorkerAccountDTO> sendInvitation(@RequestBody @Valid DepoWorkerInvitationReqDto depoWorkerInvitationReqDto) {
+        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountService.findByEmail(depoWorkerInvitationReqDto.getEmail());
+        if (depoWorkerAccountOptional.isPresent()) {
+            throw new CommonException("Worker with email " + depoWorkerInvitationReqDto.getEmail() + " is exist in system");
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(depoWorkerAccountService.createAndSendInvitationEmail(depoWorkerInvitationReqDto.getEmail()));
     }
 }
