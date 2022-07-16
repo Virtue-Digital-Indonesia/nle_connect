@@ -45,13 +45,24 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendDepoWorkerActiveEmail(String workerEmail, String activationCode) {
+    public void sendDepoWorkerInvitationEmail(String workerEmail, String activationCode) {
         Map<String, String> params = new HashMap<>();
         params.put("workerEmail", workerEmail);
         params.put("activationCode", activationCode);
         // get email template content from DB
-        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.ACTIVE_DEPO_WORKER);
+        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.INVITE_DEPO_WORKER);
         EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, workerEmail);
+        sendSimpleEmail(emailDTO);
+    }
+
+    @Override
+    public void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email) {
+        Map<String, String> params = new HashMap<>();
+        params.put("workerFullName", workerFullName);
+        params.put("depoOwnerFullName", depoOwnerFullName);
+        // get email template content from DB
+        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.APPROVE_DEPO_WORKER);
+        EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, email);
         sendSimpleEmail(emailDTO);
     }
 

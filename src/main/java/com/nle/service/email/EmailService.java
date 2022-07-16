@@ -9,5 +9,8 @@ public interface EmailService {
 
     void sendDepoOwnerActiveEmail(DepoOwnerAccount depoOwnerAccount, String token);
 
-    void sendDepoWorkerActiveEmail(String workerEmail, String activationCode);
+    void sendDepoWorkerInvitationEmail(String workerEmail, String activationCode);
+
+    void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email);
+
 }

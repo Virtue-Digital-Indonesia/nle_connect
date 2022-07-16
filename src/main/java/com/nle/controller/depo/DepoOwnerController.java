@@ -1,8 +1,9 @@
-package com.nle.controller;
+package com.nle.controller.depo;
 
 import com.nle.config.AppConfig;
 import com.nle.constant.AccountStatus;
 import com.nle.constant.VerificationType;
+import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
 import com.nle.controller.dto.DepoOwnerAccountCreateDTO;
 import com.nle.controller.dto.DepoWorkerInvitationReqDto;
@@ -25,6 +26,7 @@ import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.dto.DepoWorkerAccountDTO;
 import com.nle.service.email.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +119,7 @@ public class DepoOwnerController {
         DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
         depoOwnerAccount.setAccountStatus(AccountStatus.ACTIVE);
         depoOwnerAccountRepository.save(depoOwnerAccount);
-        log.info("Customer " + depoOwnerAccount.getFullName() + " has been active.");
+        log.info("Depo owner " + depoOwnerAccount.getFullName() + " has been active.");
         // remove verification token
         verificationTokenRepository.delete(verificationToken);
         // redirect to login page
@@ -158,11 +160,20 @@ public class DepoOwnerController {
 
     @Operation(description = "Send invitation email to worker", operationId = "sendInvitation", summary = "Send invitation email to worker")
     @PostMapping(value = "/send-invitation")
+    @SecurityRequirement(name = "nleapi")
     public ResponseEntity<DepoWorkerAccountDTO> sendInvitation(@RequestBody @Valid DepoWorkerInvitationReqDto depoWorkerInvitationReqDto) {
         Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountService.findByEmail(depoWorkerInvitationReqDto.getEmail());
         if (depoWorkerAccountOptional.isPresent()) {
             throw new CommonException("Worker with email " + depoWorkerInvitationReqDto.getEmail() + " is exist in system");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(depoWorkerAccountService.createAndSendInvitationEmail(depoWorkerInvitationReqDto.getEmail()));
+    }
+
+    @Operation(description = "Approve depo worker join request", operationId = "approveDepoWorkerJoinRequest", summary = "Approve depo worker join request")
+    @GetMapping(value = "/approve-join-request/{email}")
+    @SecurityRequirement(name = "nleapi")
+    public ResponseEntity<ActiveDto> approveDepoWorkerJoinRequest(@PathVariable String email) {
+        depoWorkerAccountService.approveJoinRequest(email);
+        return ResponseEntity.ok(new ActiveDto("true"));
     }
 }
