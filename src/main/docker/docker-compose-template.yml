@@ -9,7 +9,7 @@ services:
       - '3306:3306'
     environment:
       - MYSQL_DATABASE=nlebackend
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     volumes:
       - mysql_nle_data:/var/lib/mysql/
 
