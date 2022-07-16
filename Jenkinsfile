@@ -37,6 +37,7 @@ pipeline {
                 script {
                     sh """
                         cd src/main/resources
+                        source ~/.bashrc
                         envsubst < application.yml
                     """
                 }
