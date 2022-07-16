@@ -32,6 +32,17 @@ pipeline {
             }
         }
 
+        stage('update secret') {
+            steps {
+                script {
+                    sh """
+                        cd src/main/resources
+                        envsubst < application.yml
+                    """
+                }
+            }
+        }
+
         stage('Packaging') {
             steps {
                 script {
