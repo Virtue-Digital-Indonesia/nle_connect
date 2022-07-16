@@ -15,6 +15,7 @@ import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.dto.DepoWorkerAccountDTO;
 import com.nle.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,15 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         depoWorkerAccount.setEmail(email);
         depoWorkerAccount.setAccountStatus(AccountStatus.INACTIVE);
         // create verification token
-        VerificationToken invitationToken = verificationTokenService.createInvitationToken(depoWorkerAccount, ACTIVE_ACCOUNT);
+        String organizationCode = RandomStringUtils.randomAlphanumeric(11).toUpperCase();
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
+            if (depoOwnerAccount.isPresent()) {
+                organizationCode = depoOwnerAccount.get().getOrganizationCode();
+            }
+        }
+        VerificationToken invitationToken = verificationTokenService.createInvitationToken(organizationCode, depoWorkerAccount, ACTIVE_ACCOUNT);
         depoWorkerAccount.setInvitationCode(invitationToken.getToken());
         depoWorkerAccount = depoWorkerAccountRepository.save(depoWorkerAccount);
         // send email
@@ -83,11 +92,10 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         depoWorkerAccountRepository.save(depoWorkerAccount);
         // send email
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isEmpty()) {
-            throw new CommonException("Depo Owner account with company email: " + currentUserLogin.get() + " does not exist");
+        if (currentUserLogin.isPresent()) {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
+            emailService.sendDepoWorkerApproveEmail(depoWorkerAccount.getFullName(), depoOwnerAccount.get().getFullName(), depoWorkerAccount.getEmail());
         }
-        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
-        emailService.sendDepoWorkerApproveEmail(depoWorkerAccount.getFullName(), depoOwnerAccount.get().getFullName(), depoWorkerAccount.getEmail());
     }
 
 }

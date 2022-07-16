@@ -8,7 +8,6 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.ResourceNotFoundException;
 import com.nle.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,13 +48,12 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Override
-    public VerificationToken createInvitationToken(DepoWorkerAccount depoWorkerAccount, VerificationType type) {
-        final String token = RandomStringUtils.randomAlphanumeric(11).toUpperCase();
+    public VerificationToken createInvitationToken(String organizationCode, DepoWorkerAccount depoWorkerAccount, VerificationType type) {
         // plus 7 days before token expired
         LocalDateTime expiredDate = LocalDateTime.now().plusDays(7);
         // create new VerificationToken
         final VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(token);
+        verificationToken.setToken(organizationCode);
         verificationToken.setExpiryDate(expiredDate);
         verificationToken.setTokenType(type);
         verificationToken.setDepoOwnerAccount(null);

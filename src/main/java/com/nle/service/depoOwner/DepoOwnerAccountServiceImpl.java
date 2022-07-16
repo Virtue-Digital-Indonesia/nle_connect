@@ -11,6 +11,7 @@ import com.nle.service.VerificationTokenService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +51,9 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         }
         // encoded password
         depoOwnerAccountDTO.setPassword(passwordEncoder.encode(depoOwnerAccountDTO.getPassword()));
+        // generate organization code
+        String organizationCode = RandomStringUtils.randomAlphanumeric(11).toUpperCase();
+        depoOwnerAccountDTO.setOrganizationCode(organizationCode);
         // map to entity
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountMapper.toEntity(depoOwnerAccountDTO);
         depoOwnerAccount.setAccountStatus(AccountStatus.INACTIVE);

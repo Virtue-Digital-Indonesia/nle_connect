@@ -12,7 +12,7 @@ public interface VerificationTokenService {
 
     VerificationToken createVerificationToken(DepoOwnerAccount depoOwnerAccount, VerificationType type);
 
-    VerificationToken createInvitationToken(DepoWorkerAccount depoWorkerAccount, VerificationType type);
+    VerificationToken createInvitationToken(String organizationCode, DepoWorkerAccount depoWorkerAccount, VerificationType type);
 
     VerificationToken checkVerificationToken(String token);
 

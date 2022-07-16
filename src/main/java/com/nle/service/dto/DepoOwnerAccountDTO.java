@@ -26,6 +26,8 @@ public class DepoOwnerAccountDTO implements Serializable {
 
     private String organizationName;
 
+    private String organizationCode;
+
 
     public Long getId() {
         return id;
@@ -75,6 +77,13 @@ public class DepoOwnerAccountDTO implements Serializable {
         this.organizationName = organizationName;
     }
 
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
+
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
 
     @Override
     public boolean equals(Object o) {
