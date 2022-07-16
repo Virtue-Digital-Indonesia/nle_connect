@@ -2,6 +2,7 @@ package com.nle.service.depoWorker;
 
 import com.nle.constant.AccountStatus;
 import com.nle.controller.dto.DepoWorkerActivationDTO;
+import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.DepoWorkerAccount;
 import com.nle.entity.VerificationToken;
@@ -59,6 +60,7 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         }
         VerificationToken invitationToken = verificationTokenService.createInvitationToken(organizationCode, depoWorkerAccount, ACTIVE_ACCOUNT);
         depoWorkerAccount.setInvitationCode(invitationToken.getToken());
+        depoWorkerAccount.setOrganizationCode(organizationCode);
         depoWorkerAccount = depoWorkerAccountRepository.save(depoWorkerAccount);
         // send email
         emailService.sendDepoWorkerInvitationEmail(email, invitationToken.getToken());
@@ -96,6 +98,18 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
             emailService.sendDepoWorkerApproveEmail(depoWorkerAccount.getFullName(), depoOwnerAccount.get().getFullName(), depoWorkerAccount.getEmail());
         }
+    }
+
+    @Override
+    public DepoWorkerAccountDTO completeDepoWorkerRegistration(DepoWorkerUpdateGateNameReqDto depoWorkerUpdateGateNameReqDto) {
+        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByEmail(depoWorkerUpdateGateNameReqDto.getEmail());
+        if (depoWorkerAccountOptional.isEmpty()) {
+            throw new CommonException("Worker with email " + depoWorkerUpdateGateNameReqDto.getEmail() + " does not exist in system");
+        }
+        DepoWorkerAccount depoWorkerAccount = depoWorkerAccountOptional.get();
+        depoWorkerAccount.setGateName(depoWorkerUpdateGateNameReqDto.getGateName());
+        depoWorkerAccountRepository.save(depoWorkerAccount);
+        return depoWorkerAccountMapper.toDto(depoWorkerAccount);
     }
 
 }

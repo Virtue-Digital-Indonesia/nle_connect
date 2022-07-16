@@ -1,8 +1,10 @@
 package com.nle.controller.depo;
 
 import com.nle.controller.dto.DepoWorkerActivationDTO;
+import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
 import com.nle.exception.ApiResponse;
 import com.nle.service.depoWorker.DepoWorkerAccountService;
+import com.nle.service.dto.DepoWorkerAccountDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -33,5 +38,11 @@ public class DepoWorkerController {
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK, "Your joining request is sent to depo owner", ""));
     }
 
-
+    @Operation(description = "Complete depo worker registration process", operationId = "completeDepoWorkerRegistration", summary = "Complete depo worker registration process")
+    @PutMapping(value = "/depo-worker-accounts/complete")
+    @SecurityRequirement(name = "nleapi")
+    public ResponseEntity<DepoWorkerAccountDTO> completeDepoWorkerRegistration(@RequestBody @Valid DepoWorkerUpdateGateNameReqDto depoWorkerUpdateGateNameReqDto) {
+        DepoWorkerAccountDTO depoWorkerAccountDTO = depoWorkerAccountService.completeDepoWorkerRegistration(depoWorkerUpdateGateNameReqDto);
+        return ResponseEntity.ok(depoWorkerAccountDTO);
+    }
 }
