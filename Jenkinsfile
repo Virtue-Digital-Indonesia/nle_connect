@@ -38,7 +38,8 @@ pipeline {
                     sh """
                         cd src/main/resources
                         export DB_PASSWORD=$DB_PASSWORD
-                        envsubst < application.yml
+                        envsubst < application.yml > application_tmp.yml
+                        mv application_tmp.yml application.yml
                     """
                 }
             }
