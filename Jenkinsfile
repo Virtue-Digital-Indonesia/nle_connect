@@ -34,9 +34,10 @@ pipeline {
 
         stage('update secret') {
             steps {
-                script {
+                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
                     sh """
                         cd src/main/resources
+                        export DB_PASSWORD=$DB_PASSWORD
                         envsubst < application.yml
                     """
                 }
@@ -53,13 +54,14 @@ pipeline {
 
         stage('Build docker image & update compose file') {
             steps {
-                script {
+                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
                     sh """
                         cp Dockerfile target/
                         cd target/
                         docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
                         cd ../
                         export VERSION=${shortGitCommit}
+                        export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
                         envsubst < docker-compose-template.yml > docker-compose.yml
                     """
