@@ -1,4 +1,4 @@
-package com.nle.config.springdoc;
+package com.nle.config.prop.springdoc;
 
 import lombok.Data;
 

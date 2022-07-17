@@ -1,6 +1,6 @@
 package com.nle.service.email;
 
-import com.nle.config.AppConfig;
+import com.nle.config.prop.AppProperties;
 import com.nle.constant.EmailType;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.service.dto.EmailDTO;
@@ -30,14 +30,14 @@ public class EmailServiceImpl implements EmailService {
 
     private final Configuration config;
     private final EmailTemplateService emailTemplateService;
-    private final AppConfig appConfig;
+    private final AppProperties appProperties;
     private final JavaMailSender javaMailSender;
 
     @Override
     public void sendDepoOwnerActiveEmail(DepoOwnerAccount depoOwnerAccount, String token) {
         Map<String, String> params = new HashMap<>();
         params.put("fullName", depoOwnerAccount.getFullName());
-        params.put("activeUrl", appConfig.getUrl().getActiveUrl() + token);
+        params.put("activeUrl", appProperties.getUrl().getActiveUrl() + token);
         // get email template content from DB
         EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.ACTIVE_DEPO_OWNER);
         EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, depoOwnerAccount.getCompanyEmail());

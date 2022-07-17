@@ -1,6 +1,6 @@
 package com.nle.security.jwt;
 
-import com.nle.config.AppConfig;
+import com.nle.config.prop.AppProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
@@ -43,9 +43,9 @@ public class TokenProvider {
 
     private final long tokenValidityInMilliseconds;
 
-    public TokenProvider(AppConfig appConfig) {
+    public TokenProvider(AppProperties appProperties) {
         byte[] keyBytes;
-        String secret = appConfig.getSecurity().getJwt().getBase64Secret();
+        String secret = appProperties.getSecurity().getJwt().getBase64Secret();
         if (!ObjectUtils.isEmpty(secret)) {
             log.debug("Using a Base64-encoded JWT secret key");
             keyBytes = Decoders.BASE64.decode(secret);
@@ -54,12 +54,12 @@ public class TokenProvider {
                 "Warning: the JWT key used is not Base64-encoded. " +
                     "We recommend using the `jhipster.security.authentication.jwt.base64-secret` key for optimum security."
             );
-            secret = appConfig.getSecurity().getJwt().getSecret();
+            secret = appProperties.getSecurity().getJwt().getSecret();
             keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         }
         key = Keys.hmacShaKeyFor(keyBytes);
         jwtParser = Jwts.parserBuilder().setSigningKey(key).build();
-        this.tokenValidityInMilliseconds = 1000 * appConfig.getSecurity().getJwt().getTokenValidityInSeconds();
+        this.tokenValidityInMilliseconds = 1000 * appProperties.getSecurity().getJwt().getTokenValidityInSeconds();
     }
 
     public String createToken(Authentication authentication) {

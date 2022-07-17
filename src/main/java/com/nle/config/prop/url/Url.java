@@ -1,4 +1,4 @@
-package com.nle.config.url;
+package com.nle.config.prop.url;
 
 import lombok.Data;
 

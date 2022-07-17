@@ -1,4 +1,4 @@
-package com.nle.config.aws;
+package com.nle.config.prop.aws;
 
 import lombok.Data;
 

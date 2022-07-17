@@ -1,6 +1,6 @@
 package com.nle.controller.depo;
 
-import com.nle.config.AppConfig;
+import com.nle.config.prop.AppProperties;
 import com.nle.constant.AccountStatus;
 import com.nle.constant.VerificationType;
 import com.nle.controller.dto.ActiveDto;
@@ -72,7 +72,7 @@ public class DepoOwnerController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    private final AppConfig appConfig;
+    private final AppProperties appProperties;
 
     private final EmailService emailService;
 
@@ -125,7 +125,7 @@ public class DepoOwnerController {
         // remove verification token
         verificationTokenRepository.delete(verificationToken);
         // redirect to login page
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appConfig.getUrl().getSuccessRedirectUrl())).build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.getUrl().getSuccessRedirectUrl())).build();
     }
 
     @Operation(description = "Authenticate Depo owner user by company email and password", operationId = "authorize", summary = "Authenticate Depo owner user by company email and password")

@@ -1,6 +1,6 @@
-package com.nle.config.springdoc;
+package com.nle.config.prop.springdoc;
 
-import com.nle.config.AppConfig;
+import com.nle.config.prop.AppProperties;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
@@ -18,20 +18,20 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
 
     private int order = DEFAULT_ORDER;
 
-    private final AppConfig appConfig;
+    private final AppProperties appProperties;
 
     @Override
     public void customise(OpenAPI openApi) {
         Contact contact = new Contact()
-            .name(appConfig.getSpringdoc().getName())
-            .url(appConfig.getSpringdoc().getUrl())
-            .email(appConfig.getSpringdoc().getEmail());
+            .name(appProperties.getSpringdoc().getName())
+            .url(appProperties.getSpringdoc().getUrl())
+            .email(appProperties.getSpringdoc().getEmail());
 
         openApi.info(new Info()
             .contact(contact)
-            .title(appConfig.getSpringdoc().getTitle())
-            .description(appConfig.getSpringdoc().getDescription())
-            .version(appConfig.getSpringdoc().getVersion())
+            .title(appProperties.getSpringdoc().getTitle())
+            .description(appProperties.getSpringdoc().getDescription())
+            .version(appProperties.getSpringdoc().getVersion())
             .license(new License().name("Apache").url("https://www.apache.org/licenses/LICENSE-2.0"))
         );
     }
