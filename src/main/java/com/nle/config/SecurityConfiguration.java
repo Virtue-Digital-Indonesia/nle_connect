@@ -33,6 +33,7 @@ public class SecurityConfiguration {
         return web -> web.ignoring()
             .antMatchers(HttpMethod.OPTIONS, "/**")
             .antMatchers("/resources/**")
+            .antMatchers("/product-nle-connect.svg")
             .antMatchers("/v3/api-docs/**")
             .antMatchers("/swagger-ui/**");
     }
