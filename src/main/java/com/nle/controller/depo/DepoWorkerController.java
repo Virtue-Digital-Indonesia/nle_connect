@@ -32,7 +32,7 @@ public class DepoWorkerController {
     @Operation(description = "Depo worker join request", operationId = "depoWorkerJoinRequest", summary = "Depo worker join request")
     @PostMapping(value = "/depo-worker-accounts/join")
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<ApiResponse> depoWorkerJoinRequest(@RequestBody DepoWorkerActivationDTO depoWorkerActivationDTO) {
+    public ResponseEntity<ApiResponse> depoWorkerJoinRequest(@RequestBody @Valid DepoWorkerActivationDTO depoWorkerActivationDTO) {
         log.info("Process joining request for depo worker: " + depoWorkerActivationDTO.getFullName());
         depoWorkerAccountService.depoWorkerJoinRequest(depoWorkerActivationDTO);
         return ResponseEntity.ok(new ApiResponse(HttpStatus.OK, "Your joining request is sent to depo owner", ""));

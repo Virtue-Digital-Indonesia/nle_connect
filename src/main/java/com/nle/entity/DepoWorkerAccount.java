@@ -37,6 +37,9 @@ public class DepoWorkerAccount extends AbstractAuditingEntity implements Seriali
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "android_id")
+    private String androidId;
+
     @Column(name = "full_name")
     private String fullName;
 

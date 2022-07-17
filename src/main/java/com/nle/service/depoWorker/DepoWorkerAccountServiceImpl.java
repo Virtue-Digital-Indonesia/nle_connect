@@ -2,6 +2,7 @@ package com.nle.service.depoWorker;
 
 import com.nle.constant.AccountStatus;
 import com.nle.controller.dto.DepoWorkerActivationDTO;
+import com.nle.controller.dto.DepoWorkerApproveReqDto;
 import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.DepoWorkerAccount;
@@ -72,6 +73,7 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         VerificationToken verificationToken = verificationTokenService.checkVerificationToken(depoWorkerActivationDTO.getActivationCode());
         // active user
         DepoWorkerAccount depoWorkerAccount = verificationToken.getDepoWorkerAccount();
+        depoWorkerAccount.setAndroidId(depoWorkerActivationDTO.getAndroidId());
         depoWorkerAccount.setFullName(depoWorkerActivationDTO.getFullName());
         depoWorkerAccount.setAccountStatus(AccountStatus.WAITING_FOR_APPROVE);
         depoWorkerAccountRepository.save(depoWorkerAccount);
@@ -81,14 +83,14 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
     }
 
     @Override
-    public void approveJoinRequest(String email) {
-        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByEmail(email);
+    public void approveJoinRequest(DepoWorkerApproveReqDto depoWorkerApproveReqDto) {
+        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByEmail(depoWorkerApproveReqDto.getEmail());
         if (depoWorkerAccountOptional.isEmpty()) {
-            throw new CommonException("Worker with email " + email + " does not exist in system");
+            throw new CommonException("Worker with email " + depoWorkerApproveReqDto.getEmail() + " does not exist in system");
         }
         DepoWorkerAccount depoWorkerAccount = depoWorkerAccountOptional.get();
         if (AccountStatus.INACTIVE == depoWorkerAccount.getAccountStatus()) {
-            throw new CommonException("Depo owner account with email " + email + " did not send join request");
+            throw new CommonException("Depo owner account with email " + depoWorkerApproveReqDto.getEmail() + " did not send join request");
         }
         depoWorkerAccount.setAccountStatus(AccountStatus.ACTIVE);
         depoWorkerAccountRepository.save(depoWorkerAccount);
@@ -98,6 +100,16 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
             emailService.sendDepoWorkerApproveEmail(depoWorkerAccount.getFullName(), depoOwnerAccount.get().getFullName(), depoWorkerAccount.getEmail());
         }
+    }
+
+    @Override
+    public void deleteJoinRequest(String email) {
+        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByEmail(email);
+        if (depoWorkerAccountOptional.isEmpty()) {
+            throw new CommonException("Worker with email " + email + " does not exist in system");
+        }
+        DepoWorkerAccount depoWorkerAccount = depoWorkerAccountOptional.get();
+        depoWorkerAccountRepository.delete(depoWorkerAccount);
     }
 
     @Override

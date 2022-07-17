@@ -1,6 +1,7 @@
 package com.nle.service.depoWorker;
 
 import com.nle.controller.dto.DepoWorkerActivationDTO;
+import com.nle.controller.dto.DepoWorkerApproveReqDto;
 import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
 import com.nle.entity.DepoWorkerAccount;
 import com.nle.service.dto.DepoWorkerAccountDTO;
@@ -14,7 +15,9 @@ public interface DepoWorkerAccountService {
 
     void depoWorkerJoinRequest(DepoWorkerActivationDTO depoWorkerActivationDTO);
 
-    void approveJoinRequest(String email);
+    void approveJoinRequest(DepoWorkerApproveReqDto depoWorkerApproveReqDto);
+
+    void deleteJoinRequest(String email);
 
     DepoWorkerAccountDTO completeDepoWorkerRegistration(DepoWorkerUpdateGateNameReqDto depoWorkerUpdateGateNameReqDto);
 

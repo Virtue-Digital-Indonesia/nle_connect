@@ -6,6 +6,7 @@ import com.nle.constant.VerificationType;
 import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
 import com.nle.controller.dto.DepoOwnerAccountCreateDTO;
+import com.nle.controller.dto.DepoWorkerApproveReqDto;
 import com.nle.controller.dto.DepoWorkerInvitationReqDto;
 import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.LoginDto;
@@ -38,6 +39,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -170,10 +172,18 @@ public class DepoOwnerController {
     }
 
     @Operation(description = "Approve depo worker join request", operationId = "approveDepoWorkerJoinRequest", summary = "Approve depo worker join request")
-    @GetMapping(value = "/approve-join-request/{email}")
+    @PostMapping(value = "/approve-join-request")
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<ActiveDto> approveDepoWorkerJoinRequest(@PathVariable String email) {
-        depoWorkerAccountService.approveJoinRequest(email);
+    public ResponseEntity<ActiveDto> approveDepoWorkerJoinRequest(@RequestBody @Valid DepoWorkerApproveReqDto depoWorkerApproveReqDto) {
+        depoWorkerAccountService.approveJoinRequest(depoWorkerApproveReqDto);
         return ResponseEntity.ok(new ActiveDto("true"));
+    }
+
+    @Operation(description = "Delete depo worker join request", operationId = "deleteDepoWorkerJoinRequest", summary = "Delete depo worker join request")
+    @DeleteMapping(value = "/approve-join-request/{email}")
+    @SecurityRequirement(name = "nleapi")
+    public ResponseEntity<Void> deleteDepoWorkerJoinRequest(@PathVariable String email) {
+        depoWorkerAccountService.deleteJoinRequest(email);
+        return ResponseEntity.noContent().build();
     }
 }
