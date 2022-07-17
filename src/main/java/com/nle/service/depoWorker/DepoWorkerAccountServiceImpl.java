@@ -4,6 +4,8 @@ import com.nle.constant.AccountStatus;
 import com.nle.controller.dto.DepoWorkerActivationDTO;
 import com.nle.controller.dto.DepoWorkerApproveReqDto;
 import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
+import com.nle.controller.dto.pageable.PagingResponseModel;
+import com.nle.controller.dto.response.DepoWorkerListDTO;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.DepoWorkerAccount;
 import com.nle.entity.VerificationToken;
@@ -20,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,6 +127,18 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         depoWorkerAccount.setGateName(depoWorkerUpdateGateNameReqDto.getGateName());
         depoWorkerAccountRepository.save(depoWorkerAccount);
         return depoWorkerAccountMapper.toDto(depoWorkerAccount);
+    }
+
+    @Override
+    public PagingResponseModel<DepoWorkerListDTO> findAll(Pageable pageable) {
+        Page<DepoWorkerAccount> depoWorkerAccounts = depoWorkerAccountRepository.findAll(pageable);
+        return new PagingResponseModel<>(depoWorkerAccounts.map(this::convertFromEntity));
+    }
+
+    private DepoWorkerListDTO convertFromEntity(DepoWorkerAccount depoWorkerAccount) {
+        DepoWorkerListDTO depoWorkerListDTO = new DepoWorkerListDTO();
+        BeanUtils.copyProperties(depoWorkerAccount, depoWorkerListDTO);
+        return depoWorkerListDTO;
     }
 
 }

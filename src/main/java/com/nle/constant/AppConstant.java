@@ -1,6 +1,8 @@
 package com.nle.constant;
 
 public class AppConstant {
+    public static final String CREATED_DATE = "createdDate";
+
     private AppConstant() {
     }
 
