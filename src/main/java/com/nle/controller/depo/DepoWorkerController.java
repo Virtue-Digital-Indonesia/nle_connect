@@ -35,7 +35,6 @@ public class DepoWorkerController {
 
     @Operation(description = "Depo worker join request", operationId = "depoWorkerJoinRequest", summary = "Depo worker join request")
     @PostMapping(value = "/depo-worker-accounts/join")
-    @SecurityRequirement(name = "nleapi")
     public ResponseEntity<ApiResponse> depoWorkerJoinRequest(@RequestBody @Valid DepoWorkerActivationDTO depoWorkerActivationDTO) {
         log.info("Process joining request for depo worker: " + depoWorkerActivationDTO.getFullName());
         depoWorkerAccountService.depoWorkerJoinRequest(depoWorkerActivationDTO);
@@ -44,7 +43,6 @@ public class DepoWorkerController {
 
     @Operation(description = "Complete depo worker registration process", operationId = "completeDepoWorkerRegistration", summary = "Complete depo worker registration process")
     @PutMapping(value = "/depo-worker-accounts/complete")
-    @SecurityRequirement(name = "nleapi")
     public ResponseEntity<DepoWorkerAccountDTO> completeDepoWorkerRegistration(@RequestBody @Valid DepoWorkerUpdateGateNameReqDto depoWorkerUpdateGateNameReqDto) {
         DepoWorkerAccountDTO depoWorkerAccountDTO = depoWorkerAccountService.completeDepoWorkerRegistration(depoWorkerUpdateGateNameReqDto);
         return ResponseEntity.ok(depoWorkerAccountDTO);

@@ -50,7 +50,12 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/api/register/**", "/api/activate/**", "/api/authenticate").permitAll()
+                .antMatchers("/api/register/**"
+                    , "/api/activate/**"
+                    , "/api/authenticate"
+                    , "/api/depo-worker-accounts/join"
+                    , "/api/depo-worker-accounts/complete"
+                ).permitAll()
             .anyRequest()
                 .authenticated()
             .and()
