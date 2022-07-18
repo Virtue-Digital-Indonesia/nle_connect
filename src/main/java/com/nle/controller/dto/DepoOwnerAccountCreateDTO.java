@@ -1,5 +1,7 @@
 package com.nle.controller.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -10,6 +12,7 @@ import static com.nle.constant.AppConstant.Pattern.PHONE_NUMBER_PATTERN;
 public class DepoOwnerAccountCreateDTO implements Serializable {
 
     @Pattern(regexp = EMAIL_PATTERN, message = "Email is not valid!")
+    @Schema(example = "admin@gmail.com", required = true, description = "Depo owner email")
     private String companyEmail;
 
     @NotNull
