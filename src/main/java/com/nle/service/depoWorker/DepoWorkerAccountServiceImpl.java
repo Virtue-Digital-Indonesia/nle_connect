@@ -56,9 +56,16 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
                 organizationCode = depoOwnerAccount.get().getOrganizationCode();
             }
         }
-        VerificationToken invitationToken = verificationTokenService.createInvitationToken(organizationCode, ACTIVE_ACCOUNT);
+        VerificationToken existToken = verificationTokenService.findByToken(organizationCode);
+        String token;
+        if (existToken == null) {
+            VerificationToken invitationToken = verificationTokenService.createInvitationToken(organizationCode, ACTIVE_ACCOUNT);
+            token = invitationToken.getToken();
+        } else {
+            token = existToken.getToken();
+        }
         // send email
-        emailService.sendDepoWorkerInvitationEmail(email, invitationToken.getToken());
+        emailService.sendDepoWorkerInvitationEmail(email, token);
     }
 
     @Override
