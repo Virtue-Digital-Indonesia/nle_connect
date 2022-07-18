@@ -46,16 +46,7 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
     private final DepoOwnerAccountService depoOwnerAccountService;
 
     @Override
-    public Optional<DepoWorkerAccount> findByEmail(String email) {
-        return depoWorkerAccountRepository.findByEmail(email);
-    }
-
-    @Override
-    public DepoWorkerAccountDTO createAndSendInvitationEmail(String email) {
-        // create new record in depo worker table
-        DepoWorkerAccount depoWorkerAccount = new DepoWorkerAccount();
-        depoWorkerAccount.setEmail(email);
-        depoWorkerAccount.setAccountStatus(AccountStatus.INACTIVE);
+    public void sendInvitationEmail(String email) {
         // create verification token
         String organizationCode = RandomStringUtils.randomAlphanumeric(11).toUpperCase();
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
@@ -65,54 +56,42 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
                 organizationCode = depoOwnerAccount.get().getOrganizationCode();
             }
         }
-        VerificationToken invitationToken = verificationTokenService.createInvitationToken(organizationCode, depoWorkerAccount, ACTIVE_ACCOUNT);
-        depoWorkerAccount.setInvitationCode(invitationToken.getToken());
-        depoWorkerAccount.setOrganizationCode(organizationCode);
-        depoWorkerAccount = depoWorkerAccountRepository.save(depoWorkerAccount);
+        VerificationToken invitationToken = verificationTokenService.createInvitationToken(organizationCode, ACTIVE_ACCOUNT);
         // send email
         emailService.sendDepoWorkerInvitationEmail(email, invitationToken.getToken());
-        return depoWorkerAccountMapper.toDto(depoWorkerAccount);
     }
 
     @Override
     public void depoWorkerJoinRequest(DepoWorkerActivationDTO depoWorkerActivationDTO) {
-        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(depoWorkerActivationDTO.getActivationCode());
-        // active user
-        DepoWorkerAccount depoWorkerAccount = verificationToken.getDepoWorkerAccount();
+        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(depoWorkerActivationDTO.getOrganizationCode());
+        // create new record in depo worker table
+        DepoWorkerAccount depoWorkerAccount = new DepoWorkerAccount();
         depoWorkerAccount.setAndroidId(depoWorkerActivationDTO.getAndroidId());
         depoWorkerAccount.setFullName(depoWorkerActivationDTO.getFullName());
-        depoWorkerAccount.setAccountStatus(AccountStatus.WAITING_FOR_APPROVE);
-        depoWorkerAccountRepository.save(depoWorkerAccount);
-        log.info("Depo worker " + depoWorkerAccount.getFullName() + " has been active.");
+        depoWorkerAccount.setOrganizationCode(depoWorkerActivationDTO.getOrganizationCode());
+        depoWorkerAccount.setAccountStatus(AccountStatus.INACTIVE);
+        depoWorkerAccount = depoWorkerAccountRepository.save(depoWorkerAccount);
+        log.info("Depo worker " + depoWorkerAccount.getFullName() + " has been created, waiting for approve from depo owner.");
         // remove verification token
         verificationTokenRepository.delete(verificationToken);
     }
 
     @Override
     public void approveJoinRequest(DepoWorkerApproveReqDto depoWorkerApproveReqDto) {
-        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByEmail(depoWorkerApproveReqDto.getEmail());
+        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByAndroidId(depoWorkerApproveReqDto.getAndroidId());
         if (depoWorkerAccountOptional.isEmpty()) {
-            throw new CommonException("Worker with email " + depoWorkerApproveReqDto.getEmail() + " does not exist in system");
+            throw new CommonException("Worker with android id " + depoWorkerApproveReqDto.getAndroidId() + " does not exist in system");
         }
         DepoWorkerAccount depoWorkerAccount = depoWorkerAccountOptional.get();
-        if (AccountStatus.INACTIVE == depoWorkerAccount.getAccountStatus()) {
-            throw new CommonException("Depo owner account with email " + depoWorkerApproveReqDto.getEmail() + " did not send join request");
-        }
         depoWorkerAccount.setAccountStatus(AccountStatus.ACTIVE);
         depoWorkerAccountRepository.save(depoWorkerAccount);
-        // send email
-        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isPresent()) {
-            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
-            emailService.sendDepoWorkerApproveEmail(depoWorkerAccount.getFullName(), depoOwnerAccount.get().getFullName(), depoWorkerAccount.getEmail());
-        }
     }
 
     @Override
-    public void deleteJoinRequest(String email) {
-        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByEmail(email);
+    public void deleteJoinRequest(String androidId) {
+        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByAndroidId(androidId);
         if (depoWorkerAccountOptional.isEmpty()) {
-            throw new CommonException("Worker with email " + email + " does not exist in system");
+            throw new CommonException("Worker with android id " + androidId + " does not exist in system");
         }
         DepoWorkerAccount depoWorkerAccount = depoWorkerAccountOptional.get();
         depoWorkerAccountRepository.delete(depoWorkerAccount);
@@ -120,9 +99,9 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
 
     @Override
     public DepoWorkerAccountDTO completeDepoWorkerRegistration(DepoWorkerUpdateGateNameReqDto depoWorkerUpdateGateNameReqDto) {
-        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByEmail(depoWorkerUpdateGateNameReqDto.getEmail());
+        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountRepository.findByAndroidId(depoWorkerUpdateGateNameReqDto.getAndroidId());
         if (depoWorkerAccountOptional.isEmpty()) {
-            throw new CommonException("Worker with email " + depoWorkerUpdateGateNameReqDto.getEmail() + " does not exist in system");
+            throw new CommonException("Worker with android id " + depoWorkerUpdateGateNameReqDto.getAndroidId() + " does not exist in system");
         }
         DepoWorkerAccount depoWorkerAccount = depoWorkerAccountOptional.get();
         depoWorkerAccount.setGateName(depoWorkerUpdateGateNameReqDto.getGateName());

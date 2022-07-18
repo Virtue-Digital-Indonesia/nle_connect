@@ -16,8 +16,6 @@ public class DepoWorkerAccountDTO implements Serializable {
     private Long id;
     private String fullName;
     private String organizationCode;
-    private String invitationCode;
     private String gateName;
-    private String email;
     private AccountStatus accountStatus;
 }

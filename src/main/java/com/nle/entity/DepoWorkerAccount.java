@@ -14,11 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-
-import static com.nle.constant.AppConstant.Pattern.EMAIL_PATTERN;
 
 /**
  * A DepoWorkerAccount.
@@ -46,16 +42,8 @@ public class DepoWorkerAccount extends AbstractAuditingEntity implements Seriali
     @Column(name = "organization_code")
     private String organizationCode;
 
-    @Column(name = "invitation_code")
-    private String invitationCode;
-
     @Column(name = "gate_name")
     private String gateName;
-
-    @NotNull
-    @Pattern(regexp = EMAIL_PATTERN)
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
 
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)

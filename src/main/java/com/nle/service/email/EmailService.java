@@ -10,7 +10,7 @@ public interface EmailService {
     void sendDepoOwnerActiveEmail(DepoOwnerAccount depoOwnerAccount, String token);
 
     void sendDepoWorkerInvitationEmail(String workerEmail, String activationCode);
-
-    void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email);
+    // TODO disable because there is no email for worker invitation process
+    // void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email);
 
 }

@@ -2,7 +2,6 @@ package com.nle.service;
 
 import com.nle.constant.VerificationType;
 import com.nle.entity.DepoOwnerAccount;
-import com.nle.entity.DepoWorkerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.ResourceNotFoundException;
@@ -48,7 +47,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Override
-    public VerificationToken createInvitationToken(String organizationCode, DepoWorkerAccount depoWorkerAccount, VerificationType type) {
+    public VerificationToken createInvitationToken(String organizationCode, VerificationType type) {
         // plus 7 days before token expired
         LocalDateTime expiredDate = LocalDateTime.now().plusDays(7);
         // create new VerificationToken
@@ -57,7 +56,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         verificationToken.setExpiryDate(expiredDate);
         verificationToken.setTokenType(type);
         verificationToken.setDepoOwnerAccount(null);
-        verificationToken.setDepoWorkerAccount(depoWorkerAccount);
+        verificationToken.setDepoWorkerAccount(null);
         // save VerificationToken
         return verificationTokenRepository.save(verificationToken);
     }

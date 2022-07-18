@@ -13,5 +13,5 @@ public class DepoWorkerActivationDTO {
     private String fullName;
 
     @NotNull(message = "Activation Code can not be null!")
-    private String activationCode;
+    private String organizationCode;
 }

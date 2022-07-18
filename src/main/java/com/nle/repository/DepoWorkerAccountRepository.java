@@ -11,7 +11,5 @@ import java.util.Optional;
  */
 @Repository
 public interface DepoWorkerAccountRepository extends JpaRepository<DepoWorkerAccount, Long> {
-    Optional<DepoWorkerAccount> findByEmail(String email);
-
     Optional<DepoWorkerAccount> findByAndroidId(String androidId);
 }

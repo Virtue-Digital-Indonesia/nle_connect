@@ -55,16 +55,19 @@ public class EmailServiceImpl implements EmailService {
         sendSimpleEmail(emailDTO);
     }
 
-    @Override
-    public void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email) {
-        Map<String, String> params = new HashMap<>();
-        params.put("workerFullName", workerFullName);
-        params.put("depoOwnerFullName", depoOwnerFullName);
-        // get email template content from DB
-        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.APPROVE_DEPO_WORKER);
-        EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, email);
-        sendSimpleEmail(emailDTO);
-    }
+    // TODO disable because there is no email for worker invitation process
+
+    /**
+     * @Override public void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email) {
+     * Map<String, String> params = new HashMap<>();
+     * params.put("workerFullName", workerFullName);
+     * params.put("depoOwnerFullName", depoOwnerFullName);
+     * // get email template content from DB
+     * EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.APPROVE_DEPO_WORKER);
+     * EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, email);
+     * sendSimpleEmail(emailDTO);
+     * }
+     **/
 
     @Override
     @Async

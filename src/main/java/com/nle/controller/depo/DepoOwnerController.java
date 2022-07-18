@@ -11,10 +11,8 @@ import com.nle.controller.dto.DepoWorkerInvitationReqDto;
 import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.LoginDto;
 import com.nle.entity.DepoOwnerAccount;
-import com.nle.entity.DepoWorkerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.exception.ApiResponse;
-import com.nle.exception.CommonException;
 import com.nle.exception.ResourceNotFoundException;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
@@ -24,7 +22,6 @@ import com.nle.service.VerificationTokenService;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.depoWorker.DepoWorkerAccountService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
-import com.nle.service.dto.DepoWorkerAccountDTO;
 import com.nle.service.email.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -148,7 +145,7 @@ public class DepoOwnerController {
     public ApiResponse resendActivationCode(@PathVariable String email) {
         Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(email);
         if (depoOwnerAccount.isEmpty()) {
-            throw new ResourceNotFoundException("Depo account with email : " + email + " doesn't exist");
+            throw new ResourceNotFoundException("Depo owner account with email : " + email + " doesn't exist");
         }
         // find all old active token then remove them
         Optional<VerificationToken> oldToken = verificationTokenService.findByEmailAndType(email, VerificationType.ACTIVE_ACCOUNT);
@@ -163,12 +160,9 @@ public class DepoOwnerController {
     @Operation(description = "Send invitation email to worker", operationId = "sendInvitation", summary = "Send invitation email to worker")
     @PostMapping(value = "/send-invitation")
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<DepoWorkerAccountDTO> sendInvitation(@RequestBody @Valid DepoWorkerInvitationReqDto depoWorkerInvitationReqDto) {
-        Optional<DepoWorkerAccount> depoWorkerAccountOptional = depoWorkerAccountService.findByEmail(depoWorkerInvitationReqDto.getEmail());
-        if (depoWorkerAccountOptional.isPresent()) {
-            throw new CommonException("Worker with email " + depoWorkerInvitationReqDto.getEmail() + " is exist in system");
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(depoWorkerAccountService.createAndSendInvitationEmail(depoWorkerInvitationReqDto.getEmail()));
+    public ResponseEntity<Void> sendInvitation(@RequestBody @Valid DepoWorkerInvitationReqDto depoWorkerInvitationReqDto) {
+        depoWorkerAccountService.sendInvitationEmail(depoWorkerInvitationReqDto.getEmail());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(description = "Approve depo worker join request", operationId = "approveDepoWorkerJoinRequest", summary = "Approve depo worker join request")
