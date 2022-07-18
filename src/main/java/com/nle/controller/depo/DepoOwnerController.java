@@ -113,7 +113,7 @@ public class DepoOwnerController {
     @Operation(description = "Active Depo owner user by verification token", operationId = "activeDepoOwner", summary = "Active Depo owner user by verification token")
     @GetMapping(value = "/activate/{token}")
     public ResponseEntity<Void> activeDepoOwner(@PathVariable String token) {
-        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token);
+        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token, true);
         // active user
         DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
         depoOwnerAccount.setAccountStatus(AccountStatus.ACTIVE);

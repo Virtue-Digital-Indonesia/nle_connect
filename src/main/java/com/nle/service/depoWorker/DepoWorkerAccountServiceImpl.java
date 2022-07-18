@@ -70,7 +70,7 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
 
     @Override
     public void depoWorkerJoinRequest(DepoWorkerActivationDTO depoWorkerActivationDTO) {
-        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(depoWorkerActivationDTO.getOrganizationCode());
+        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(depoWorkerActivationDTO.getOrganizationCode(), false);
         // create new record in depo worker table
         DepoWorkerAccount depoWorkerAccount = new DepoWorkerAccount();
         depoWorkerAccount.setAndroidId(depoWorkerActivationDTO.getAndroidId());

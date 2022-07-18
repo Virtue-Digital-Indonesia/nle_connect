@@ -62,17 +62,20 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     @Override
-    public VerificationToken checkVerificationToken(String token) {
+    public VerificationToken checkVerificationToken(String token, boolean required) {
         VerificationToken verificationToken = this.findByToken(token);
-        if (null == verificationToken) {
+        if (null == verificationToken && required) {
             throw new ResourceNotFoundException("Active token does not exist");
         }
-        // check expired token
-        long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), verificationToken.getExpiryDate());
-        if (seconds < 0) {
-            throw new BadRequestException("Your token has expired.");
+        if (verificationToken != null) {
+            // check expired token
+            long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), verificationToken.getExpiryDate());
+            if (seconds < 0) {
+                throw new BadRequestException("Your token has expired.");
+            }
+            return verificationToken;
         }
-        return verificationToken;
+        return null;
     }
 
     @Override

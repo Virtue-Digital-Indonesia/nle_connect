@@ -13,7 +13,7 @@ public interface VerificationTokenService {
 
     VerificationToken createInvitationToken(String organizationCode, VerificationType type);
 
-    VerificationToken checkVerificationToken(String token);
+    VerificationToken checkVerificationToken(String token, boolean required);
 
     VerificationToken findByToken(String token);
 
