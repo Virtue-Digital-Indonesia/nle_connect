@@ -10,6 +10,7 @@ import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.DepoWorkerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.exception.CommonException;
+import com.nle.exception.ResourceNotFoundException;
 import com.nle.mapper.DepoWorkerAccountMapper;
 import com.nle.repository.DepoWorkerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
@@ -133,6 +134,15 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
     public PagingResponseModel<DepoWorkerListDTO> findAll(Pageable pageable) {
         Page<DepoWorkerAccount> depoWorkerAccounts = depoWorkerAccountRepository.findAll(pageable);
         return new PagingResponseModel<>(depoWorkerAccounts.map(this::convertFromEntity));
+    }
+
+    @Override
+    public AccountStatus checkDepoWorkerRegistrationStatus(String androidId) {
+        Optional<DepoWorkerAccount> depoWorkerAccount = depoWorkerAccountRepository.findByAndroidId(androidId);
+        if (depoWorkerAccount.isEmpty()) {
+            throw new ResourceNotFoundException("Depo worker account with Android id : " + androidId + " doesn't exist");
+        }
+        return depoWorkerAccount.get().getAccountStatus();
     }
 
     private DepoWorkerListDTO convertFromEntity(DepoWorkerAccount depoWorkerAccount) {

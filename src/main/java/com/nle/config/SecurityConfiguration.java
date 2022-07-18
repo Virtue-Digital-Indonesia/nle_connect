@@ -55,6 +55,7 @@ public class SecurityConfiguration {
                     , "/api/authenticate"
                     , "/api/depo-worker-accounts/join"
                     , "/api/depo-worker-accounts/complete"
+                    , "/api/depo-worker-accounts/status/**"
                 ).permitAll()
             .anyRequest()
                 .authenticated()

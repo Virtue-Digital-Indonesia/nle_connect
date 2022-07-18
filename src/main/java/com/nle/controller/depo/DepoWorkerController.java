@@ -1,5 +1,7 @@
 package com.nle.controller.depo;
 
+import com.nle.constant.AccountStatus;
+import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.DepoWorkerActivationDTO;
 import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
 import com.nle.controller.dto.pageable.PagingResponseModel;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +49,13 @@ public class DepoWorkerController {
     public ResponseEntity<DepoWorkerAccountDTO> completeDepoWorkerRegistration(@RequestBody @Valid DepoWorkerUpdateGateNameReqDto depoWorkerUpdateGateNameReqDto) {
         DepoWorkerAccountDTO depoWorkerAccountDTO = depoWorkerAccountService.completeDepoWorkerRegistration(depoWorkerUpdateGateNameReqDto);
         return ResponseEntity.ok(depoWorkerAccountDTO);
+    }
+
+    @Operation(description = "Check depo worker join request status", operationId = "checkDepoWorkerRegistrationStatus", summary = "Check depo worker join request status")
+    @GetMapping(value = "/depo-worker-accounts/status/{androidId}")
+    public ResponseEntity<ActiveDto> checkDepoWorkerRegistrationStatus(@PathVariable String androidId) {
+        AccountStatus accountStatus = depoWorkerAccountService.checkDepoWorkerRegistrationStatus(androidId);
+        return ResponseEntity.ok(new ActiveDto(accountStatus.name()));
     }
 
 
