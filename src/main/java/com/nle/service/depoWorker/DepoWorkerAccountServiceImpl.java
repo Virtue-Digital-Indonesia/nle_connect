@@ -80,7 +80,9 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         depoWorkerAccount = depoWorkerAccountRepository.save(depoWorkerAccount);
         log.info("Depo worker " + depoWorkerAccount.getFullName() + " has been created, waiting for approve from depo owner.");
         // remove verification token
-        verificationTokenRepository.delete(verificationToken);
+        if (verificationToken != null) {
+            verificationTokenRepository.delete(verificationToken);
+        }
     }
 
     @Override
