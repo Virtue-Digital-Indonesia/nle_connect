@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -16,6 +17,6 @@ public class DepoWorkerListDTO implements Serializable {
     private Long id;
     private String androidId;
     private String fullName;
-    private String email;
+    private LocalDateTime createdDate;
     private AccountStatus accountStatus;
 }
