@@ -70,12 +70,6 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "iso_code")
     private String isoCode;
 
-    @Column(name = "container_size")
-    private String size;
-
-    @Column(name = "container_type")
-    private String containerType;
-
     @Column(name = "container_condition")
     @Enumerated(EnumType.STRING)
     private ContainerCondition containerCondition;

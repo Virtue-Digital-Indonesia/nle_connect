@@ -39,13 +39,9 @@ public class GateMoveDTO implements Serializable {
 
     private String isoCode;
 
-    private String size;
-
-    private String containerType;
-
     private ContainerCondition containerCondition;
 
-    private Boolean CLEAN;
+    private Boolean clean;
 
     private String cleaning;
 
