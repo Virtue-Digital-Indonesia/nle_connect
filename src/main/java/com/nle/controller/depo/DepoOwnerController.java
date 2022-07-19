@@ -174,10 +174,10 @@ public class DepoOwnerController {
     }
 
     @Operation(description = "Delete depo worker join request", operationId = "deleteDepoWorkerJoinRequest", summary = "Delete depo worker join request")
-    @DeleteMapping(value = "/approve-join-request/{email}")
+    @DeleteMapping(value = "/approve-join-request/{androidId}")
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<Void> deleteDepoWorkerJoinRequest(@PathVariable String email) {
-        depoWorkerAccountService.deleteJoinRequest(email);
+    public ResponseEntity<Void> deleteDepoWorkerJoinRequest(@PathVariable String androidId) {
+        depoWorkerAccountService.deleteJoinRequest(androidId);
         return ResponseEntity.noContent().build();
     }
 }
