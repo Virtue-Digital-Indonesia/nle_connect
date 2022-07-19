@@ -128,7 +128,7 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
     public AccountStatus checkDepoWorkerRegistrationStatus(String androidId) {
         Optional<DepoWorkerAccount> depoWorkerAccount = depoWorkerAccountRepository.findByAndroidId(androidId);
         if (depoWorkerAccount.isEmpty()) {
-            throw new ResourceNotFoundException("Depo worker account with Android id : " + androidId + " doesn't exist");
+            throw new ResourceNotFoundException("Depo worker account with Android id: '" + androidId + "' doesn't exist");
         }
         return depoWorkerAccount.get().getAccountStatus();
     }

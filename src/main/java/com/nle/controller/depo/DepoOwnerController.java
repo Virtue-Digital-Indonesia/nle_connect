@@ -145,7 +145,7 @@ public class DepoOwnerController {
     public ApiResponse resendActivationCode(@PathVariable String email) {
         Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(email);
         if (depoOwnerAccount.isEmpty()) {
-            throw new ResourceNotFoundException("Depo owner account with email : " + email + " doesn't exist");
+            throw new ResourceNotFoundException("Depo owner account with email: '" + email + "' doesn't exist");
         }
         // find all old active token then remove them
         Optional<VerificationToken> oldToken = verificationTokenService.findByEmailAndType(email, VerificationType.ACTIVE_ACCOUNT);
