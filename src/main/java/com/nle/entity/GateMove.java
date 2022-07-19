@@ -19,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * A GateMove.
@@ -37,6 +38,8 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "date_time")
+    private LocalDateTime dateTime;
 
     @Column(name = "longitude")
     private String longitude;
