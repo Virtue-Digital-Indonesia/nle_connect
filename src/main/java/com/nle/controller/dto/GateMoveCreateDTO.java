@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -19,11 +20,11 @@ public class GateMoveCreateDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private LocalDateTime dateTime;
+
     private String longitude;
 
     private String latitude;
-
-    private String linkToGoogleMap;
 
     private ProcessType process;
 
@@ -71,7 +72,7 @@ public class GateMoveCreateDTO implements Serializable {
 
     private String PAYLOAD;
 
-    private LocalDate date_manufactured;
+    private LocalDate dateManufactured;
 
     private String remarks;
 

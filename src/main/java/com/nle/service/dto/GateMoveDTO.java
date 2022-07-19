@@ -71,9 +71,9 @@ public class GateMoveDTO implements Serializable {
 
     private String tare;
 
-    private String PAYLOAD;
+    private String payload;
 
-    private LocalDate date_manufactured;
+    private String dateManufactured;
 
     private String remarks;
 

@@ -120,7 +120,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private String PAYLOAD;
 
     @Column(name = "date_manufactured")
-    private LocalDate date_manufactured;
+    private LocalDate dateManufactured;
 
     @Column(name = "remarks")
     private String remarks;

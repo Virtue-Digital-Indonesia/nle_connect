@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -33,6 +35,14 @@ public class GateMoveServiceImpl implements GateMoveService {
     @Override
     public PagingResponseModel<GateMoveDTO> findAll(Pageable pageable) {
         Page<GateMove> gateMoves = gateMoveRepository.findAll(pageable);
-        return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
+        return new PagingResponseModel<>(gateMoves.map(this::convertToDto));
+    }
+
+    private GateMoveDTO convertToDto(GateMove gateMove) {
+        GateMoveDTO gateMoveDTO = new GateMoveDTO();
+        BeanUtils.copyProperties(gateMove, gateMoveDTO);
+        String formattedDate = gateMove.getDateManufactured().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        gateMoveDTO.setDateManufactured(formattedDate);
+        return gateMoveDTO;
     }
 }
