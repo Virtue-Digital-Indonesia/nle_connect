@@ -3,7 +3,9 @@ package com.nle.controller.depo;
 import com.nle.constant.AccountStatus;
 import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.DepoWorkerActivationDTO;
+import com.nle.controller.dto.DepoWorkerLoginDto;
 import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
+import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.pageable.PagingResponseModel;
 import com.nle.controller.dto.response.DepoWorkerListDTO;
 import com.nle.exception.ApiResponse;
@@ -64,6 +66,12 @@ public class DepoWorkerController {
     @SecurityRequirement(name = "nleapi")
     public ResponseEntity<PagingResponseModel<DepoWorkerListDTO>> getDepoWorkerList(Pageable pageable) {
         return ResponseEntity.ok(depoWorkerAccountService.findAll(pageable));
+    }
+
+    @Operation(description = "Authenticate depo worker account against android id", operationId = "getDepoWorkerList", summary = "Authenticate depo worker account against android id")
+    @PostMapping(value = "/depo-worker-accounts/authenticate")
+    public ResponseEntity<JWTToken> authenticateDepoWorker(@RequestBody @Valid DepoWorkerLoginDto depoWorkerLoginDto) {
+        return ResponseEntity.ok(depoWorkerAccountService.authenticateDepoWorker(depoWorkerLoginDto));
     }
 
 }

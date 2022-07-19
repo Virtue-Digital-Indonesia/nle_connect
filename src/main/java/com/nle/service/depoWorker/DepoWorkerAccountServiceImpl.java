@@ -3,7 +3,9 @@ package com.nle.service.depoWorker;
 import com.nle.constant.AccountStatus;
 import com.nle.controller.dto.DepoWorkerActivationDTO;
 import com.nle.controller.dto.DepoWorkerApproveReqDto;
+import com.nle.controller.dto.DepoWorkerLoginDto;
 import com.nle.controller.dto.DepoWorkerUpdateGateNameReqDto;
+import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.pageable.PagingResponseModel;
 import com.nle.controller.dto.response.DepoWorkerListDTO;
 import com.nle.entity.DepoOwnerAccount;
@@ -15,6 +17,7 @@ import com.nle.mapper.DepoWorkerAccountMapper;
 import com.nle.repository.DepoWorkerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
 import com.nle.security.SecurityUtils;
+import com.nle.security.jwt.TokenProvider;
 import com.nle.service.VerificationTokenService;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.dto.DepoWorkerAccountDTO;
@@ -26,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +49,7 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
     private final DepoWorkerAccountMapper depoWorkerAccountMapper;
     private final VerificationTokenRepository verificationTokenRepository;
     private final DepoOwnerAccountService depoOwnerAccountService;
+    private final TokenProvider tokenProvider;
 
     @Override
     public void sendInvitationEmail(String email) {
@@ -131,6 +137,19 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
             throw new ResourceNotFoundException("Depo worker account with Android id: '" + androidId + "' doesn't exist");
         }
         return depoWorkerAccount.get().getAccountStatus();
+    }
+
+    @Override
+    public JWTToken authenticateDepoWorker(DepoWorkerLoginDto androidId) {
+        Optional<DepoWorkerAccount> optionalDepoWorkerAccount = depoWorkerAccountRepository.findByAndroidId(androidId.getAndroidId());
+        if (optionalDepoWorkerAccount.isEmpty()) {
+            throw new ResourceNotFoundException("Depo worker account with Android id: '" + androidId.getAndroidId() + "' doesn't exist");
+        }
+        DepoWorkerAccount workerAccount = optionalDepoWorkerAccount.get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(workerAccount.getFullName(), workerAccount.getAndroidId());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = tokenProvider.createToken(authentication);
+        return new JWTToken(jwt);
     }
 
     private DepoWorkerListDTO convertFromEntity(DepoWorkerAccount depoWorkerAccount) {
