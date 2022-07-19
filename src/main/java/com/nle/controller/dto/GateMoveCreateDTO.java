@@ -44,7 +44,7 @@ public class GateMoveCreateDTO implements Serializable {
 
     private ContainerCondition containerCondition;
 
-    private Boolean CLEAN;
+    private Boolean clean;
 
     private String cleaning;
 
@@ -70,7 +70,7 @@ public class GateMoveCreateDTO implements Serializable {
 
     private String tare;
 
-    private String PAYLOAD;
+    private String payload;
 
     private LocalDate dateManufactured;
 
