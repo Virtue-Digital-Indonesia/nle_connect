@@ -52,8 +52,10 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         // encoded password
         depoOwnerAccountDTO.setPassword(passwordEncoder.encode(depoOwnerAccountDTO.getPassword()));
         // generate organization code
-        String organizationCode = RandomStringUtils.randomAlphanumeric(5).toUpperCase();
-        depoOwnerAccountDTO.setOrganizationCode(organizationCode);
+        StringBuilder organizationCode = new StringBuilder();
+        organizationCode.append(RandomStringUtils.randomAlphabetic(3).toUpperCase());
+        organizationCode.append(RandomStringUtils.randomNumeric(2).toUpperCase());
+        depoOwnerAccountDTO.setOrganizationCode(organizationCode.toString());
         // map to entity
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountMapper.toEntity(depoOwnerAccountDTO);
         depoOwnerAccount.setAccountStatus(AccountStatus.INACTIVE);
