@@ -75,10 +75,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private ContainerCondition containerCondition;
 
     @Column(name = "clean")
-    private Boolean CLEAN;
-
-    @Column(name = "cleaning")
-    private String cleaning;
+    private Boolean clean;
 
     @Column(name = "grade")
     private ContainerGrade grade;

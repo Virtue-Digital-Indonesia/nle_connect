@@ -43,8 +43,6 @@ public class GateMoveDTO implements Serializable {
 
     private Boolean clean;
 
-    private String cleaning;
-
     private ContainerGrade grade;
 
     private String damageBy;
