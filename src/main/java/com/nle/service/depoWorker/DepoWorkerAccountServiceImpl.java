@@ -121,7 +121,12 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         DepoWorkerAccount depoWorkerAccount = depoWorkerAccountOptional.get();
         depoWorkerAccount.setGateName(depoWorkerUpdateGateNameReqDto.getGateName());
         depoWorkerAccountRepository.save(depoWorkerAccount);
-        return depoWorkerAccountMapper.toDto(depoWorkerAccount);
+
+        Optional<DepoOwnerAccount> depoOwnerAccountOptional = depoOwnerAccountService.findByOrganizationCode(depoWorkerAccount.getOrganizationCode());
+        DepoWorkerAccountDTO depoWorkerAccountDTO = new DepoWorkerAccountDTO();
+        BeanUtils.copyProperties(depoWorkerAccount, depoWorkerAccountDTO);
+        depoWorkerAccountDTO.setOrganizationName(depoOwnerAccountOptional.get().getOrganizationName());
+        return depoWorkerAccountDTO;
     }
 
     @Override

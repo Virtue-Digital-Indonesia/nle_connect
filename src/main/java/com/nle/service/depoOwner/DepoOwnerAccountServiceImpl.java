@@ -74,4 +74,9 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     public Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber) {
         return depoOwnerAccountRepository.findByPhoneNumber(phoneNumber);
     }
+
+    @Override
+    public Optional<DepoOwnerAccount> findByOrganizationCode(String organizationCode) {
+        return depoOwnerAccountRepository.findByOrganizationCode(organizationCode);
+    }
 }

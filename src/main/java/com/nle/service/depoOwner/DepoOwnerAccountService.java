@@ -14,4 +14,6 @@ public interface DepoOwnerAccountService {
     Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail);
 
     Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber);
+
+    Optional<DepoOwnerAccount> findByOrganizationCode(String organizationCode);
 }
