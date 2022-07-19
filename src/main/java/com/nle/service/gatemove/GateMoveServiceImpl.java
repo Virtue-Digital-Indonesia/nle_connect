@@ -41,8 +41,10 @@ public class GateMoveServiceImpl implements GateMoveService {
     private GateMoveDTO convertToDto(GateMove gateMove) {
         GateMoveDTO gateMoveDTO = new GateMoveDTO();
         BeanUtils.copyProperties(gateMove, gateMoveDTO);
-        String formattedDate = gateMove.getDateManufactured().format(DateTimeFormatter.ofPattern("yyyy-MM"));
-        gateMoveDTO.setDateManufactured(formattedDate);
+        if (gateMove.getDateManufactured() != null) {
+            String formattedDate = gateMove.getDateManufactured().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+            gateMoveDTO.setDateManufactured(formattedDate);
+        }
         return gateMoveDTO;
     }
 }
