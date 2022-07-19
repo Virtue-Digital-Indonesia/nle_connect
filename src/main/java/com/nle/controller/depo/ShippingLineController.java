@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/shipping-lines")
 @RequiredArgsConstructor
@@ -22,6 +24,13 @@ public class ShippingLineController {
     private final Logger log = LoggerFactory.getLogger(ShippingLineController.class);
 
     private final ShippingLineService shippingLineService;
+
+    @Operation(description = "Find all Shipping Line", operationId = "findAll", summary = "Find all Shipping Line")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping
+    public ResponseEntity<List<ShippingLineDTO>> findAll() {
+        return ResponseEntity.ok(shippingLineService.findAll());
+    }
 
     @Operation(description = "Find Shipping Line with code", operationId = "findByCode", summary = "Find Shipping Line with code")
     @SecurityRequirement(name = "nleapi")

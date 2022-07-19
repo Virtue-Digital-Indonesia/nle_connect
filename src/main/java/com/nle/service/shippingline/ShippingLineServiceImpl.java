@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -25,5 +27,12 @@ public class ShippingLineServiceImpl implements ShippingLineService {
             throw new ResourceNotFoundException("ShippingLine with code: '" + code + "' doesn't exist");
         }
         return shippingLineMapper.toDto(shippingLineOptional.get());
+    }
+
+    @Override
+    public List<ShippingLineDTO> findAll() {
+        List<ShippingLine> shippingLineList = shippingLineRepository.findAll();
+        return shippingLineList.stream().map(shippingLineMapper::toDto)
+            .collect(Collectors.toList());
     }
 }
