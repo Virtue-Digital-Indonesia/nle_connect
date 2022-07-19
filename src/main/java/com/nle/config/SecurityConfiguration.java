@@ -1,5 +1,6 @@
 package com.nle.config;
 
+import com.nle.config.prop.AppProperties;
 import com.nle.security.jwt.JWTConfigurer;
 import com.nle.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfiguration {
     private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
+    private final AppProperties appProperties;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,6 +68,6 @@ public class SecurityConfiguration {
     }
 
     private JWTConfigurer securityConfigurerAdapter() {
-        return new JWTConfigurer(tokenProvider);
+        return new JWTConfigurer(tokenProvider, appProperties);
     }
 }

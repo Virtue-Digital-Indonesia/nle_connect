@@ -7,4 +7,5 @@ public class Jwt {
     private String base64Secret;
     private long tokenValidityInSeconds;
     private String secret;
+    private String temporaryToken;
 }

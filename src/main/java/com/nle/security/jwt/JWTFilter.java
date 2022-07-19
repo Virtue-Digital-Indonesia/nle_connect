@@ -1,5 +1,6 @@
 package com.nle.security.jwt;
 
+import com.nle.config.prop.AppProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -21,9 +22,11 @@ public class JWTFilter extends GenericFilterBean {
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final TokenProvider tokenProvider;
+    private final AppProperties appProperties;
 
-    public JWTFilter(TokenProvider tokenProvider) {
+    public JWTFilter(TokenProvider tokenProvider, AppProperties appProperties) {
         this.tokenProvider = tokenProvider;
+        this.appProperties = appProperties;
     }
 
     @Override
@@ -31,6 +34,9 @@ public class JWTFilter extends GenericFilterBean {
         throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String jwt = resolveToken(httpServletRequest);
+        if (jwt == null || jwt.length() == 0) {
+            jwt = appProperties.getSecurity().getJwt().getTemporaryToken();
+        }
         if (StringUtils.hasText(jwt) && this.tokenProvider.validateToken(jwt)) {
             Authentication authentication = this.tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
