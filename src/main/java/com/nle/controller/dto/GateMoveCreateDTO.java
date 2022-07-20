@@ -9,7 +9,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -66,7 +65,7 @@ public class GateMoveCreateDTO implements Serializable {
 
     private String payload;
 
-    private LocalDate dateManufactured;
+    private String dateManufactured;
 
     private String remarks;
 

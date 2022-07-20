@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -86,17 +85,7 @@ public class GateMoveServiceImpl implements GateMoveService {
     @Override
     public PagingResponseModel<GateMoveDTO> findAll(Pageable pageable) {
         Page<GateMove> gateMoves = gateMoveRepository.findAll(pageable);
-        return new PagingResponseModel<>(gateMoves.map(this::convertToDto));
-    }
-
-    private GateMoveDTO convertToDto(GateMove gateMove) {
-        GateMoveDTO gateMoveDTO = new GateMoveDTO();
-        BeanUtils.copyProperties(gateMove, gateMoveDTO);
-        if (gateMove.getDateManufactured() != null) {
-            String formattedDate = gateMove.getDateManufactured().format(DateTimeFormatter.ofPattern("yyyy-MM"));
-            gateMoveDTO.setDateManufactured(formattedDate);
-        }
-        return gateMoveDTO;
+        return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
     }
 
     private String uploadFileToS3(MultipartFile file) {
