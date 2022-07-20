@@ -10,12 +10,16 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -25,8 +29,6 @@ import java.net.URISyntaxException;
 @RequestMapping("/api/gate-moves")
 @RequiredArgsConstructor
 public class GateMoveController {
-
-
     private final Logger log = LoggerFactory.getLogger(GateMoveController.class);
 
     private final GateMoveService gateMoveService;
@@ -41,6 +43,15 @@ public class GateMoveController {
         return ResponseEntity
             .created(new URI("/api/gate-moves/" + createdGateMove.getId()))
             .body(createdGateMove);
+    }
+
+    @Operation(description = "Upload Gate In / Gate Out photo", operationId = "uploadGateMoveFile", summary = "Upload Gate In / Gate Out photo")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @SecurityRequirement(name = "nleapi")
+    public ResponseEntity<GateMoveDTO> uploadGateMoveFile(@RequestParam("gateMoveId") Long gateMoveId, @RequestPart("files") MultipartFile files[]) {
+        log.debug("REST request to upload {} files", files.length);
+        gateMoveService.uploadFile(files, gateMoveId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(description = "Get list of gate move with paging", operationId = "findAllGateMoves", summary = "Get list of gate move with paging")

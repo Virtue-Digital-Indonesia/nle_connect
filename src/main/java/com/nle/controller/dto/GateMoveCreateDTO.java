@@ -38,7 +38,6 @@ public class GateMoveCreateDTO implements Serializable {
 
     private String isoCode;
 
-
     private ContainerCondition containerCondition;
 
     private Boolean clean;

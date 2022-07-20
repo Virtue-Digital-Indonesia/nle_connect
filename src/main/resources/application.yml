@@ -9,6 +9,11 @@ app:
       credentials:
         access-key: "AKIAWJCGQ2JNB7LRYTOY"
         secret-key: "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"
+      s3:
+        region: "ap-southeast-3"
+        bucket-name: "nle-backend-dev"
+        access-key: "AKIAWJCGQ2JNAL4BLUZL"
+        secret-key: "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"
   springdoc:
     name:  Nlebackend API
     url: http://api.nle-connect.id/
@@ -18,8 +23,8 @@ app:
     version: 0.0.1
   url:
     active-url: http://api.nle-connect.id/api/activate/
-    success-redirect-url: http://nle-connect.id/sign-in
-    failed-redirect-url: http://nle-connect.id/sign-in
+    success-redirect-url: https://nle-connect.id/sign-in
+    failed-redirect-url: https://nle-connect.id/sign-in
 
 spring:
   devtools:
@@ -44,6 +49,10 @@ spring:
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048
         useServerPrepStmts: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 server:
   port: 8080
   forward-headers-strategy: framework

@@ -16,10 +16,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A GateMove.
@@ -121,5 +124,8 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "photos")
     private String photos;
+
+    @OneToMany(mappedBy = "gateMove")
+    private Set<Media> media = new HashSet<>();
 
 }
