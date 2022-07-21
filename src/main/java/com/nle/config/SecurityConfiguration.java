@@ -37,6 +37,7 @@ public class SecurityConfiguration {
             .antMatchers("/resources/**")
             .antMatchers("/product-nle-connect.svg")
             .antMatchers("/tx_adkon_202207202135.csv")
+            .antMatchers("/tx_deponame_timestamp.csv")
             .antMatchers("/v3/api-docs/**")
             .antMatchers("/swagger-ui/**");
     }
