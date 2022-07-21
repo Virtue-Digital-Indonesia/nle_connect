@@ -61,9 +61,9 @@ public class GateMoveCreateDTO implements Serializable {
 
     private String truckNo;
 
-    private String tare;
+    private Double tare;
 
-    private String payload;
+    private Double payload;
 
     private String dateManufactured;
 

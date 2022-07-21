@@ -111,10 +111,10 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private String truckNo;
 
     @Column(name = "tare")
-    private String tare;
+    private Double tare;
 
     @Column(name = "payload")
-    private String payload;
+    private Double payload;
 
     @Column(name = "date_manufactured")
     private String dateManufactured;
