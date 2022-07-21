@@ -1,0 +1,5 @@
+﻿Log date & time;Type;Depot;Fleet manager;Container number;ISO code;Condition;Date Manufacturer;Clean;Grade;Order number;Customer;Vessel;Voyage;Discharge port;Delivery port;Carrier;Transport id;Driver name;Tare weight;Payload;Max Gross;Remark
+2022-07-15T19:44:48.54+07:00;Gate in;Jakarta;KMTC;CMAU7739804;45G1;AV;2008-12;TRUE;Cargo worthy;1234;IKEA;;;;;APPLE LOGISTICS;1234;;;;;
+2022-07-13T12:50:19.028+07:00;Gate in;Jakarta;KMTC;GSTU6277337;45G1;;;TRUE;Cargo worthy;GG09473747;ALFAMIDI;;;;;APPLE LOGISTICS;MQ74747;;;;;
+2022-07-14T00:48:52.594+07:00;Gate out;Jakarta;KMTC;TRHU7857252;45G1;;;TRUE;Cargo worthy;ORD2207141246;IKEA;VSL123;VOY124;SGSIN;;APPLE LOGISTICS;TRSP1S3;;;;;
+2022-07-13T23:44:12.457+07:00;Gate in;Jakarta;HAPAG LLOYD;TRHU7857252;22G1;;;TRUE;Cargo worthy;GG09473748;IKEA;;;;;PINEAPPLE HAULIERS;TRSP000192;;;;;
