@@ -36,6 +36,7 @@ public class SecurityConfiguration {
             .antMatchers(HttpMethod.OPTIONS, "/**")
             .antMatchers("/resources/**")
             .antMatchers("/product-nle-connect.svg")
+            .antMatchers("/tx_adkon_202207202135.csv")
             .antMatchers("/v3/api-docs/**")
             .antMatchers("/swagger-ui/**");
     }
