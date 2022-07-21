@@ -4,7 +4,6 @@ app:
       base64-secret: OTdiYTU1OTE1Y2E0ZjRjN2U0NTI2MTI2YjY4NDc4NjEwMWIyY2NmZGY4YTVjOTc0YzBmNDZlZDA5OGVlYmVlMzYzNGU3MTkyMjUzNGIzZGJlZjBhNmIzNGYzZWM1YmY5NjNhMzg4MTQyOTFhYTA0NGExNTNhNDBiZmRhNWNjZjA=
       token-validity-in-seconds: 8640000
       secret: 5BQ0aAFGyyTC7HVEUHic
-      temporaryToken: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjYW9kYW5ndGluaEBnbWFpbC5jb20iLCJhdXRoIjoiVVNFUiIsImV4cCI6MTY2NjgzODQxMn0.VwPuzFy6JV0cZ5553SIWhtmjyUV0BcdskppLM-PRjVnUpsn1aBSarTv5hmEkVwdaoW51l7BzrZH1QRwcRaEzoA"
     aws:
       credentials:
         access-key: "AKIAWJCGQ2JNB7LRYTOY"

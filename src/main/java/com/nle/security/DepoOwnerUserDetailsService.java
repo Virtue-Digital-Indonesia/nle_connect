@@ -40,7 +40,7 @@ public class DepoOwnerUserDetailsService implements UserDetailsService {
         if (!user.isActivated()) {
             throw new CommonException("User " + companyEmail + " was not activated");
         }
-        List<GrantedAuthority> grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority("USER"));
+        List<GrantedAuthority> grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority("DEPO_OWNER"));
         return new org.springframework.security.core.userdetails.User(companyEmail, user.getPassword(), grantedAuthorities);
     }
 }

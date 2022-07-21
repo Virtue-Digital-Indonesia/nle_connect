@@ -74,4 +74,11 @@ public class DepoWorkerController {
         return ResponseEntity.ok(depoWorkerAccountService.authenticateDepoWorker(depoWorkerLoginDto));
     }
 
+    @Operation(description = "Get depo worker account details", operationId = "getDepoWorkerAccountDetails", summary = "Get depo worker account details")
+    @GetMapping(value = "/depo-worker-accounts/details")
+    @SecurityRequirement(name = "nleapi")
+    public ResponseEntity<DepoWorkerAccountDTO> getDepoWorkerAccountDetails() {
+        return ResponseEntity.ok(depoWorkerAccountService.getDepoWorkerAccountDetails());
+    }
+
 }

@@ -28,4 +28,6 @@ public interface DepoWorkerAccountService {
 
     JWTToken authenticateDepoWorker(DepoWorkerLoginDto androidId);
 
+    DepoWorkerAccountDTO getDepoWorkerAccountDetails();
+
 }

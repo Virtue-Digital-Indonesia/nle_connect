@@ -69,6 +69,6 @@ public class SecurityConfiguration {
     }
 
     private JWTConfigurer securityConfigurerAdapter() {
-        return new JWTConfigurer(tokenProvider, appProperties);
+        return new JWTConfigurer(tokenProvider);
     }
 }

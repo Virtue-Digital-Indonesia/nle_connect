@@ -30,10 +30,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.nle.constant.VerificationType.ACTIVE_ACCOUNT;
@@ -151,10 +155,27 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
             throw new ResourceNotFoundException("Depo worker account with Android id: '" + androidId.getAndroidId() + "' doesn't exist");
         }
         DepoWorkerAccount workerAccount = optionalDepoWorkerAccount.get();
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(workerAccount.getFullName(), workerAccount.getAndroidId());
+        List<GrantedAuthority> grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority("DEPO_WORKER"));
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(workerAccount.getAndroidId(), workerAccount.getAndroidId(), grantedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication);
         return new JWTToken(jwt);
+    }
+
+    @Override
+    public DepoWorkerAccountDTO getDepoWorkerAccountDetails() {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            Optional<DepoWorkerAccount> optionalDepoWorkerAccount = depoWorkerAccountRepository.findByAndroidId(currentUserLogin.get());
+            if (optionalDepoWorkerAccount.isEmpty()) {
+                throw new ResourceNotFoundException("Depo worker account with Android id: '" + currentUserLogin.get() + "' doesn't exist");
+            }
+            DepoWorkerAccountDTO depoWorkerAccountDTO = depoWorkerAccountMapper.toDto(optionalDepoWorkerAccount.get());
+            Optional<DepoOwnerAccount> depoOwnerAccountOptional = depoOwnerAccountService.findByOrganizationCode(optionalDepoWorkerAccount.get().getOrganizationCode());
+            depoOwnerAccountOptional.ifPresent(depoOwnerAccount -> depoWorkerAccountDTO.setOrganizationName(depoOwnerAccount.getOrganizationName()));
+            return depoWorkerAccountDTO;
+        }
+        return null;
     }
 
     private DepoWorkerListDTO convertFromEntity(DepoWorkerAccount depoWorkerAccount) {
