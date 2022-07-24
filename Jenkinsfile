@@ -34,8 +34,10 @@ pipeline {
 
         stage('update secret') {
             steps {
-                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')],
-                    [usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME')]) {
+                withCredentials([
+                    string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                    usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME')
+                    ]) {
                     sh """
                         cd src/main/resources
                         export DB_PASSWORD=$DB_PASSWORD
