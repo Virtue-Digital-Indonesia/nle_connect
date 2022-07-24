@@ -13,6 +13,11 @@ app:
         bucket-name: "nle-backend-dev"
         access-key: "AKIAWJCGQ2JNAL4BLUZL"
         secret-key: "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"
+    ftp:
+      server: "ftp.nle-connect.id"
+      username: ${FTP_USERNAME}
+      password: ${FTP_PASSWORD}
+      path: "/ftp/files"
   springdoc:
     name:  Nlebackend API
     url: http://api.nle-connect.id/

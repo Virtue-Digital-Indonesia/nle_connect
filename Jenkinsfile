@@ -34,10 +34,13 @@ pipeline {
 
         stage('update secret') {
             steps {
-                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
+                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')],
+                    [usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME')]) {
                     sh """
                         cd src/main/resources
                         export DB_PASSWORD=$DB_PASSWORD
+                        export FTP_USERNAME=$FTP_USERNAME
+                        export FTP_PASSWORD=$FTP_PASSWORD
                         envsubst < application.yml > application_tmp.yml
                         mv application_tmp.yml application.yml
                     """

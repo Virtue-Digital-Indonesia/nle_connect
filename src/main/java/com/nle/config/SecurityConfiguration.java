@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                     , "/api/depo-worker-accounts/join"
                     , "/api/depo-worker-accounts/complete"
                     , "/api/depo-worker-accounts/status/**"
+                    , "/api/ftp/**"
                     , "/api/depo-worker-accounts/authenticate"
                 ).permitAll()
             .anyRequest()
