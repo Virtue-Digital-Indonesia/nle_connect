@@ -45,7 +45,7 @@ public class FTPService {
             if (login) {
                 log.info("Login success...");
                 FTPFile[] ftpFiles = ftpClient.listFiles(appProperties.getSecurity().getFtp().getPath());
-                log.info("Total file in FTP server {}", ftpFiles.length);
+                log.info("Total file in folder {} from FTP server {}", appProperties.getSecurity().getFtp().getPath(), ftpFiles.length);
                 // Download file from FTP server.
                 ftpClient.changeWorkingDirectory(appProperties.getSecurity().getFtp().getPath());
                 processFiles(ftpFiles, ftpClient);
