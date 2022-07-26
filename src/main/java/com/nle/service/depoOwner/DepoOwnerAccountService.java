@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface DepoOwnerAccountService {
     DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO);
 
+    void activeDepoOwnerAccount(String token);
+
     Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail);
 
     Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber);

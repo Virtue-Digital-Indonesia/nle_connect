@@ -18,6 +18,8 @@ app:
       username: "${FTP_USERNAME}"
       password: "${FTP_PASSWORD}"
       path: "/ftp/files"
+      TRIGGER_URL: "${TRIGGER_URL}"
+      TRIGGER_TOKEN: "${TRIGGER_TOKEN}"
   springdoc:
     name:  Nlebackend API
     url: http://api.nle-connect.id/

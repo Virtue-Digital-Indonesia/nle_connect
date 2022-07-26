@@ -36,6 +36,8 @@ pipeline {
             steps {
                 withCredentials([
                     string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'TRIGGER_URL', variable: 'TRIGGER_URL'),
+                    string(credentialsId: 'TRIGGER_TOKEN', variable: 'TRIGGER_TOKEN'),
                     usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME')
                     ]) {
                     sh """
@@ -43,6 +45,8 @@ pipeline {
                         export DB_PASSWORD=$DB_PASSWORD
                         export FTP_USERNAME=$FTP_USERNAME
                         export FTP_PASSWORD=$FTP_PASSWORD
+                        export TRIGGER_URL=$TRIGGER_URL
+                        export TRIGGER_TOKEN=$TRIGGER_TOKEN
                         envsubst < application.yml > application_tmp.yml
                         mv application_tmp.yml application.yml
                     """

@@ -8,4 +8,6 @@ public class Ftp {
     private String username;
     private String password;
     private String path;
+    private String triggerUrl;
+    private String triggerToken;
 }

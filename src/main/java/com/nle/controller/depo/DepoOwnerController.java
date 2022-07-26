@@ -1,7 +1,6 @@
 package com.nle.controller.depo;
 
 import com.nle.config.prop.AppProperties;
-import com.nle.constant.AccountStatus;
 import com.nle.constant.VerificationType;
 import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
@@ -14,8 +13,6 @@ import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.exception.ApiResponse;
 import com.nle.exception.ResourceNotFoundException;
-import com.nle.repository.DepoOwnerAccountRepository;
-import com.nle.repository.VerificationTokenRepository;
 import com.nle.security.jwt.JWTFilter;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.service.VerificationTokenService;
@@ -54,14 +51,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DepoOwnerController {
 
-
     private final Logger log = LoggerFactory.getLogger(DepoOwnerController.class);
 
     private final DepoOwnerAccountService depoOwnerAccountService;
-
-    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
-
-    private final VerificationTokenRepository verificationTokenRepository;
 
     private final VerificationTokenService verificationTokenService;
 
@@ -113,14 +105,7 @@ public class DepoOwnerController {
     @Operation(description = "Active Depo owner user by verification token", operationId = "activeDepoOwner", summary = "Active Depo owner user by verification token")
     @GetMapping(value = "/activate/{token}")
     public ResponseEntity<Void> activeDepoOwner(@PathVariable String token) {
-        VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token, true);
-        // active user
-        DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
-        depoOwnerAccount.setAccountStatus(AccountStatus.ACTIVE);
-        depoOwnerAccountRepository.save(depoOwnerAccount);
-        log.info("Depo owner " + depoOwnerAccount.getFullName() + " has been active.");
-        // remove verification token
-        verificationTokenRepository.delete(verificationToken);
+        depoOwnerAccountService.activeDepoOwnerAccount(token);
         // redirect to login page
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.getUrl().getSuccessRedirectUrl())).build();
     }
