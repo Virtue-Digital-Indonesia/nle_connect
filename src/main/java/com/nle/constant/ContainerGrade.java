@@ -1,9 +1,8 @@
 package com.nle.constant;
 
 public enum ContainerGrade {
-    NEW,
-    A,
-    B,
-    C,
-    D
+    FOOD_GRADE,
+    GRADE_A,
+    GRADE_B,
+    GRADE_C
 }

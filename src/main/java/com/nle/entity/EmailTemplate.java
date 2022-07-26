@@ -18,40 +18,40 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "EMAIL_TEMPLATE")
+@Table(name = "email_template")
 @Getter
 @Setter
 public class EmailTemplate extends AbstractAuditingEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long emailTemplateId;
 
     @Size(max = 50)
     @NotNull
-    @Column(name = "TEMPLATE_NAME")
+    @Column(name = "template_name")
     private String templateName;
 
     @NotNull
-    @Column(name = "TEMPLATE_CONTENT")
+    @Column(name = "template_content")
     private String templateContent;
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "SENDER_NAME")
+    @Column(name = "sender_name")
     private String senderName;
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "SEND_FROM")
+    @Column(name = "send_from")
     private String sendFrom;
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "SUBJECT")
+    @Column(name = "subject")
     private String subject;
 
-    @Column(name = "TEMPLATE_TYPE")
+    @Column(name = "template_type")
     @Enumerated(EnumType.STRING)
     private EmailType type;
 

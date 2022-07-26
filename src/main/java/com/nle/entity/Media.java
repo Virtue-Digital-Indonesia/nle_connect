@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "MEDIA")
+@Table(name = "media")
 @Getter
 @Setter
 public class Media extends AbstractAuditingEntity implements Serializable {
@@ -23,22 +23,22 @@ public class Media extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "MEDIA_TYPE")
+    @Column(name = "media_type")
     private String mediaType;
 
-    @Column(name = "FILE_NAME")
+    @Column(name = "file_name")
     private String fileName;
 
-    @Column(name = "FILE_SIZE")
+    @Column(name = "file_size")
     private long fileSize;
 
-    @Column(name = "FILE_PATH")
+    @Column(name = "file_path")
     private String filePath;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "GATE_MOVE_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "gate_move_id", referencedColumnName = "id")
     private GateMove gateMove;
 }

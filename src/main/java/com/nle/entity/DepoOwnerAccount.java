@@ -13,10 +13,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.nle.constant.AppConstant.Pattern.EMAIL_PATTERN;
 
@@ -62,6 +65,9 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
+
+    @OneToMany(mappedBy = "depoOwnerAccount")
+    private Set<GateMove> gateMoves = new HashSet<>();
 
     public boolean isActivated() {
         return AccountStatus.ACTIVE == accountStatus;

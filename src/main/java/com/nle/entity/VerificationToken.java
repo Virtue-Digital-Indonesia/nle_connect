@@ -2,6 +2,8 @@ package com.nle.entity;
 
 import com.nle.constant.VerificationType;
 import com.nle.entity.common.AbstractAuditingEntity;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +23,8 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "verification_token")
+@Getter
+@Setter
 public class VerificationToken extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -43,57 +47,10 @@ public class VerificationToken extends AbstractAuditingEntity implements Seriali
     @Enumerated(EnumType.STRING)
     private VerificationType tokenType;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     private DepoOwnerAccount depoOwnerAccount;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     private DepoWorkerAccount depoWorkerAccount;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDateTime expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public VerificationType getTokenType() {
-        return tokenType;
-    }
-
-    public void setTokenType(VerificationType tokenType) {
-        this.tokenType = tokenType;
-    }
-
-    public DepoOwnerAccount getDepoOwnerAccount() {
-        return depoOwnerAccount;
-    }
-
-    public void setDepoOwnerAccount(DepoOwnerAccount depoOwnerAccount) {
-        this.depoOwnerAccount = depoOwnerAccount;
-    }
-
-    public DepoWorkerAccount getDepoWorkerAccount() {
-        return depoWorkerAccount;
-    }
-
-    public void setDepoWorkerAccount(DepoWorkerAccount depoWorkerAccount) {
-        this.depoWorkerAccount = depoWorkerAccount;
-    }
 }

@@ -5,5 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ContainerCondition {
     AV,
-    DM
+    DM,
+    MA,
+    DL,
 }

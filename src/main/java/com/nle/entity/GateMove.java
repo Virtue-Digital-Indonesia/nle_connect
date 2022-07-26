@@ -2,6 +2,7 @@ package com.nle.entity;
 
 import com.nle.constant.ContainerCondition;
 import com.nle.constant.ContainerGrade;
+import com.nle.constant.GateMoveSource;
 import com.nle.constant.GateMoveType;
 import com.nle.constant.ProcessType;
 import com.nle.entity.common.AbstractAuditingEntity;
@@ -16,6 +17,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -40,31 +43,22 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "date_time")
-    private LocalDateTime dateTime;
+    @Column(name = "tx_date")
+    private LocalDateTime txDate;
 
-    @Column(name = "longitude")
-    private String longitude;
-
-    @Column(name = "latitude")
-    private String latitude;
-
-    @Column(name = "link_to_google_map")
-    private String linkToGoogleMap;
-
-    @Column(name = "process")
+    @Column(name = "process_type")
     @Enumerated(EnumType.STRING)
-    private ProcessType process;
+    private ProcessType processType;
 
-    @Column(name = "type")
+    @Column(name = "gate_move_type")
     @Enumerated(EnumType.STRING)
-    private GateMoveType type;
+    private GateMoveType gateMoveType;
 
     @Column(name = "depot")
     private String depot;
 
-    @Column(name = "shipping_line")
-    private String shippingLine;
+    @Column(name = "fleet_manager")
+    private String fleetManager;
 
     @Column(name = "container_number")
     private String containerNumber;
@@ -74,19 +68,16 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "container_condition")
     @Enumerated(EnumType.STRING)
-    private ContainerCondition containerCondition;
+    private ContainerCondition condition;
+
+    @Column(name = "date_manufacturer")
+    private String dateManufacturer;
 
     @Column(name = "clean")
     private Boolean clean;
 
     @Column(name = "grade")
     private ContainerGrade grade;
-
-    @Column(name = "damage_by")
-    private String damageBy;
-
-    @Column(name = "cost")
-    private Double cost;
 
     @Column(name = "order_number")
     private String orderNumber;
@@ -100,14 +91,20 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "voyage")
     private String voyage;
 
-    @Column(name = "discharge_port")
-    private String dischargePort;
+    @Column(name = "discarge_port")
+    private String discargePort;
 
-    @Column(name = "trucker_name")
-    private String truckerName;
+    @Column(name = "delivery_port")
+    private String deliveryPort;
 
-    @Column(name = "truck_no")
-    private String truckNo;
+    @Column(name = "carrier")
+    private String carrier;
+
+    @Column(name = "transport_number")
+    private String transportNumber;
+
+    @Column(name = "driver_name")
+    private String driverName;
 
     @Column(name = "tare")
     private Double tare;
@@ -115,16 +112,46 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "payload")
     private Double payload;
 
-    @Column(name = "date_manufactured")
-    private String dateManufactured;
+    @Column(name = "max_gross")
+    private Double maxGross;
 
     @Column(name = "remarks")
     private String remarks;
 
-    @Column(name = "photos")
-    private String photos;
+    // mobile only
+    @Column(name = "longitude")
+    private String longitude;
+
+    @Column(name = "latitude")
+    private String latitude;
+
+    @Column(name = "link_to_google_map")
+    private String linkToGoogleMap;
+
+    @Column(name = "shipping_line")
+    private String shippingLine;
+
+    @Column(name = "damage_by")
+    private String damageBy;
+
+    @Column(name = "cost")
+    private Double cost;
+
+    @Column(name = "trucker_name")
+    private String truckerName;
+
+    @Column(name = "truck_no")
+    private String truckNo;
+
+    @Column(name = "data_source")
+    @Enumerated(EnumType.STRING)
+    private GateMoveSource gateMoveSource;
 
     @OneToMany(mappedBy = "gateMove")
     private Set<Media> media = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "depo_owner_account_id", referencedColumnName = "id")
+    private DepoOwnerAccount depoOwnerAccount;
 
 }
