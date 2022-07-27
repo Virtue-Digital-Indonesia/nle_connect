@@ -85,7 +85,11 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccountRepository.save(depoOwnerAccount);
         log.info("Depo owner " + depoOwnerAccount.getFullName() + " has been active.");
         // create FTP account
-        sshService.createFtpUser(depoOwnerAccount.getCompanyEmail(), rawPassword);
+        try {
+            sshService.createFtpUser(depoOwnerAccount.getCompanyEmail(), rawPassword);
+        } catch (Exception e) {
+            log.error("Error while creating FTP account", e);
+        }
         log.info("FTP account for depo owner " + depoOwnerAccount.getFullName() + " has been created.");
         // remove verification token
         verificationTokenRepository.delete(verificationToken);

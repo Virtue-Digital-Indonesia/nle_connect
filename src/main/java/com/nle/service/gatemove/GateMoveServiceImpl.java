@@ -5,6 +5,7 @@ import com.nle.config.prop.AppProperties;
 import com.nle.controller.depo.GateMoveController;
 import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
+import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.GateMove;
 import com.nle.entity.Media;
 import com.nle.exception.CommonException;
@@ -12,6 +13,8 @@ import com.nle.exception.ResourceNotFoundException;
 import com.nle.mapper.GateMoveMapper;
 import com.nle.repository.GateMoveRepository;
 import com.nle.repository.MediaRepository;
+import com.nle.security.SecurityUtils;
+import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.dto.GateMoveDTO;
 import com.nle.service.s3.S3StoreService;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +52,20 @@ public class GateMoveServiceImpl implements GateMoveService {
     private final AppProperties appProperties;
     private final S3StoreService s3StoreService;
     private final MediaRepository mediaRepository;
+    private final DepoOwnerAccountService depoOwnerAccountService;
 
     @Override
     public GateMoveDTO createGateMove(GateMoveCreateDTO gateMoveCreateDTO) {
         GateMoveDTO gateMoveDTO = new GateMoveDTO();
         BeanUtils.copyProperties(gateMoveCreateDTO, gateMoveDTO);
         GateMove gateMove = gateMoveMapper.toEntity(gateMoveDTO);
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
+            if (depoOwnerAccount.isPresent()) {
+                gateMove.setDepoOwnerAccount(depoOwnerAccount.get());
+            }
+        }
         gateMove = gateMoveRepository.save(gateMove);
         return gateMoveMapper.toDto(gateMove);
     }
