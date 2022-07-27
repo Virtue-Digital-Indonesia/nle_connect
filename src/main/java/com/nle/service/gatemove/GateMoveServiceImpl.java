@@ -2,6 +2,7 @@ package com.nle.service.gatemove;
 
 
 import com.nle.config.prop.AppProperties;
+import com.nle.constant.GateMoveSource;
 import com.nle.controller.depo.GateMoveController;
 import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
@@ -66,8 +67,21 @@ public class GateMoveServiceImpl implements GateMoveService {
                 gateMove.setDepoOwnerAccount(depoOwnerAccount.get());
             }
         }
+        gateMove.setGateMoveSource(GateMoveSource.MOBILE);
         gateMove = gateMoveRepository.save(gateMove);
         return gateMoveMapper.toDto(gateMove);
+    }
+
+    @Override
+    public GateMoveDTO updateGateMove(GateMoveDTO gateMoveDTO) {
+        Optional<GateMove> gateMoveOptional = gateMoveRepository.findById(gateMoveDTO.getId());
+        if (gateMoveOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Gate move with id '" + gateMoveDTO.getId() + "' doesn't exist");
+        }
+        GateMove gateMove = gateMoveOptional.get();
+        BeanUtils.copyProperties(gateMoveDTO, gateMove);
+        GateMove updatedGateMove = gateMoveRepository.save(gateMove);
+        return gateMoveMapper.toDto(updatedGateMove);
     }
 
     @Override

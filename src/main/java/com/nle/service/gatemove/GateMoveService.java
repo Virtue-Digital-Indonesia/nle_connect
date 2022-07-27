@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface GateMoveService {
     GateMoveDTO createGateMove(GateMoveCreateDTO gateMoveCreateDTO);
 
+    GateMoveDTO updateGateMove(GateMoveDTO gateMoveDTO);
+
     void uploadFile(MultipartFile[] files, Long gateMoveId);
 
     PagingResponseModel<GateMoveDTO> findAll(Pageable pageable);

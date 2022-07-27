@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,4 +61,13 @@ public class GateMoveController {
     public ResponseEntity<PagingResponseModel<GateMoveDTO>> findAllGateMoves(Pageable pageable) {
         return ResponseEntity.ok(gateMoveService.findAll(pageable));
     }
+
+    @Operation(description = "Update date Gate Move", operationId = "updateGateMove", summary = "Update date Gate Move")
+    @SecurityRequirement(name = "nleapi")
+    @PutMapping
+    public ResponseEntity<GateMoveDTO> updateGateMove(GateMoveDTO gateMoveDTO) {
+        return ResponseEntity.ok(gateMoveService.updateGateMove(gateMoveDTO));
+    }
+
+
 }
