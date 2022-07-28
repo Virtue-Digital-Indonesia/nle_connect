@@ -1,8 +1,10 @@
 package com.nle.service.depoOwner;
 
+import com.nle.constant.AccountStatus;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,4 +20,6 @@ public interface DepoOwnerAccountService {
     Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber);
 
     Optional<DepoOwnerAccount> findByOrganizationCode(String organizationCode);
+
+    List<DepoOwnerAccount> findAllByStatus(AccountStatus accountStatus);
 }

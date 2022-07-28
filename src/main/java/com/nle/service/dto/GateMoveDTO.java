@@ -15,4 +15,18 @@ public class GateMoveDTO extends GateMoveCreateDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Long id;
+
+    private String fleetManager;
+
+    private String deliveryPort;
+
+    private String carrier;
+
+    private String transportNumber;
+
+    private String driverName;
+
+    private Double maxGross;
+
+    private String linkToGoogleMap;
 }

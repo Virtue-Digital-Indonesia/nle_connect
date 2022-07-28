@@ -4,6 +4,31 @@ public class AppConstant {
     public static final String CREATED_DATE = "createdDate";
     public static final String SPLASH = "/";
 
+    public static final String[] MEMBER_FIELDS_TO_BIND_TO = new String[]{
+        "tx_date",
+        "process_type",
+        "depot",
+        "fleet_manager",
+        "container_number",
+        "iso_code",
+        "condition",
+        "date_manufacturer",
+        "clean",
+        "grade",
+        "order_number",
+        "customer",
+        "vessel",
+        "voyage",
+        "discarge_port",
+        "delivery_port",
+        "carrier",
+        "transport_number",
+        "driver_name",
+        "tare",
+        "payload",
+        "max_gross",
+        "remark"};
+
     private AppConstant() {
     }
 

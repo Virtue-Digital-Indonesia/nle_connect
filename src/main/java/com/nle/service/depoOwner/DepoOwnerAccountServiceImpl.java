@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -82,7 +83,6 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         byte[] decodedBytes = Base64.getDecoder().decode(depoOwnerAccount.getPassword());
         String rawPassword = new String(decodedBytes);
         depoOwnerAccount.setPassword(passwordEncoder.encode(rawPassword));
-        depoOwnerAccountRepository.save(depoOwnerAccount);
         log.info("Depo owner " + depoOwnerAccount.getFullName() + " has been active.");
         // create FTP account
         try {
@@ -90,6 +90,8 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         } catch (Exception e) {
             log.error("Error while creating FTP account", e);
         }
+        depoOwnerAccount.setFtpFolder("/home/" + depoOwnerAccount.getCompanyEmail() + "/ftp/files");
+        depoOwnerAccountRepository.save(depoOwnerAccount);
         log.info("FTP account for depo owner " + depoOwnerAccount.getFullName() + " has been created.");
         // remove verification token
         verificationTokenRepository.delete(verificationToken);
@@ -108,5 +110,10 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     @Override
     public Optional<DepoOwnerAccount> findByOrganizationCode(String organizationCode) {
         return depoOwnerAccountRepository.findByOrganizationCode(organizationCode);
+    }
+
+    @Override
+    public List<DepoOwnerAccount> findAllByStatus(AccountStatus accountStatus) {
+        return depoOwnerAccountRepository.findAllByAccountStatus(accountStatus);
     }
 }

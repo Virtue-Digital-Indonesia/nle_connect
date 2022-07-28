@@ -1,9 +1,11 @@
 package com.nle.repository;
 
+import com.nle.constant.AccountStatus;
 import com.nle.entity.DepoOwnerAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,4 +18,6 @@ public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccou
     Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber);
 
     Optional<DepoOwnerAccount> findByOrganizationCode(String organizationCode);
+
+    List<DepoOwnerAccount> findAllByAccountStatus(AccountStatus accountStatus);
 }

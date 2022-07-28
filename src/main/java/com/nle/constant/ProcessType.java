@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum ProcessType {
-    GATE_IN_EMPTY,
-    GATE_OUT_EMPTY,
-    GATE_IN_REPO,
-    GATE_OUT_REPO
+    gate_in_empty,
+    gate_out_empty,
+    gate_in_repo,
+    gate_out_repo
 }

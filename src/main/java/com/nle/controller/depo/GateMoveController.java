@@ -49,7 +49,7 @@ public class GateMoveController {
     @Operation(description = "Upload Gate In / Gate Out photo", operationId = "uploadGateMoveFile", summary = "Upload Gate In / Gate Out photo")
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<GateMoveDTO> uploadGateMoveFile(@RequestParam("gateMoveId") Long gateMoveId, @RequestPart("files") MultipartFile files[]) {
+    public ResponseEntity<Void> uploadGateMoveFile(@RequestParam("gateMoveId") Long gateMoveId, @RequestPart("files") MultipartFile files[]) {
         log.debug("REST request to upload {} files", files.length);
         gateMoveService.uploadFile(files, gateMoveId);
         return ResponseEntity.ok().build();
