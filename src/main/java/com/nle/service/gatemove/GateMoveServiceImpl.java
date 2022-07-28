@@ -80,6 +80,13 @@ public class GateMoveServiceImpl implements GateMoveService {
         }
         GateMove gateMove = gateMoveOptional.get();
         BeanUtils.copyProperties(gateMoveDTO, gateMove);
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
+            if (depoOwnerAccount.isPresent()) {
+                gateMove.setDepoOwnerAccount(depoOwnerAccount.get());
+            }
+        }
         GateMove updatedGateMove = gateMoveRepository.save(gateMove);
         return gateMoveMapper.toDto(updatedGateMove);
     }
