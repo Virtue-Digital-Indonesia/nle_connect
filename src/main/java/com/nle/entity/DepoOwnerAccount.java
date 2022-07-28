@@ -65,6 +65,9 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     @Column(name = "ftp_folder")
     private String ftpFolder;
 
+    @Column(name = "ftp_password")
+    private String ftpPassword;
+
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;

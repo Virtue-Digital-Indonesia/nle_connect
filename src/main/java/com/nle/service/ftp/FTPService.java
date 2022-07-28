@@ -2,6 +2,7 @@ package com.nle.service.ftp;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AccountStatus;
+import com.nle.constant.GateMoveSource;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.FtpFile;
 import com.nle.entity.GateMove;
@@ -25,6 +26,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -49,10 +51,12 @@ public class FTPService {
             return;
         }
         FTPClient ftpClient = new FTPClient();
-        try {
-            ftpClient.connect(appProperties.getSecurity().getFtp().getServer());
-            for (DepoOwnerAccount depoOwnerAccount : activeDepoOwner) {
-                boolean login = ftpClient.login("caodangtinh@gmail.com", "abc123456");
+        for (DepoOwnerAccount depoOwnerAccount : activeDepoOwner) {
+            try {
+                ftpClient.connect(appProperties.getSecurity().getFtp().getServer());
+                byte[] decodedBytes = Base64.getDecoder().decode(depoOwnerAccount.getFtpPassword());
+                String rawPassword = new String(decodedBytes);
+                boolean login = ftpClient.login(depoOwnerAccount.getCompanyEmail(), rawPassword);
                 if (login) {
                     log.info("Login success...");
                     FTPFile[] ftpFiles = ftpClient.listFiles(appProperties.getSecurity().getFtp().getPath());
@@ -63,14 +67,14 @@ public class FTPService {
                 } else {
                     log.error("Can not login to FTP server");
                 }
-            }
-        } catch (IOException e) {
-            log.error("Error while sync data from ftp server FTP server", e);
-        } finally {
-            try {
-                ftpClient.disconnect();
             } catch (IOException e) {
                 log.error("Error while sync data from ftp server FTP server", e);
+            } finally {
+                try {
+                    ftpClient.disconnect();
+                } catch (IOException e) {
+                    log.error("Error while sync data from ftp server FTP server", e);
+                }
             }
         }
     }
@@ -142,6 +146,7 @@ public class FTPService {
         gateMove.setPayload(Double.valueOf(ftpMoveDTO.getPayload()));
         gateMove.setMaxGross(Double.valueOf(ftpMoveDTO.getMax_gross()));
         gateMove.setRemarks(ftpMoveDTO.getRemark());
+        gateMove.setGateMoveSource(GateMoveSource.FTP_SERVER);
         return gateMove;
     }
 }

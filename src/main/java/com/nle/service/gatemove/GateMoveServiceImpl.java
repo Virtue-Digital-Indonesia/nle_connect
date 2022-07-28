@@ -109,8 +109,13 @@ public class GateMoveServiceImpl implements GateMoveService {
 
     @Override
     public PagingResponseModel<GateMoveDTO> findAll(Pageable pageable) {
-        Page<GateMove> gateMoves = gateMoveRepository.findAll(pageable);
-        return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            Page<GateMove> gateMoves = gateMoveRepository.findAllByDepoOwnerAccount_CompanyEmail(currentUserLogin.get(), pageable);
+            return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
+        }
+        return new PagingResponseModel<>();
+
     }
 
     private String uploadFileToS3(MultipartFile file) {

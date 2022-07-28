@@ -81,6 +81,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
         depoOwnerAccount.setAccountStatus(AccountStatus.ACTIVE);
         byte[] decodedBytes = Base64.getDecoder().decode(depoOwnerAccount.getPassword());
+        depoOwnerAccount.setFtpPassword(depoOwnerAccount.getPassword());
         String rawPassword = new String(decodedBytes);
         depoOwnerAccount.setPassword(passwordEncoder.encode(rawPassword));
         log.info("Depo owner " + depoOwnerAccount.getFullName() + " has been active.");
