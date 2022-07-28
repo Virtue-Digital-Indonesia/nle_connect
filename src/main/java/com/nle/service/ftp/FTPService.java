@@ -68,7 +68,7 @@ public class FTPService {
                     log.info("FTP file path {}", path);
                     int cwd = ftpClient.cwd(path);
                     log.info("CWD {}", cwd);
-                    FTPFile[] ftpFiles = ftpClient.listFiles(path);
+                    FTPFile[] ftpFiles = ftpClient.listFiles(".");
                     log.info("Working directory {}", ftpClient.printWorkingDirectory());
                     log.info("Total file in folder {} from FTP server {}", path, ftpFiles.length);
                     // Download file from FTP server.
