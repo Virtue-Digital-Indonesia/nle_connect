@@ -63,11 +63,12 @@ public class FTPService {
                 boolean login = ftpClient.login(depoOwnerAccount.getCompanyEmail(), rawPassword);
                 if (login) {
                     log.info("Login success...");
-                    FTPFile[] ftpFiles = ftpClient.listFiles(appProperties.getSecurity().getFtp().getPath());
+                    String path = appProperties.getSecurity().getFtp().getPath();
+                    ftpClient.changeWorkingDirectory(path);
+                    FTPFile[] ftpFiles = ftpClient.listFiles(path);
                     log.info("Working directory {}", ftpClient.printWorkingDirectory());
-                    log.info("Total file in folder {} from FTP server {}", appProperties.getSecurity().getFtp().getPath(), ftpFiles.length);
+                    log.info("Total file in folder {} from FTP server {}", path, ftpFiles.length);
                     // Download file from FTP server.
-                    ftpClient.changeWorkingDirectory(appProperties.getSecurity().getFtp().getPath());
                     log.info("Working directory {}", ftpClient.printWorkingDirectory());
                     processFiles(ftpFiles, ftpClient, depoOwnerAccount);
                 } else {
