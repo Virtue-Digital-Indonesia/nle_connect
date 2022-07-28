@@ -2,9 +2,6 @@ package com.nle.service.ftp;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AccountStatus;
-import com.nle.constant.ContainerCondition;
-import com.nle.constant.ContainerGrade;
-import com.nle.constant.ProcessType;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.FtpFile;
 import com.nle.entity.GateMove;
@@ -123,15 +120,15 @@ public class FTPService {
     private GateMove convertToEntity(FtpMoveDTO ftpMoveDTO) {
         GateMove gateMove = new GateMove();
 //        gateMove.setTxDate(LocalDateTime.parse(ftpMoveDTO.getTx_date()));
-        gateMove.setProcessType(ProcessType.valueOf(ftpMoveDTO.getProcess_type()));
+        gateMove.setProcessType(ftpMoveDTO.getProcess_type());
         gateMove.setDepot(ftpMoveDTO.getDepot());
         gateMove.setFleetManager(ftpMoveDTO.getFleet_manager());
         gateMove.setContainerNumber(ftpMoveDTO.getContainer_number());
         gateMove.setIsoCode(ftpMoveDTO.getIso_code());
-        gateMove.setCondition(ContainerCondition.valueOf(ftpMoveDTO.getCondition()));
+        gateMove.setCondition(ftpMoveDTO.getCondition());
         gateMove.setDateManufacturer(ftpMoveDTO.getDate_manufacturer());
         gateMove.setClean("yes".equalsIgnoreCase(ftpMoveDTO.getClean()) || "true".equalsIgnoreCase(ftpMoveDTO.getClean()));
-        gateMove.setGrade(ContainerGrade.valueOf(ftpMoveDTO.getGrade()));
+        gateMove.setGrade(ftpMoveDTO.getGrade());
         gateMove.setOrderNumber(ftpMoveDTO.getOrder_number());
         gateMove.setCustomer(ftpMoveDTO.getCustomer());
         gateMove.setVessel(ftpMoveDTO.getVessel());

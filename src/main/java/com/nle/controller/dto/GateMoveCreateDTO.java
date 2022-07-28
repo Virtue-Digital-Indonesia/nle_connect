@@ -1,10 +1,6 @@
 package com.nle.controller.dto;
 
-import com.nle.constant.ContainerCondition;
-import com.nle.constant.ContainerGrade;
 import com.nle.constant.GateMoveSource;
-import com.nle.constant.GateMoveType;
-import com.nle.constant.ProcessType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,9 +22,9 @@ public class GateMoveCreateDTO implements Serializable {
 
     private String latitude;
 
-    private ProcessType processType;
+    private String processType;
 
-    private GateMoveType gateMoveType;
+    private String gateMoveType;
 
     private String depot;
 
@@ -38,11 +34,11 @@ public class GateMoveCreateDTO implements Serializable {
 
     private String isoCode;
 
-    private ContainerCondition condition;
+    private String condition;
 
     private Boolean clean;
 
-    private ContainerGrade grade;
+    private String grade;
 
     private String damageBy;
 

@@ -1,10 +1,6 @@
 package com.nle.entity;
 
-import com.nle.constant.ContainerCondition;
-import com.nle.constant.ContainerGrade;
 import com.nle.constant.GateMoveSource;
-import com.nle.constant.GateMoveType;
-import com.nle.constant.ProcessType;
 import com.nle.entity.common.AbstractAuditingEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,12 +43,10 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private LocalDateTime txDate;
 
     @Column(name = "process_type")
-    @Enumerated(EnumType.STRING)
-    private ProcessType processType;
+    private String processType;
 
     @Column(name = "gate_move_type")
-    @Enumerated(EnumType.STRING)
-    private GateMoveType gateMoveType;
+    private String gateMoveType;
 
     @Column(name = "depot")
     private String depot;
@@ -67,8 +61,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private String isoCode;
 
     @Column(name = "container_condition")
-    @Enumerated(EnumType.STRING)
-    private ContainerCondition condition;
+    private String condition;
 
     @Column(name = "date_manufacturer")
     private String dateManufacturer;
@@ -77,7 +70,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private Boolean clean;
 
     @Column(name = "grade")
-    private ContainerGrade grade;
+    private String grade;
 
     @Column(name = "order_number")
     private String orderNumber;
