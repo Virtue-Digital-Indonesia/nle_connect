@@ -58,6 +58,7 @@ public class FTPService {
         for (DepoOwnerAccount depoOwnerAccount : activeDepoOwner) {
             try {
                 ftpClient.connect(appProperties.getSecurity().getFtp().getServer());
+                ftpClient.enterLocalPassiveMode();
                 byte[] decodedBytes = Base64.getDecoder().decode(depoOwnerAccount.getFtpPassword());
                 String rawPassword = new String(decodedBytes);
                 log.info("Authenticating for account {} with FTP folder {}", depoOwnerAccount.getCompanyEmail(), depoOwnerAccount.getFtpFolder());
