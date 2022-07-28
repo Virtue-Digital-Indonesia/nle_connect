@@ -15,7 +15,7 @@ app:
         secret-key: "x6fjKmzsEc3mZUk9oWVW+T4DSXDLYBBSGkacig+f"
     ftp:
       server: "ftp.nle-connect.id"
-      path: "/files"
+      path: "files"
       TRIGGER_URL: "${TRIGGER_URL}"
       TRIGGER_TOKEN: "${TRIGGER_TOKEN}"
   springdoc:
