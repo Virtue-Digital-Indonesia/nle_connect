@@ -18,6 +18,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -26,6 +27,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +45,7 @@ public class FTPService {
     private final FtpFileRepository ftpFileRepository;
     private final GateMoveRepository gateMoveRepository;
 
+    @Scheduled(cron = "0 0/15 * * * ?")
     public void syncDataFromFtpServer() {
         // find all active depo owner account
         List<DepoOwnerAccount> activeDepoOwner = depoOwnerAccountService.findAllByStatus(AccountStatus.ACTIVE);
@@ -82,7 +85,7 @@ public class FTPService {
     private void processFiles(FTPFile[] ftpFiles, FTPClient client, DepoOwnerAccount depoOwnerAccount) {
         for (FTPFile ftpFile : ftpFiles) {
             if (ftpFile.getName().endsWith(".csv")) {
-                Optional<FtpFile> optionalFtpFile = ftpFileRepository.findByFileName(ftpFile.getName());
+                Optional<FtpFile> optionalFtpFile = ftpFileRepository.findByFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
                 if (optionalFtpFile.isPresent()) {
                     log.info("Ignore processed file {}", ftpFile.getName());
                 } else {
@@ -113,6 +116,11 @@ public class FTPService {
                             }
 
                         }
+                        FtpFile newFile = new FtpFile();
+                        newFile.setFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
+                        newFile.setFileSize(ftpFile.getSize());
+                        newFile.setImportDate(LocalDateTime.now());
+                        ftpFileRepository.save(newFile);
                     } catch (IOException e) {
                         log.error("Error while sync data from ftp server FTP server", e);
                     }
