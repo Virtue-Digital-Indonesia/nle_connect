@@ -64,11 +64,11 @@ public class FTPService {
                 if (login) {
                     log.info("Login success...");
                     FTPFile[] ftpFiles = ftpClient.listFiles(appProperties.getSecurity().getFtp().getPath());
-                    String workingDirectory = ftpClient.printWorkingDirectory();
-                    log.info("Working directory {}", workingDirectory);
+                    log.info("Working directory {}", ftpClient.printWorkingDirectory());
                     log.info("Total file in folder {} from FTP server {}", appProperties.getSecurity().getFtp().getPath(), ftpFiles.length);
                     // Download file from FTP server.
                     ftpClient.changeWorkingDirectory(appProperties.getSecurity().getFtp().getPath());
+                    log.info("Working directory {}", ftpClient.printWorkingDirectory());
                     processFiles(ftpFiles, ftpClient, depoOwnerAccount);
                 } else {
                     log.error("Can not login to FTP server");
