@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -63,13 +64,13 @@ public class FTPService {
                 boolean login = ftpClient.login(depoOwnerAccount.getCompanyEmail(), rawPassword);
                 if (login) {
                     log.info("Login success...");
-                    String path = appProperties.getSecurity().getFtp().getPath();
+                    String path = File.separator + appProperties.getSecurity().getFtp().getPath();
+                    log.info("FTP file path {}", path);
                     ftpClient.changeWorkingDirectory(path);
                     FTPFile[] ftpFiles = ftpClient.listFiles(path);
                     log.info("Working directory {}", ftpClient.printWorkingDirectory());
                     log.info("Total file in folder {} from FTP server {}", path, ftpFiles.length);
                     // Download file from FTP server.
-                    log.info("Working directory {}", ftpClient.printWorkingDirectory());
                     processFiles(ftpFiles, ftpClient, depoOwnerAccount);
                 } else {
                     log.error("Can not login to FTP server");
