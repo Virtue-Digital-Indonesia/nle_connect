@@ -75,6 +75,9 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     @OneToMany(mappedBy = "depoOwnerAccount")
     private Set<GateMove> gateMoves = new HashSet<>();
 
+    @OneToMany(mappedBy = "depoOwnerAccount")
+    private Set<FtpFile> ftpFiles = new HashSet<>();
+
     public boolean isActivated() {
         return AccountStatus.ACTIVE == accountStatus;
     }

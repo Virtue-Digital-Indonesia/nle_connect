@@ -127,6 +127,7 @@ public class FTPService {
                         newFile.setFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
                         newFile.setFileSize(ftpFile.getSize());
                         newFile.setImportDate(LocalDateTime.now());
+                        newFile.setDepoOwnerAccount(depoOwnerAccount);
                         ftpFileRepository.save(newFile);
                     } catch (IOException e) {
                         log.error("Error while sync data from ftp server FTP server", e);

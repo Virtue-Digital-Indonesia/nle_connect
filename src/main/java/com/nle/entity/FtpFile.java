@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -39,4 +41,8 @@ public class FtpFile extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "import_date")
     private LocalDateTime importDate;
+
+    @ManyToOne
+    @JoinColumn(name = "depo_owner_account_id", referencedColumnName = "id")
+    private DepoOwnerAccount depoOwnerAccount;
 }
