@@ -7,7 +7,6 @@ import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 import static com.nle.constant.AppConstant.Pattern.EMAIL_PATTERN;
-import static com.nle.constant.AppConstant.Pattern.PHONE_NUMBER_PATTERN;
 
 public class DepoOwnerAccountCreateDTO implements Serializable {
 
@@ -16,7 +15,6 @@ public class DepoOwnerAccountCreateDTO implements Serializable {
     private String companyEmail;
 
     @NotNull
-    @Pattern(regexp = PHONE_NUMBER_PATTERN, message = "Phone Number is not valid!")
     private String phoneNumber;
 
     @NotNull
