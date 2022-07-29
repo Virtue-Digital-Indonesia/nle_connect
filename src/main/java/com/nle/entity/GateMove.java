@@ -136,6 +136,12 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "truck_no")
     private String truckNo;
 
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "nle_id")
+    private String nleId;
+
     @Column(name = "data_source")
     @Enumerated(EnumType.STRING)
     private GateMoveSource gateMoveSource;

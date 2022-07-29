@@ -29,4 +29,8 @@ public class GateMoveDTO extends GateMoveCreateDTO implements Serializable {
     private Double maxGross;
 
     private String linkToGoogleMap;
+
+    private String status;
+
+    private String nleId;
 }

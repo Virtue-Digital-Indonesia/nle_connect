@@ -2,6 +2,7 @@ package com.nle.service.ftp;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AccountStatus;
+import com.nle.constant.AppConstant;
 import com.nle.constant.GateMoveSource;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.FtpFile;
@@ -32,6 +33,7 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.nle.constant.AppConstant.MEMBER_FIELDS_TO_BIND_TO;
 
@@ -162,6 +164,8 @@ public class FTPService {
         gateMove.setMaxGross(Double.valueOf(ftpMoveDTO.getMax_gross()));
         gateMove.setRemarks(ftpMoveDTO.getRemark());
         gateMove.setGateMoveSource(GateMoveSource.FTP_SERVER);
+        gateMove.setStatus(AppConstant.Status.WAITING);
+        gateMove.setNleId(UUID.randomUUID().toString());
         return gateMove;
     }
 

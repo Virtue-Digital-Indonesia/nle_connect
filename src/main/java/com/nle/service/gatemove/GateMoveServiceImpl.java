@@ -2,6 +2,7 @@ package com.nle.service.gatemove;
 
 
 import com.nle.config.prop.AppProperties;
+import com.nle.constant.AppConstant;
 import com.nle.constant.GateMoveSource;
 import com.nle.controller.depo.GateMoveController;
 import com.nle.controller.dto.GateMoveCreateDTO;
@@ -36,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.nle.constant.AppConstant.SPLASH;
 import static org.apache.http.entity.ContentType.IMAGE_BMP;
@@ -68,6 +70,8 @@ public class GateMoveServiceImpl implements GateMoveService {
             }
         }
         gateMove.setGateMoveSource(GateMoveSource.MOBILE);
+        gateMove.setStatus(AppConstant.Status.WAITING);
+        gateMove.setNleId(UUID.randomUUID().toString());
         gateMove = gateMoveRepository.save(gateMove);
         return gateMoveMapper.toDto(gateMove);
     }
