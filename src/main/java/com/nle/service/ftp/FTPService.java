@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -139,7 +138,7 @@ public class FTPService {
 
     private GateMove convertToEntity(FtpMoveDTO ftpMoveDTO) {
         GateMove gateMove = new GateMove();
-//        gateMove.setTxDate(LocalDateTime.parse(ftpMoveDTO.getTx_date()));
+        gateMove.setTxDate(ftpMoveDTO.getTx_date());
         gateMove.setProcessType(ftpMoveDTO.getProcess_type());
         gateMove.setDepot(ftpMoveDTO.getDepot());
         gateMove.setFleetManager(ftpMoveDTO.getFleet_manager());
@@ -165,4 +164,5 @@ public class FTPService {
         gateMove.setGateMoveSource(GateMoveSource.FTP_SERVER);
         return gateMove;
     }
+
 }

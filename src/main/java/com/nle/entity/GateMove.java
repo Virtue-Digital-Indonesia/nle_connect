@@ -40,7 +40,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private Long id;
 
     @Column(name = "tx_date")
-    private LocalDateTime txDate;
+    private String txDate;
 
     @Column(name = "process_type")
     private String processType;
