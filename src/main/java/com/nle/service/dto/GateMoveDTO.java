@@ -1,5 +1,6 @@
 package com.nle.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nle.controller.dto.GateMoveCreateDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class GateMoveDTO extends GateMoveCreateDTO implements Serializable {
 
     private String carrier;
 
+    @JsonProperty("transportId")
     private String transportNumber;
 
     private String driverName;

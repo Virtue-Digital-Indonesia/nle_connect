@@ -163,7 +163,7 @@ public class FTPService {
         gateMove.setPayload(Double.valueOf(ftpMoveDTO.getPayload()));
         gateMove.setMaxGross(Double.valueOf(ftpMoveDTO.getMax_gross()));
         gateMove.setRemarks(ftpMoveDTO.getRemark());
-        gateMove.setGateMoveSource(GateMoveSource.FTP_SERVER);
+        gateMove.setSource(GateMoveSource.FTP_SERVER);
         gateMove.setStatus(AppConstant.Status.WAITING);
         gateMove.setNleId(UUID.randomUUID().toString());
         return gateMove;

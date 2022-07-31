@@ -69,7 +69,7 @@ public class GateMoveServiceImpl implements GateMoveService {
                 gateMove.setDepoOwnerAccount(depoOwnerAccount.get());
             }
         }
-        gateMove.setGateMoveSource(GateMoveSource.MOBILE);
+        gateMove.setSource(GateMoveSource.MOBILE);
         gateMove.setStatus(AppConstant.Status.WAITING);
         gateMove.setNleId(UUID.randomUUID().toString());
         gateMove = gateMoveRepository.save(gateMove);

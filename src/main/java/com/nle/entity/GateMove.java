@@ -18,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -144,7 +143,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "data_source")
     @Enumerated(EnumType.STRING)
-    private GateMoveSource gateMoveSource;
+    private GateMoveSource source;
 
     @OneToMany(mappedBy = "gateMove")
     private Set<Media> media = new HashSet<>();
