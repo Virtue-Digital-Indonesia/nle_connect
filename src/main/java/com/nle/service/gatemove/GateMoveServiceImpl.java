@@ -4,7 +4,7 @@ package com.nle.service.gatemove;
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AppConstant;
 import com.nle.constant.GateMoveSource;
-import com.nle.controller.depo.GateMoveController;
+import com.nle.controller.gavemove.GateMoveController;
 import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
 import com.nle.entity.DepoOwnerAccount;
@@ -15,6 +15,7 @@ import com.nle.exception.ResourceNotFoundException;
 import com.nle.mapper.GateMoveMapper;
 import com.nle.repository.GateMoveRepository;
 import com.nle.repository.MediaRepository;
+import com.nle.repository.dto.MoveStatic;
 import com.nle.security.SecurityUtils;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.dto.GateMoveDTO;
@@ -35,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -137,6 +139,11 @@ public class GateMoveServiceImpl implements GateMoveService {
             return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
         }
         return new PagingResponseModel<>();
+    }
+
+    @Override
+    public List<MoveStatic> countTotalGateMoveByType() {
+        return gateMoveRepository.countTotalGateMoveByType();
     }
 
     private String uploadFileToS3(MultipartFile file) {

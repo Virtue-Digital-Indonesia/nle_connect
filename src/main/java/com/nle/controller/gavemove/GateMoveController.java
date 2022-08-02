@@ -1,7 +1,8 @@
-package com.nle.controller.depo;
+package com.nle.controller.gavemove;
 
 import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
+import com.nle.repository.dto.MoveStatic;
 import com.nle.service.dto.GateMoveDTO;
 import com.nle.service.gatemove.GateMoveService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/gate-moves")
@@ -67,6 +69,13 @@ public class GateMoveController {
     @PutMapping
     public ResponseEntity<GateMoveDTO> updateGateMove(GateMoveDTO gateMoveDTO) {
         return ResponseEntity.ok(gateMoveService.updateGateMove(gateMoveDTO));
+    }
+
+    @Operation(description = "Count total GateMove by type", operationId = "countTotalGateMoveByType", summary = "Count total GateMove by type")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "count")
+    public ResponseEntity<List<MoveStatic>> countTotalGateMoveByType() {
+        return ResponseEntity.ok(gateMoveService.countTotalGateMoveByType());
     }
 
 
