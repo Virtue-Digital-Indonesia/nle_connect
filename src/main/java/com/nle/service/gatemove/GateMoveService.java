@@ -2,7 +2,7 @@ package com.nle.service.gatemove;
 
 import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
-import com.nle.repository.dto.MoveStatic;
+import com.nle.repository.dto.MoveStatistic;
 import com.nle.service.dto.GateMoveDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,5 +20,5 @@ public interface GateMoveService {
 
     PagingResponseModel<GateMoveDTO> findByType(Pageable pageable);
 
-    List<MoveStatic> countTotalGateMoveByType();
+    List<MoveStatistic> countTotalGateMoveByType();
 }

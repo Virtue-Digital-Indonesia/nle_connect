@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MoveStatic {
+public class MoveStatistic {
     private String gateMoveType;
     private Long count;
 }

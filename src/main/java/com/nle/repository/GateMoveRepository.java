@@ -1,7 +1,7 @@
 package com.nle.repository;
 
 import com.nle.entity.GateMove;
-import com.nle.repository.dto.MoveStatic;
+import com.nle.repository.dto.MoveStatistic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +19,7 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
 
     Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(String depoOwnerAccount, String gateMoveType, Pageable pageable);
 
-    @Query("select new com.nle.repository.dto.MoveStatic(gm.gateMoveType, count (gm.gateMoveType)) from GateMove gm group by gm.gateMoveType")
-    List<MoveStatic> countTotalGateMoveByType();
+    @Query("select new com.nle.repository.dto.MoveStatistic(gm.gateMoveType, count (gm.gateMoveType)) from GateMove gm group by gm.gateMoveType")
+    List<MoveStatistic> countTotalGateMoveByType();
 
 }

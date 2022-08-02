@@ -2,7 +2,7 @@ package com.nle.controller.gavemove;
 
 import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
-import com.nle.repository.dto.MoveStatic;
+import com.nle.repository.dto.MoveStatistic;
 import com.nle.service.dto.GateMoveDTO;
 import com.nle.service.gatemove.GateMoveService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,7 +74,7 @@ public class GateMoveController {
     @Operation(description = "Count total GateMove by type", operationId = "countTotalGateMoveByType", summary = "Count total GateMove by type")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "count")
-    public ResponseEntity<List<MoveStatic>> countTotalGateMoveByType() {
+    public ResponseEntity<List<MoveStatistic>> countTotalGateMoveByType() {
         return ResponseEntity.ok(gateMoveService.countTotalGateMoveByType());
     }
 
