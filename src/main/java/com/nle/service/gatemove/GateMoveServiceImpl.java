@@ -129,6 +129,16 @@ public class GateMoveServiceImpl implements GateMoveService {
 
     }
 
+    @Override
+    public PagingResponseModel<GateMoveDTO> findByType(Pageable pageable) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            Page<GateMove> gateMoves = gateMoveRepository.findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(currentUserLogin.get(), "gate_in", pageable);
+            return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
+        }
+        return new PagingResponseModel<>();
+    }
+
     private String uploadFileToS3(MultipartFile file) {
         if (file.isEmpty()) {
             throw new CommonException("Cannot upload empty file");

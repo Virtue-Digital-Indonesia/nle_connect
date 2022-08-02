@@ -14,4 +14,6 @@ public interface GateMoveService {
     void uploadFile(MultipartFile[] files, Long gateMoveId);
 
     PagingResponseModel<GateMoveDTO> findAll(Pageable pageable);
+
+    PagingResponseModel<GateMoveDTO> findByType(Pageable pageable);
 }

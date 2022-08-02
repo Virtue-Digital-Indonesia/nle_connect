@@ -12,4 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
     Page<GateMove> findAllByDepoOwnerAccount_CompanyEmail(String depoOwnerAccount, Pageable pageable);
+
+    Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(String depoOwnerAccount, String gateMoveType, Pageable pageable);
+
 }
