@@ -16,6 +16,7 @@ import com.nle.mapper.GateMoveMapper;
 import com.nle.repository.GateMoveRepository;
 import com.nle.repository.MediaRepository;
 import com.nle.repository.dto.MoveStatistic;
+import com.nle.repository.dto.ShippingLineStatistic;
 import com.nle.security.SecurityUtils;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.dto.GateMoveDTO;
@@ -144,6 +145,11 @@ public class GateMoveServiceImpl implements GateMoveService {
     @Override
     public List<MoveStatistic> countTotalGateMoveByType() {
         return gateMoveRepository.countTotalGateMoveByType();
+    }
+
+    @Override
+    public List<ShippingLineStatistic> countTotalGateMoveByShippingLine() {
+        return gateMoveRepository.countTotalGateMoveByShippingLine();
     }
 
     private String uploadFileToS3(MultipartFile file) {
