@@ -4,9 +4,9 @@ package com.nle.service.gatemove;
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AppConstant;
 import com.nle.constant.GateMoveSource;
-import com.nle.controller.gavemove.GateMoveController;
 import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
+import com.nle.controller.gavemove.GateMoveController;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.GateMove;
 import com.nle.entity.Media;
@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -144,12 +145,20 @@ public class GateMoveServiceImpl implements GateMoveService {
 
     @Override
     public List<MoveStatistic> countTotalGateMoveByType() {
-        return gateMoveRepository.countTotalGateMoveByType();
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            return gateMoveRepository.countTotalGateMoveByType(currentUserLogin.get());
+        }
+        return new ArrayList<>();
     }
 
     @Override
     public List<ShippingLineStatistic> countTotalGateMoveByShippingLine() {
-        return gateMoveRepository.countTotalGateMoveByShippingLine();
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            return gateMoveRepository.countTotalGateMoveByShippingLine(currentUserLogin.get());
+        }
+        return new ArrayList<>();
     }
 
     private String uploadFileToS3(MultipartFile file) {
