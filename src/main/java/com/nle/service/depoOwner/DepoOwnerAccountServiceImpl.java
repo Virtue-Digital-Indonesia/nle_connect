@@ -1,6 +1,7 @@
 package com.nle.service.depoOwner;
 
 import com.nle.constant.AccountStatus;
+import com.nle.constant.ApprovalStatus;
 import com.nle.constant.VerificationType;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
@@ -66,6 +67,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         // map to entity
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountMapper.toEntity(depoOwnerAccountDTO);
         depoOwnerAccount.setAccountStatus(AccountStatus.INACTIVE);
+        depoOwnerAccount.setApprovalStatus(ApprovalStatus.REQUEST);
         // save to db
         depoOwnerAccount = depoOwnerAccountRepository.save(depoOwnerAccount);
         VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount, VerificationType.ACTIVE_ACCOUNT);

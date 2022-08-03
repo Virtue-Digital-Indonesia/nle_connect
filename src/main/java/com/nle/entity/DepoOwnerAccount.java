@@ -1,6 +1,7 @@
 package com.nle.entity;
 
 import com.nle.constant.AccountStatus;
+import com.nle.constant.ApprovalStatus;
 import com.nle.entity.common.AbstractAuditingEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,6 +72,10 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
+
+    @Column(name = "approval_status")
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus;
 
     @OneToMany(mappedBy = "depoOwnerAccount")
     private Set<GateMove> gateMoves = new HashSet<>();
