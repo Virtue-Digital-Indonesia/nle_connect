@@ -2,6 +2,7 @@ package com.nle.service.applicant;
 
 import com.nle.constant.AccountStatus;
 import com.nle.constant.ApprovalStatus;
+import com.nle.controller.dto.ApplicantListReqDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
 import com.nle.controller.dto.response.ApplicantDTO;
 import com.nle.entity.DepoOwnerAccount;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -22,22 +25,27 @@ import java.util.Optional;
 @Transactional
 public class ApplicantServiceImpl implements ApplicantService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+    private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
     @Override
-    public PagingResponseModel<ApplicantDTO> findAll(Pageable pageable) {
-        Page<DepoOwnerAccount> depoOwnerAccounts = depoOwnerAccountRepository.findAll(pageable);
-        return new PagingResponseModel<>(depoOwnerAccounts.map(this::convertFromEntity));
-    }
+    public PagingResponseModel<ApplicantDTO> findAll(ApplicantListReqDTO applicantListReqDTO, Pageable pageable) {
+        List<ApprovalStatus> approvalStatuses = null;
+        if (applicantListReqDTO.getFrom() == null) {
+            applicantListReqDTO.setFrom(EPOCH_TIME);
+        }
+        if (applicantListReqDTO.getTo() == null) {
+            applicantListReqDTO.setTo(LocalDateTime.now());
+        }
 
-    @Override
-    public PagingResponseModel<ApplicantDTO> filterByCreatedDate(Pageable pageable, LocalDateTime from, LocalDateTime to) {
-        Page<DepoOwnerAccount> depoOwnerAccounts = depoOwnerAccountRepository.findAllByCreatedDateBetween(from, to, pageable);
-        return new PagingResponseModel<>(depoOwnerAccounts.map(this::convertFromEntity));
-    }
+        if (applicantListReqDTO.getApprovalStatus() == null) {
+            approvalStatuses = List.of(ApprovalStatus.values());
+        } else {
+            approvalStatuses = List.of(applicantListReqDTO.getApprovalStatus());
+        }
 
-    @Override
-    public PagingResponseModel<ApplicantDTO> filterApprovalStatus(Pageable pageable, ApprovalStatus approvalStatus) {
-        Page<DepoOwnerAccount> depoOwnerAccounts = depoOwnerAccountRepository.findAllByApprovalStatus(approvalStatus, pageable);
+        Page<DepoOwnerAccount> depoOwnerAccounts = depoOwnerAccountRepository.filter(applicantListReqDTO.getFrom(),
+            applicantListReqDTO.getTo(),
+            approvalStatuses, pageable);
         return new PagingResponseModel<>(depoOwnerAccounts.map(this::convertFromEntity));
     }
 

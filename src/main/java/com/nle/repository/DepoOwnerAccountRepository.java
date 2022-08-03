@@ -6,6 +6,8 @@ import com.nle.entity.DepoOwnerAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -25,7 +27,11 @@ public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccou
 
     List<DepoOwnerAccount> findAllByAccountStatus(AccountStatus accountStatus);
 
-    Page<DepoOwnerAccount> findAllByCreatedDateBetween(LocalDateTime from, LocalDateTime to, Pageable pageable);
+    @Query("select d from DepoOwnerAccount d where d.createdDate between :from and :to " +
+        "and d.approvalStatus in (:approvalStatuses)")
+    Page<DepoOwnerAccount> filter(@Param("from") LocalDateTime from,
+                                  @Param("to") LocalDateTime to,
+                                  @Param("approvalStatuses") List<ApprovalStatus> approvalStatuses,
+                                  Pageable pageable);
 
-    Page<DepoOwnerAccount> findAllByApprovalStatus(ApprovalStatus approvalStatus, Pageable pageable);
 }
