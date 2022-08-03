@@ -1,6 +1,7 @@
 package com.nle.config;
 
-import com.nle.config.prop.AppProperties;
+import com.nle.security.SwitchUserDetailsService;
+import com.nle.security.impersonate.SwitchUserAuthenticationSuccessHandler;
 import com.nle.security.jwt.JWTConfigurer;
 import com.nle.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.util.UrlPathHelper;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -23,7 +27,8 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfiguration {
     private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
-    private final AppProperties appProperties;
+    private final SwitchUserDetailsService switchUserDetailsService;
+    private final SwitchUserAuthenticationSuccessHandler switchUserAuthenticationSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -69,6 +74,7 @@ public class SecurityConfiguration {
                     , "/api/depo-worker-accounts/status/**"
                     , "/api/ftp/**"
                     , "/api/depo-worker-accounts/authenticate"
+                    , "/impersonate"
                 ).permitAll()
             .anyRequest()
                 .authenticated()
@@ -76,6 +82,16 @@ public class SecurityConfiguration {
             .apply(securityConfigurerAdapter());
         // @formatter:on
         return http.build();
+    }
+
+    @Bean
+    public SwitchUserFilter switchUserFilter() {
+        SwitchUserFilter filter = new SwitchUserFilter();
+        filter.setUserDetailsService(switchUserDetailsService);
+        filter.setSwitchUserMatcher(new AntPathRequestMatcher("/impersonate", "GET", true, new UrlPathHelper()));
+        filter.setSwitchFailureUrl("/switchUser");
+        filter.setSuccessHandler(switchUserAuthenticationSuccessHandler);
+        return filter;
     }
 
     private JWTConfigurer securityConfigurerAdapter() {
