@@ -40,6 +40,10 @@ import static com.nle.constant.AppConstant.MEMBER_FIELDS_TO_BIND_TO;
 @Service
 @RequiredArgsConstructor
 public class FTPService {
+    public static final String GATE_IN = "gate_in";
+    public static final String GATE_IN_EMPTY = "gate_in_empty";
+    public static final String GATE_OUT = "gate_out";
+    public static final String GATE_OUT_EMPTY = "gate_out_empty";
     private final DepoOwnerAccountService depoOwnerAccountService;
 
     private final Logger log = LoggerFactory.getLogger(FTPService.class);
@@ -142,6 +146,7 @@ public class FTPService {
         GateMove gateMove = new GateMove();
         gateMove.setTxDate(ftpMoveDTO.getTx_date());
         gateMove.setProcessType(ftpMoveDTO.getProcess_type());
+        gateMove.setGateMoveType(transformProcessTypeToGateMoveType(ftpMoveDTO.getProcess_type()));
         gateMove.setDepot(ftpMoveDTO.getDepot());
         gateMove.setFleetManager(ftpMoveDTO.getFleet_manager());
         gateMove.setContainerNumber(ftpMoveDTO.getContainer_number());
@@ -167,6 +172,19 @@ public class FTPService {
         gateMove.setStatus(AppConstant.Status.WAITING);
         gateMove.setNleId(UUID.randomUUID().toString());
         return gateMove;
+    }
+
+    private String transformProcessTypeToGateMoveType(String processType) {
+        if (processType == null) {
+            return null;
+        }
+        if (GATE_IN.equals(processType) || GATE_IN_EMPTY.equals(processType)) {
+            return GATE_IN;
+        }
+        if (GATE_OUT.equals(processType) || GATE_OUT_EMPTY.equals(processType)) {
+            return GATE_OUT;
+        }
+        return null;
     }
 
 }
