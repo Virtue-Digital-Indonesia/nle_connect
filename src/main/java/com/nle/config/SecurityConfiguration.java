@@ -1,6 +1,6 @@
 package com.nle.config;
 
-import com.nle.security.SwitchUserDetailsService;
+import com.nle.security.DepoOwnerUserDetailsService;
 import com.nle.security.impersonate.SwitchUserAuthenticationSuccessHandler;
 import com.nle.security.jwt.JWTConfigurer;
 import com.nle.security.jwt.TokenProvider;
@@ -27,7 +27,7 @@ import org.springframework.web.util.UrlPathHelper;
 public class SecurityConfiguration {
     private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
-    private final SwitchUserDetailsService switchUserDetailsService;
+    private final DepoOwnerUserDetailsService depoOwnerUserDetailsService;
     private final SwitchUserAuthenticationSuccessHandler switchUserAuthenticationSuccessHandler;
 
     @Bean
@@ -87,7 +87,7 @@ public class SecurityConfiguration {
     @Bean
     public SwitchUserFilter switchUserFilter() {
         SwitchUserFilter filter = new SwitchUserFilter();
-        filter.setUserDetailsService(switchUserDetailsService);
+        filter.setUserDetailsService(depoOwnerUserDetailsService);
         filter.setSwitchUserMatcher(new AntPathRequestMatcher("/impersonate", "GET", true, new UrlPathHelper()));
         filter.setSwitchFailureUrl("/switchUser");
         filter.setSuccessHandler(switchUserAuthenticationSuccessHandler);
