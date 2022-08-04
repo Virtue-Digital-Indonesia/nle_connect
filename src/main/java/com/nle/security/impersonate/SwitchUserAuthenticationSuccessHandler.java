@@ -1,5 +1,6 @@
 package com.nle.security.impersonate;
 
+import com.nle.config.prop.AppProperties;
 import com.nle.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -16,10 +17,11 @@ import java.io.IOException;
 public class SwitchUserAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
+    private final AppProperties appProperties;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         String jwt = tokenProvider.createToken(authentication);
-        getRedirectStrategy().sendRedirect(request, response, "https://nle-connect.id/home?token=" + jwt);
+        getRedirectStrategy().sendRedirect(request, response, appProperties.getUrl().getImpersonateUrl() + jwt);
     }
 }

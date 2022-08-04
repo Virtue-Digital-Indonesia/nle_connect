@@ -29,6 +29,7 @@ app:
     active-url: http://api.nle-connect.id/api/activate/
     success-redirect-url: https://nle-connect.id/sign-in
     failed-redirect-url: https://nle-connect.id/sign-in
+    impersonate-url: https://nle-connect.id/impersonate/token=
 
 spring:
   devtools:

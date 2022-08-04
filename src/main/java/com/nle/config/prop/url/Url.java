@@ -7,4 +7,5 @@ public class Url {
     private String activeUrl;
     private String successRedirectUrl;
     private String failedRedirectUrl;
+    private String impersonateUrl;
 }
