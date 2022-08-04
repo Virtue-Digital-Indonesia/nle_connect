@@ -69,13 +69,14 @@ public class SecurityConfiguration {
                 .antMatchers("/api/register/**"
                     , "/api/activate/**"
                     , "/api/authenticate"
+                    , "/api/admins/authenticate"
                     , "/api/depo-worker-accounts/join"
                     , "/api/depo-worker-accounts/complete"
                     , "/api/depo-worker-accounts/status/**"
                     , "/api/ftp/**"
                     , "/api/depo-worker-accounts/authenticate"
-                    , "/impersonate"
                 ).permitAll()
+            .antMatchers("/impersonate").access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
             .and()
