@@ -97,14 +97,15 @@ public class FTPService {
     private void processFiles(FTPFile[] ftpFiles, FTPClient client, DepoOwnerAccount depoOwnerAccount) {
         for (FTPFile ftpFile : ftpFiles) {
             if (ftpFile.getName().endsWith(".csv")) {
-                Optional<FtpFile> optionalFtpFile = ftpFileRepository.findByFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
-                if (optionalFtpFile.isPresent()) {
+                List<FtpFile> allByFileName = ftpFileRepository.findAllByFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
+                if (!allByFileName.isEmpty()) {
                     log.info("Ignore processed file {}", ftpFile.getName());
                 } else {
                     try (OutputStream os = new FileOutputStream(ftpFile.getName())) {
                         // Download file from FTP server.
                         boolean status = client.retrieveFile(ftpFile.getName(), os);
                         log.info("Status of retrieveFile() {}", status);
+                        log.info("Processing for file {}", ftpFile.getName());
                         Reader reader = Files.newBufferedReader(Paths.get(ftpFile.getName()));
                         ColumnPositionMappingStrategy<FtpMoveDTO> strategy = new ColumnPositionMappingStrategy<FtpMoveDTO>();
                         strategy.setType(FtpMoveDTO.class);
@@ -116,24 +117,28 @@ public class FTPService {
                             .withSkipLines(1)
                             .withIgnoreLeadingWhiteSpace(true)
                             .build();
-                        Iterator<FtpMoveDTO> ftpMoveDTOIterator = csvToBean.iterator();
-                        while (ftpMoveDTOIterator.hasNext()) {
-                            FtpMoveDTO ftpMoveDTO = ftpMoveDTOIterator.next();
-                            try {
-                                GateMove entity = convertToEntity(ftpMoveDTO);
-                                entity.setDepoOwnerAccount(depoOwnerAccount);
-                                gateMoveRepository.save(entity);
-                            } catch (Exception e) {
-                                log.error("Error while importing gate move data {} {}", ftpMoveDTO, e);
-                            }
+                        try {
+                            Iterator<FtpMoveDTO> ftpMoveDTOIterator = csvToBean.iterator();
+                            while (ftpMoveDTOIterator.hasNext()) {
+                                FtpMoveDTO ftpMoveDTO = ftpMoveDTOIterator.next();
+                                try {
+                                    GateMove entity = convertToEntity(ftpMoveDTO);
+                                    entity.setDepoOwnerAccount(depoOwnerAccount);
+                                    gateMoveRepository.save(entity);
+                                } catch (Exception e) {
+                                    log.error("Error while importing gate move data {} {}", ftpMoveDTO, e);
+                                }
 
+                            }
+                            FtpFile newFile = new FtpFile();
+                            newFile.setFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
+                            newFile.setFileSize(ftpFile.getSize());
+                            newFile.setImportDate(LocalDateTime.now());
+                            newFile.setDepoOwnerAccount(depoOwnerAccount);
+                            ftpFileRepository.save(newFile);
+                        } catch (Exception exception) {
+                            log.error("Error while sync data from ftp server FTP server", exception);
                         }
-                        FtpFile newFile = new FtpFile();
-                        newFile.setFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
-                        newFile.setFileSize(ftpFile.getSize());
-                        newFile.setImportDate(LocalDateTime.now());
-                        newFile.setDepoOwnerAccount(depoOwnerAccount);
-                        ftpFileRepository.save(newFile);
                     } catch (IOException e) {
                         log.error("Error while sync data from ftp server FTP server", e);
                     }

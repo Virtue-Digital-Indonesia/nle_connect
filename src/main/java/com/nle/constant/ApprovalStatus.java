@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ApprovalStatus {
-    APPROVED,
+    ACCCEPTED,
     REJECTED,
     REQUEST
 }
