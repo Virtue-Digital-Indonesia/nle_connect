@@ -45,6 +45,8 @@ public class TaxMinistryService {
         TaxMinistryResponseDTO taxMinistryResponseDTO = taxMinistryServiceClient.syncDataToTaxMinistry(taxMinistryRequestDTO);
         if (taxMinistryResponseDTO.getStatus()) {
             gateMoveRepository.updateGateMoveStatusById(AppConstant.Status.SUBMITTED, taxMinistryRequestDTO.getId());
+        } else {
+            LOGGER.error("Error while syncing data to tax ministry {}", taxMinistryResponseDTO.getData().getMessage());
         }
     }
 
