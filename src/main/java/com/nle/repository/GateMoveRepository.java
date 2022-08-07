@@ -6,6 +6,7 @@ import com.nle.repository.dto.ShippingLineStatistic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -32,5 +33,11 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
         "where gm.depoOwnerAccount.companyEmail =:companyEmail " +
         "group by gm.fleetManager")
     List<ShippingLineStatistic> countTotalGateMoveByShippingLine(@Param("companyEmail") String companyEmail);
+
+    List<GateMove> findAllByStatus(String status);
+
+    @Modifying
+    @Query("update GateMove gm set gm.status =:status where gm.id =:id")
+    int updateGateMoveStatusById(@Param("status") String status, @Param("id") Long id);
 
 }

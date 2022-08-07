@@ -13,6 +13,8 @@ app:
         bucket-name: "nle-backend-dev"
         access-key: "AKIAWJCGQ2JNAL4BLUZL"
         secret-key: "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"
+    tax-ministry:
+      api-key: ${TAX_MINISTRY_API_KEY}
     ftp:
       server: "ftp.nle-connect.id"
       path: "files"
@@ -30,6 +32,11 @@ app:
     success-redirect-url: https://nle-connect.id/sign-in
     failed-redirect-url: https://nle-connect.id/sign-in
     impersonate-url: https://nle-connect.id/impersonate/token=
+    tax-ministry: https://nlehub-dev.kemenkeu.go.id/DepoGate/Depo/post/data/depo-traffic
+  scheduler:
+    enabled: true
+    ftp-sync-cron: 59 59 17 * * *
+    tax-ministry-sync-cron: 59 59 23 * * *
 
 spring:
   devtools:
@@ -61,3 +68,13 @@ spring:
 server:
   port: 8080
   forward-headers-strategy: framework
+
+feign:
+  client:
+    config:
+      jphServiceClient:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+        errorDecoder: com.nle.config.openfeign.TaxMinistryClientErrorDecoder
+        retryer: com.nle.config.openfeign.TaxMinistryClientRetryer

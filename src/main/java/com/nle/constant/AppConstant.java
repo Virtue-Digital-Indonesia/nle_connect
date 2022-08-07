@@ -3,6 +3,7 @@ package com.nle.constant;
 public class AppConstant {
     public static final String CREATED_DATE = "createdDate";
     public static final String SPLASH = "/";
+    public static final String TAX_MINISTRY_HEADER_KEY = "Beacukai-Api-Key";
 
     public static final String[] MEMBER_FIELDS_TO_BIND_TO = new String[]{
         "tx_date",

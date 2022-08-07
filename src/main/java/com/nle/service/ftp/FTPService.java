@@ -32,7 +32,6 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.nle.constant.AppConstant.MEMBER_FIELDS_TO_BIND_TO;
@@ -51,7 +50,7 @@ public class FTPService {
     private final FtpFileRepository ftpFileRepository;
     private final GateMoveRepository gateMoveRepository;
 
-    @Scheduled(cron = "0 0/15 * * * ?")
+    @Scheduled(cron = "${app.scheduler.ftp-sync-cron}")
     public void syncDataFromFtpServer() {
         // find all active depo owner account
         List<DepoOwnerAccount> activeDepoOwner = depoOwnerAccountService.findAllByStatus(AccountStatus.ACTIVE);

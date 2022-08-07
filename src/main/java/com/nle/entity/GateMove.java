@@ -109,7 +109,6 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "remarks")
     private String remarks;
-
     // mobile only
     @Column(name = "longitude")
     private String longitude;

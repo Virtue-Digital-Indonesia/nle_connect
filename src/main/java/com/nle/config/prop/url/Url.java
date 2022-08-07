@@ -8,4 +8,5 @@ public class Url {
     private String successRedirectUrl;
     private String failedRedirectUrl;
     private String impersonateUrl;
+    private String taxMinistry;
 }
