@@ -1,6 +1,7 @@
 package com.nle.service.depoWorker;
 
 import com.nle.constant.AccountStatus;
+import com.nle.constant.AppConstant;
 import com.nle.controller.dto.DepoWorkerActivationDTO;
 import com.nle.controller.dto.DepoWorkerApproveReqDto;
 import com.nle.controller.dto.DepoWorkerLoginDto;
@@ -91,7 +92,8 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
         log.info("Depo worker " + depoWorkerAccount.getFullName() + " has been created, waiting for approve from depo owner.");
         // remove verification token
         if (verificationToken != null) {
-            verificationTokenRepository.delete(verificationToken);
+            verificationToken.setActiveStatus(AppConstant.VerificationStatus.ACTIVE);
+            verificationTokenRepository.save(verificationToken);
         }
     }
 

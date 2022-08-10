@@ -1,6 +1,7 @@
 package com.nle.service.depoOwner;
 
 import com.nle.constant.AccountStatus;
+import com.nle.controller.dto.ActiveDto;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.dto.DepoOwnerAccountProfileDTO;
@@ -14,7 +15,7 @@ import java.util.Optional;
 public interface DepoOwnerAccountService {
     DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO);
 
-    void activeDepoOwnerAccount(String token);
+    ActiveDto activeDepoOwnerAccount(String token);
 
     Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail);
 

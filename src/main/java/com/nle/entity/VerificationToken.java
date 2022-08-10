@@ -38,6 +38,9 @@ public class VerificationToken extends AbstractAuditingEntity implements Seriali
     @Column(name = "token", nullable = false, unique = true)
     private String token;
 
+    @Column(name = "active_status", nullable = false, unique = true)
+    private String activeStatus;
+
     @NotNull
     @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;

@@ -105,7 +105,7 @@ public class DepoOwnerController {
 
     @Operation(description = "Active Depo owner user by verification token", operationId = "activeDepoOwner", summary = "Active Depo owner user by verification token")
     @GetMapping(value = "/activate/{token}")
-    public ResponseEntity<Void> activeDepoOwner(@PathVariable String token) {
+    public ResponseEntity<ActiveDto> activeDepoOwner(@PathVariable String token) {
         depoOwnerAccountService.activeDepoOwnerAccount(token);
         // redirect to login page
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.getUrl().getSuccessRedirectUrl())).build();

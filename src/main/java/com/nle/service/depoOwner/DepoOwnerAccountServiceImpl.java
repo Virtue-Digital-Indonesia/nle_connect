@@ -1,8 +1,10 @@
 package com.nle.service.depoOwner;
 
 import com.nle.constant.AccountStatus;
+import com.nle.constant.AppConstant;
 import com.nle.constant.ApprovalStatus;
 import com.nle.constant.VerificationType;
+import com.nle.controller.dto.ActiveDto;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.exception.CommonException;
@@ -81,8 +83,11 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     }
 
     @Override
-    public void activeDepoOwnerAccount(String token) {
+    public ActiveDto activeDepoOwnerAccount(String token) {
         VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token, true);
+        if (AppConstant.VerificationStatus.ACTIVE.equals(verificationToken.getActiveStatus())) {
+            return new ActiveDto("Your account is already activated!");
+        }
         // active user
         DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
         depoOwnerAccount.setAccountStatus(AccountStatus.ACTIVE);
@@ -101,7 +106,9 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccountRepository.save(depoOwnerAccount);
         log.info("FTP account for depo owner " + depoOwnerAccount.getFullName() + " has been created.");
         // remove verification token
-        verificationTokenRepository.delete(verificationToken);
+        verificationToken.setActiveStatus(AppConstant.VerificationStatus.ACTIVE);
+        verificationTokenRepository.save(verificationToken);
+        return new ActiveDto("Your account is activated!");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.nle.service;
 
+import com.nle.constant.AppConstant;
 import com.nle.constant.VerificationType;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
@@ -42,6 +43,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         verificationToken.setTokenType(type);
         verificationToken.setDepoOwnerAccount(depoOwnerAccount);
         verificationToken.setDepoWorkerAccount(null);
+        verificationToken.setActiveStatus(AppConstant.VerificationStatus.INACTIVE);
         // save VerificationToken
         return verificationTokenRepository.save(verificationToken);
     }
@@ -57,6 +59,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         verificationToken.setTokenType(type);
         verificationToken.setDepoOwnerAccount(null);
         verificationToken.setDepoWorkerAccount(null);
+        verificationToken.setActiveStatus(AppConstant.VerificationStatus.INACTIVE);
         // save VerificationToken
         return verificationTokenRepository.save(verificationToken);
     }
@@ -68,6 +71,9 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
             throw new ResourceNotFoundException("Active token does not exist");
         }
         if (verificationToken != null) {
+            if (AppConstant.VerificationStatus.ACTIVE.equals(verificationToken.getActiveStatus())) {
+                return verificationToken;
+            }
             // check expired token
             long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), verificationToken.getExpiryDate());
             if (seconds < 0) {
