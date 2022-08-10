@@ -1,23 +1,16 @@
 package com.nle.controller.dto;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ActiveDto implements Serializable {
     private String activeStatus;
-
-    public ActiveDto() {
-    }
-
-    public ActiveDto(String activeStatus) {
-        this.activeStatus = activeStatus;
-    }
-
-    public String getActiveStatus() {
-        return activeStatus;
-    }
-
-    public void setActiveStatus(String activeStatus) {
-        this.activeStatus = activeStatus;
-    }
+    private String message;
 }

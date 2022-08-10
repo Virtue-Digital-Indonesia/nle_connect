@@ -57,7 +57,7 @@ public class DepoWorkerController {
     @GetMapping(value = "/depo-worker-accounts/status/{androidId}")
     public ResponseEntity<ActiveDto> checkDepoWorkerRegistrationStatus(@PathVariable String androidId) {
         AccountStatus accountStatus = depoWorkerAccountService.checkDepoWorkerRegistrationStatus(androidId);
-        return ResponseEntity.ok(new ActiveDto(accountStatus.name()));
+        return ResponseEntity.ok(new ActiveDto(accountStatus.name(), ""));
     }
 
 

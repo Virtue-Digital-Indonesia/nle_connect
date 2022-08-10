@@ -1,6 +1,7 @@
 package com.nle.controller.depo;
 
 import com.nle.config.prop.AppProperties;
+import com.nle.constant.AppConstant;
 import com.nle.constant.VerificationType;
 import com.nle.controller.dto.ActiveDto;
 import com.nle.controller.dto.CheckExistDto;
@@ -46,6 +47,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
+
+import static com.nle.constant.AppConstant.VerificationStatus.ALREADY_ACTIVE;
 
 @RestController
 @RequestMapping("/api")
@@ -106,7 +109,10 @@ public class DepoOwnerController {
     @Operation(description = "Active Depo owner user by verification token", operationId = "activeDepoOwner", summary = "Active Depo owner user by verification token")
     @GetMapping(value = "/activate/{token}")
     public ResponseEntity<ActiveDto> activeDepoOwner(@PathVariable String token) {
-        depoOwnerAccountService.activeDepoOwnerAccount(token);
+        ActiveDto activeDto = depoOwnerAccountService.activeDepoOwnerAccount(token);
+        if (ALREADY_ACTIVE.equals(activeDto.getActiveStatus())) {
+            return ResponseEntity.ok(activeDto);
+        }
         // redirect to login page
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.getUrl().getSuccessRedirectUrl())).build();
     }
@@ -156,7 +162,7 @@ public class DepoOwnerController {
     @SecurityRequirement(name = "nleapi")
     public ResponseEntity<ActiveDto> approveDepoWorkerJoinRequest(@RequestBody @Valid DepoWorkerApproveReqDto depoWorkerApproveReqDto) {
         depoWorkerAccountService.approveJoinRequest(depoWorkerApproveReqDto);
-        return ResponseEntity.ok(new ActiveDto("true"));
+        return ResponseEntity.ok(new ActiveDto(AppConstant.VerificationStatus.ACTIVE, "Depo Worker account is active."));
     }
 
     @Operation(description = "Delete depo worker join request", operationId = "deleteDepoWorkerJoinRequest", summary = "Delete depo worker join request")

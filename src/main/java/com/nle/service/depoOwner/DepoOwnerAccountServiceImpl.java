@@ -31,6 +31,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import static com.nle.constant.AppConstant.VerificationStatus.ACTIVE;
+import static com.nle.constant.AppConstant.VerificationStatus.ALREADY_ACTIVE;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -85,8 +88,11 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     @Override
     public ActiveDto activeDepoOwnerAccount(String token) {
         VerificationToken verificationToken = verificationTokenService.checkVerificationToken(token, true);
-        if (AppConstant.VerificationStatus.ACTIVE.equals(verificationToken.getActiveStatus())) {
-            return new ActiveDto("Your account is already activated!");
+        if (ACTIVE.equals(verificationToken.getActiveStatus())) {
+            ActiveDto activeDto = new ActiveDto();
+            activeDto.setMessage("Your account is already activated!");
+            activeDto.setActiveStatus(ALREADY_ACTIVE);
+            return activeDto;
         }
         // active user
         DepoOwnerAccount depoOwnerAccount = verificationToken.getDepoOwnerAccount();
@@ -106,9 +112,12 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccountRepository.save(depoOwnerAccount);
         log.info("FTP account for depo owner " + depoOwnerAccount.getFullName() + " has been created.");
         // remove verification token
-        verificationToken.setActiveStatus(AppConstant.VerificationStatus.ACTIVE);
+        verificationToken.setActiveStatus(ACTIVE);
         verificationTokenRepository.save(verificationToken);
-        return new ActiveDto("Your account is activated!");
+        ActiveDto activeDto = new ActiveDto();
+        activeDto.setMessage("Your account is activated!");
+        activeDto.setActiveStatus(ACTIVE);
+        return activeDto;
     }
 
     @Override
