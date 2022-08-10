@@ -76,7 +76,7 @@ public class SecurityConfiguration {
                     , "/api/ftp/**"
                     , "/api/depo-worker-accounts/authenticate"
                 ).permitAll()
-            .antMatchers("/impersonate").access("hasRole('ADMIN')")
+            .antMatchers("/impersonate", "/api/admins/profile").access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
             .and()

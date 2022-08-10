@@ -2,12 +2,15 @@ package com.nle.service.admin;
 
 import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.admin.AdminLoginDTO;
+import com.nle.controller.dto.admin.AdminProfileDTO;
 import com.nle.entity.admin.Admin;
 import com.nle.exception.CommonException;
 import com.nle.exception.ResourceNotFoundException;
 import com.nle.repository.AdminRepository;
+import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -48,5 +51,20 @@ public class AdminServiceImpl implements AdminService {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(admin.getEmail(), admin.getPassword(), grantedAuthorities);
         String jwt = tokenProvider.createToken(authentication);
         return new JWTToken(jwt);
+    }
+
+    @Override
+    public AdminProfileDTO getAdminProfile() {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty()) {
+            throw new ResourceNotFoundException("No user login information");
+        }
+        Optional<Admin> optionalAdmin = adminRepository.findByEmail(currentUserLogin.get());
+        if (optionalAdmin.isPresent()) {
+            AdminProfileDTO adminProfileDTO = new AdminProfileDTO();
+            BeanUtils.copyProperties(optionalAdmin.get(), adminProfileDTO);
+            return adminProfileDTO;
+        }
+        return null;
     }
 }

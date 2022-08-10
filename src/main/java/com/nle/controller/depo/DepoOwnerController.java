@@ -174,5 +174,4 @@ public class DepoOwnerController {
         return ResponseEntity.ok(depoOwnerAccountService.getProfileDetails());
     }
 
-
 }

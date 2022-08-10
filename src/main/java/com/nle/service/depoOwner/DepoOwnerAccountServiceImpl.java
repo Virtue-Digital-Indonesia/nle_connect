@@ -6,6 +6,7 @@ import com.nle.constant.VerificationType;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.VerificationToken;
 import com.nle.exception.CommonException;
+import com.nle.exception.ResourceNotFoundException;
 import com.nle.mapper.DepoOwnerAccountMapper;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
@@ -126,14 +127,15 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     @Override
     public DepoOwnerAccountProfileDTO getProfileDetails() {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isPresent()) {
-            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
-            if (depoOwnerAccount.isPresent()) {
-                DepoOwnerAccountProfileDTO depoOwnerAccountProfileDTO = new DepoOwnerAccountProfileDTO();
-                BeanUtils.copyProperties(depoOwnerAccount.get(), depoOwnerAccountProfileDTO);
-                return depoOwnerAccountProfileDTO;
-            }
+        if (currentUserLogin.isEmpty()) {
+            throw new ResourceNotFoundException("No user login information");
         }
-        return null;
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
+        if (!depoOwnerAccount.isPresent()) {
+            throw new ResourceNotFoundException("Depo worker account with email: '" + currentUserLogin.get() + "' doesn't exist");
+        }
+        DepoOwnerAccountProfileDTO depoOwnerAccountProfileDTO = new DepoOwnerAccountProfileDTO();
+        BeanUtils.copyProperties(depoOwnerAccount.get(), depoOwnerAccountProfileDTO);
+        return depoOwnerAccountProfileDTO;
     }
 }

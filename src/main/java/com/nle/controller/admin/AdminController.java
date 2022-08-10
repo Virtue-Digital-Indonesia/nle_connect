@@ -2,10 +2,13 @@ package com.nle.controller.admin;
 
 import com.nle.controller.dto.JWTToken;
 import com.nle.controller.dto.admin.AdminLoginDTO;
+import com.nle.controller.dto.admin.AdminProfileDTO;
 import com.nle.service.admin.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,5 +27,12 @@ public class AdminController {
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authenticate(@Valid @RequestBody AdminLoginDTO adminLoginDTO) {
         return ResponseEntity.ok(adminService.loginAdmin(adminLoginDTO));
+    }
+
+    @Operation(description = "Get Admin Profile", operationId = "getAdminProfile", summary = "Get Admin Profile")
+    @GetMapping(value = "/profile")
+    @SecurityRequirement(name = "nleapi")
+    public ResponseEntity<AdminProfileDTO> getAdminProfile() {
+        return ResponseEntity.ok(adminService.getAdminProfile());
     }
 }
