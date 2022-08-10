@@ -34,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -54,6 +56,8 @@ import static org.apache.http.entity.ContentType.IMAGE_PNG;
 @Transactional
 public class GateMoveServiceImpl implements GateMoveService {
     private final Logger log = LoggerFactory.getLogger(GateMoveController.class);
+    private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
+
     private final GateMoveRepository gateMoveRepository;
     private final GateMoveMapper gateMoveMapper;
     private final AppProperties appProperties;
@@ -123,10 +127,17 @@ public class GateMoveServiceImpl implements GateMoveService {
     }
 
     @Override
-    public PagingResponseModel<GateMoveDTO> findAll(Pageable pageable) {
+    public PagingResponseModel<GateMoveDTO> findAll(Pageable pageable, LocalDateTime from, LocalDateTime to) {
+
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
-            Page<GateMove> gateMoves = gateMoveRepository.findAllByDepoOwnerAccount_CompanyEmail(currentUserLogin.get(), pageable);
+            if (from == null) {
+                from = EPOCH_TIME;
+            }
+            if (to == null) {
+                to = LocalDateTime.now();
+            }
+            Page<GateMove> gateMoves = gateMoveRepository.findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(currentUserLogin.get(), from, to, pageable);
             return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
         }
         return new PagingResponseModel<>();

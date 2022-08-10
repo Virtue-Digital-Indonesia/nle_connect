@@ -62,7 +62,7 @@ public class GateMoveController {
     @SecurityRequirement(name = "nleapi")
     @GetMapping
     public ResponseEntity<PagingResponseModel<GateMoveDTO>> findAllGateMoves(Pageable pageable) {
-        return ResponseEntity.ok(gateMoveService.findAll(pageable));
+        return ResponseEntity.ok(gateMoveService.findAll(pageable, null, null));
     }
 
     @Operation(description = "Update date Gate Move", operationId = "updateGateMove", summary = "Update date Gate Move")

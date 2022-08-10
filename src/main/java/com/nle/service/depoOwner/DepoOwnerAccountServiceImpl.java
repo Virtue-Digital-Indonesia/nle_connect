@@ -1,7 +1,6 @@
 package com.nle.service.depoOwner;
 
 import com.nle.constant.AccountStatus;
-import com.nle.constant.AppConstant;
 import com.nle.constant.ApprovalStatus;
 import com.nle.constant.VerificationType;
 import com.nle.controller.dto.ActiveDto;

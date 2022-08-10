@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Repository
 public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
-    Page<GateMove> findAllByDepoOwnerAccount_CompanyEmail(String depoOwnerAccount, Pageable pageable);
+    Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(String depoOwnerAccount, LocalDateTime from, LocalDateTime to, Pageable pageable);
 
     Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(String depoOwnerAccount, String gateMoveType, Pageable pageable);
 

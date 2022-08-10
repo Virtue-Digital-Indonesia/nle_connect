@@ -8,6 +8,7 @@ import com.nle.service.dto.GateMoveDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface GateMoveService {
@@ -17,7 +18,7 @@ public interface GateMoveService {
 
     void uploadFile(MultipartFile[] files, Long gateMoveId);
 
-    PagingResponseModel<GateMoveDTO> findAll(Pageable pageable);
+    PagingResponseModel<GateMoveDTO> findAll(Pageable pageable, LocalDateTime from, LocalDateTime to);
 
     PagingResponseModel<GateMoveDTO> findByType(Pageable pageable);
 
