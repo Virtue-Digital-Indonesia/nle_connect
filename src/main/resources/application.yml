@@ -28,7 +28,7 @@ app:
     description: Nlebackend API documentation
     version: 0.0.1
   url:
-    active-url: http://api.nle-connect.id/api/activate/
+    active-url: https://api.nle-connect.id/api/activate/
     success-redirect-url: https://nle-connect.id/sign-in
     failed-redirect-url: https://nle-connect.id/sign-in
     impersonate-url: https://nle-connect.id/impersonate/token=
