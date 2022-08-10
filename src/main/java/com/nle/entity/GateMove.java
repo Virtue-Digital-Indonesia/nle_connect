@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -139,6 +140,12 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "nle_id")
     private String nleId;
+
+    @Column(name = "tx_date_formatted")
+    private LocalDateTime txDateFormatted;
+
+    @Column(name = "sync_to_tax_ministry_date")
+    private LocalDateTime syncToTaxMinistryDate;
 
     @Column(name = "data_source")
     @Enumerated(EnumType.STRING)

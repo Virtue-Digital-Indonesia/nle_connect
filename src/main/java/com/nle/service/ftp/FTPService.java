@@ -148,7 +148,10 @@ public class FTPService {
 
     private GateMove convertToEntity(FtpMoveDTO ftpMoveDTO) {
         GateMove gateMove = new GateMove();
-        gateMove.setTxDate(ftpMoveDTO.getTx_date());
+        if (ftpMoveDTO.getTx_date() != null) {
+            gateMove.setTxDate(ftpMoveDTO.getTx_date());
+            gateMove.setTxDateFormatted(formatTxDate(ftpMoveDTO.getTx_date()));
+        }
         gateMove.setProcessType(ftpMoveDTO.getProcess_type());
         gateMove.setGateMoveType(transformProcessTypeToGateMoveType(ftpMoveDTO.getProcess_type()));
         gateMove.setDepot(ftpMoveDTO.getDepot());
@@ -189,6 +192,16 @@ public class FTPService {
             return GATE_OUT;
         }
         return null;
+    }
+
+    private LocalDateTime formatTxDate(String txDate) {
+        String replace = txDate.replace(AppConstant.TIME_ZONE, "");
+        try {
+            return LocalDateTime.parse(replace);
+        } catch (Exception exception) {
+            log.error("Can not format transaction date {}", txDate);
+            return null;
+        }
     }
 
 }

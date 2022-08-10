@@ -29,6 +29,7 @@ public class AppConstant {
         "payload",
         "max_gross",
         "remark"};
+    public static final String TIME_ZONE = "+07:00";
 
     private AppConstant() {
     }

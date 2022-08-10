@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -37,7 +38,9 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
     List<GateMove> findAllByStatus(String status);
 
     @Modifying
-    @Query("update GateMove gm set gm.status =:status where gm.id =:id")
-    int updateGateMoveStatusById(@Param("status") String status, @Param("id") Long id);
+    @Query("update GateMove gm set gm.status =:status, gm.syncToTaxMinistryDate =:syncToTaxMinistryDate where gm.id =:id")
+    int updateGateMoveStatusById(@Param("status") String status,
+                                 @Param("syncToTaxMinistryDate") LocalDateTime syncToTaxMinistryDate,
+                                 @Param("id") Long id);
 
 }
