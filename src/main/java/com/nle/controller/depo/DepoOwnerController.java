@@ -19,6 +19,7 @@ import com.nle.service.VerificationTokenService;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.depoWorker.DepoWorkerAccountService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
+import com.nle.service.dto.DepoOwnerAccountProfileDTO;
 import com.nle.service.email.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -165,4 +166,13 @@ public class DepoOwnerController {
         depoWorkerAccountService.deleteJoinRequest(androidId);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(description = "Get Depo Owner Profile", operationId = "getDepoOwnerAccountProfile", summary = "Get Depo Owner Profile")
+    @GetMapping(value = "/profile")
+    @SecurityRequirement(name = "nleapi")
+    public ResponseEntity<DepoOwnerAccountProfileDTO> getDepoOwnerAccountProfile() {
+        return ResponseEntity.ok(depoOwnerAccountService.getProfileDetails());
+    }
+
+
 }

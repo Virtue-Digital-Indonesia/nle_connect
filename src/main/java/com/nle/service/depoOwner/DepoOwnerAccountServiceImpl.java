@@ -9,14 +9,17 @@ import com.nle.exception.CommonException;
 import com.nle.mapper.DepoOwnerAccountMapper;
 import com.nle.repository.DepoOwnerAccountRepository;
 import com.nle.repository.VerificationTokenRepository;
+import com.nle.security.SecurityUtils;
 import com.nle.service.VerificationTokenService;
 import com.nle.service.dto.DepoOwnerAccountDTO;
+import com.nle.service.dto.DepoOwnerAccountProfileDTO;
 import com.nle.service.email.EmailService;
 import com.nle.service.ftp.SSHService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,5 +121,19 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     @Override
     public List<DepoOwnerAccount> findAllByStatus(AccountStatus accountStatus) {
         return depoOwnerAccountRepository.findAllByAccountStatus(accountStatus);
+    }
+
+    @Override
+    public DepoOwnerAccountProfileDTO getProfileDetails() {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent()) {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
+            if (depoOwnerAccount.isPresent()) {
+                DepoOwnerAccountProfileDTO depoOwnerAccountProfileDTO = new DepoOwnerAccountProfileDTO();
+                BeanUtils.copyProperties(depoOwnerAccount.get(), depoOwnerAccountProfileDTO);
+                return depoOwnerAccountProfileDTO;
+            }
+        }
+        return null;
     }
 }
