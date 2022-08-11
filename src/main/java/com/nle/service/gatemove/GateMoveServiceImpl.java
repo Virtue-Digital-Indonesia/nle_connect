@@ -79,6 +79,7 @@ public class GateMoveServiceImpl implements GateMoveService {
         }
         gateMove.setSource(GateMoveSource.MOBILE);
         gateMove.setStatus(AppConstant.Status.WAITING);
+        gateMove.setTxDateFormatted(LocalDateTime.now());
         gateMove.setNleId(UUID.randomUUID().toString());
         gateMove = gateMoveRepository.save(gateMove);
         return gateMoveMapper.toDto(gateMove);

@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -66,4 +67,6 @@ public class GateMoveCreateDTO implements Serializable {
     private String remarks;
 
     private GateMoveSource source;
+
+    private LocalDateTime txDateFormatted;
 }
