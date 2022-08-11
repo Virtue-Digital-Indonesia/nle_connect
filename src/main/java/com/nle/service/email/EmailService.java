@@ -2,6 +2,9 @@ package com.nle.service.email;
 
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.service.dto.EmailDTO;
+import com.nle.service.dto.ftp.FtpMoveDTOError;
+
+import java.util.List;
 
 
 public interface EmailService {
@@ -13,4 +16,5 @@ public interface EmailService {
     // TODO disable because there is no email for worker invitation process
     // void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email);
 
+    void sendFTPSynErrorEmail(DepoOwnerAccount depoOwnerAccount, List<FtpMoveDTOError> errors);
 }

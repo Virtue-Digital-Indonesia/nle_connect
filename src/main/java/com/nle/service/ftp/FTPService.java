@@ -11,6 +11,8 @@ import com.nle.repository.FtpFileRepository;
 import com.nle.repository.GateMoveRepository;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.dto.ftp.FtpMoveDTO;
+import com.nle.service.dto.ftp.FtpMoveDTOError;
+import com.nle.service.email.EmailService;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -22,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,26 +33,32 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.nle.constant.AppConstant.MEMBER_FIELDS_TO_BIND_TO;
 
 @Service
 @RequiredArgsConstructor
 public class FTPService {
+    private final Logger log = LoggerFactory.getLogger(FTPService.class);
+
     public static final String GATE_IN = "gate_in";
     public static final String GATE_IN_EMPTY = "gate_in_empty";
     public static final String GATE_OUT = "gate_out";
     public static final String GATE_OUT_EMPTY = "gate_out_empty";
-    private final DepoOwnerAccountService depoOwnerAccountService;
 
-    private final Logger log = LoggerFactory.getLogger(FTPService.class);
+    private final DepoOwnerAccountService depoOwnerAccountService;
     private final AppProperties appProperties;
     private final FtpFileRepository ftpFileRepository;
     private final GateMoveRepository gateMoveRepository;
+    private final Validator validator;
+    private final EmailService emailService;
 
     @Scheduled(cron = "${app.scheduler.ftp-sync-cron}")
     public void syncDataFromFtpServer() {
@@ -77,7 +87,12 @@ public class FTPService {
                     log.info("Working directory {}", ftpClient.printWorkingDirectory());
                     log.info("Total file in folder {} from FTP server {}", path, ftpFiles.length);
                     // Download file from FTP server.
-                    processFiles(ftpFiles, ftpClient, depoOwnerAccount);
+                    List<FtpMoveDTOError> errors = new ArrayList<>();
+                    processFiles(ftpFiles, ftpClient, depoOwnerAccount, errors);
+                    if (!errors.isEmpty()) {
+                        // send email to depo owner
+                        emailService.sendFTPSynErrorEmail(depoOwnerAccount, errors);
+                    }
                 } else {
                     log.error("Can not login to FTP server");
                 }
@@ -93,7 +108,7 @@ public class FTPService {
         }
     }
 
-    private void processFiles(FTPFile[] ftpFiles, FTPClient client, DepoOwnerAccount depoOwnerAccount) {
+    private void processFiles(FTPFile[] ftpFiles, FTPClient client, DepoOwnerAccount depoOwnerAccount, List<FtpMoveDTOError> errors) {
         for (FTPFile ftpFile : ftpFiles) {
             if (ftpFile.getName().endsWith(".csv")) {
                 List<FtpFile> allByFileName = ftpFileRepository.findAllByFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
@@ -120,6 +135,15 @@ public class FTPService {
                             Iterator<FtpMoveDTO> ftpMoveDTOIterator = csvToBean.iterator();
                             while (ftpMoveDTOIterator.hasNext()) {
                                 FtpMoveDTO ftpMoveDTO = ftpMoveDTOIterator.next();
+                                // validate the record
+                                Set<ConstraintViolation<FtpMoveDTO>> constraintViolations = validator.validate(ftpMoveDTO);
+                                if(!constraintViolations.isEmpty()) {
+                                    String errorMessage = constraintViolations.stream()
+                                        .map(ConstraintViolation::getMessage)
+                                        .collect(Collectors.joining(", "));
+                                    errors.add(new FtpMoveDTOError(ftpMoveDTO, errorMessage));
+                                    continue;
+                                }
                                 try {
                                     GateMove entity = convertToEntity(ftpMoveDTO);
                                     entity.setDepoOwnerAccount(depoOwnerAccount);

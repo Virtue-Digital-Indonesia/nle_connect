@@ -6,6 +6,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.Collections;
 
 @Configuration
@@ -24,5 +27,11 @@ public class AppConfig {
         source.registerCorsConfiguration("/v3/api-docs", corsConfiguration);
         source.registerCorsConfiguration("/swagger-ui/**", corsConfiguration);
         return new CorsFilter(source);
+    }
+
+    @Bean
+    public Validator validator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        return factory.getValidator();
     }
 }

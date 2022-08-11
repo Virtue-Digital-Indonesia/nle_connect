@@ -5,6 +5,7 @@ import com.nle.constant.EmailType;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.service.dto.EmailDTO;
 import com.nle.service.dto.EmailTemplateDto;
+import com.nle.service.dto.ftp.FtpMoveDTOError;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -21,6 +22,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -52,6 +54,18 @@ public class EmailServiceImpl implements EmailService {
         // get email template content from DB
         EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.INVITE_DEPO_WORKER);
         EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, workerEmail);
+        sendSimpleEmail(emailDTO);
+    }
+
+    @Override
+    public void sendFTPSynErrorEmail(DepoOwnerAccount depoOwnerAccount, List<FtpMoveDTOError> errors) {
+        Map<String, String> params = new HashMap<>();
+        params.put("fullName", depoOwnerAccount.getFullName());
+        String tableErrors = buildTableErrors(errors);
+        params.put("tableErrors", tableErrors);
+        // get email template content from DB
+        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.FTP_SYNC_ERROR);
+        EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, depoOwnerAccount.getCompanyEmail());
         sendSimpleEmail(emailDTO);
     }
 
@@ -99,5 +113,32 @@ public class EmailServiceImpl implements EmailService {
         emailDTO.setTemplateContent(activeEmailTemplate.getTemplateContent());
         emailDTO.setModel(params);
         return emailDTO;
+    }
+
+    private String buildTableErrors(List<FtpMoveDTOError> errors) {
+        StringBuilder errorTable = new StringBuilder();
+        errorTable.append("<table>");
+        errorTable.append("<th>");
+        errorTable.append("<tr>");
+        errorTable.append("<td>");
+        errorTable.append("Record");
+        errorTable.append("</td>");
+        errorTable.append("<td>");
+        errorTable.append("Errors");
+        errorTable.append("</td>");
+        errorTable.append("</tr>");
+        errorTable.append("</th>");
+        errors.forEach(ftpMoveDTOError -> {
+            errorTable.append("<tr>");
+            errorTable.append("<td>");
+            errorTable.append(ftpMoveDTOError.getFtpMoveDTO().toString());
+            errorTable.append("</td>");
+            errorTable.append("<td>");
+            errorTable.append(ftpMoveDTOError.getErrorMessage());
+            errorTable.append("</td>");
+            errorTable.append("</tr>");
+        });
+        errorTable.append("</table>");
+        return errorTable.toString();
     }
 }
