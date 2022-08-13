@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -120,7 +121,8 @@ public class FTPService {
                         boolean status = client.retrieveFile(ftpFile.getName(), os);
                         log.info("Status of retrieveFile() {}", status);
                         log.info("Processing for file {}", ftpFile.getName());
-                        Reader reader = Files.newBufferedReader(Paths.get(ftpFile.getName()));
+                        Path localFilePath = Paths.get(ftpFile.getName());
+                        Reader reader = Files.newBufferedReader(localFilePath);
                         ColumnPositionMappingStrategy<FtpMoveDTO> strategy = new ColumnPositionMappingStrategy<FtpMoveDTO>();
                         strategy.setType(FtpMoveDTO.class);
                         strategy.setColumnMapping(MEMBER_FIELDS_TO_BIND_TO);
@@ -159,6 +161,7 @@ public class FTPService {
                             newFile.setImportDate(LocalDateTime.now());
                             newFile.setDepoOwnerAccount(depoOwnerAccount);
                             ftpFileRepository.save(newFile);
+                            Files.deleteIfExists(localFilePath);
                         } catch (Exception exception) {
                             log.error("Error while sync data from ftp server FTP server", exception);
                         }
