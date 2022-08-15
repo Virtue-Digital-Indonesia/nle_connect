@@ -23,7 +23,7 @@ public class AppConfig {
         corsConfiguration.setExposedHeaders(Collections.singletonList("*"));
         corsConfiguration.setMaxAge(3600L);
         source.registerCorsConfiguration("/api/**", corsConfiguration);
-//        source.registerCorsConfiguration("/impersonate/**", corsConfiguration);
+        source.registerCorsConfiguration("/impersonate/**", corsConfiguration);
         source.registerCorsConfiguration("/management/**", corsConfiguration);
         source.registerCorsConfiguration("/v3/api-docs", corsConfiguration);
         source.registerCorsConfiguration("/swagger-ui/**", corsConfiguration);
