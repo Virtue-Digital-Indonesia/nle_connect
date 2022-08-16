@@ -1,7 +1,7 @@
 package com.nle.controller.depo;
 
 import com.nle.controller.dto.pageable.PagingResponseModel;
-import com.nle.service.dto.GateMoveDTO;
+import com.nle.controller.dto.response.GateMoveResponseDTO;
 import com.nle.service.gatemove.GateMoveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -29,7 +29,7 @@ public class InventoryController {
     @Operation(description = "Get list of inventory move with paging", operationId = "findAllInventories", summary = "Get list of inventory move with paging")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "/{from}/{to}")
-    public ResponseEntity<PagingResponseModel<GateMoveDTO>> findAllInventories(
+    public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> findAllInventories(
         @PathVariable(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
         @PathVariable(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
         Pageable pageable) {

@@ -8,9 +8,13 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @ToString
-public class FtpMoveDTO {
+public class MoveDTO {
     @NotNull(message = "tx_date can not be null")
     private String tx_date;
+
+    private String longitude;
+
+    private String latitude;
 
     @NotNull(message = "process_type can not be null")
     private String process_type;
@@ -30,14 +34,15 @@ public class FtpMoveDTO {
     @NotNull(message = "condition can not be null")
     private String condition;
 
-    @NotNull(message = "date_manufacturer can not be null")
-    private String date_manufacturer;
-
     @NotNull(message = "clean can not be null")
     private String clean;
 
     @NotNull(message = "grade can not be null")
     private String grade;
+
+    private String damageBy;
+
+    private Long amount;
 
     @NotNull(message = "order_number can not be null")
     private String order_number;
@@ -48,21 +53,25 @@ public class FtpMoveDTO {
     private String vessel;
     private String voyage;
     private String discarge_port;
-    private String delivery_port;
 
     @NotNull(message = "carrier can not be null")
     private String carrier;
-
     private String transport_number;
-    private String driver_name;
 
     @NotNull(message = "tare can not be null")
-    private String tare;
+    private Double tare;
 
     @NotNull(message = "payload can not be null")
-    private String payload;
+    private Double payload;
 
-    @NotNull(message = "max_gross can not be null")
-    private String max_gross;
-    private String remark;
+    @NotNull(message = "date_manufacturer can not be null")
+    private String date_manufacturer;
+
+    private String remarks;
+
+    private String delivery_port;
+    private String driver_name;
+
+    @NotNull(message = "Max Gross can not be null")
+    private Double max_gross;
 }

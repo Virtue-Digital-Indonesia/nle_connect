@@ -29,10 +29,10 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
         "group by gm.gateMoveType")
     List<MoveStatistic> countTotalGateMoveByType(@Param("companyEmail") String companyEmail);
 
-    @Query("select new com.nle.repository.dto.ShippingLineStatistic(gm.fleetManager, count (gm.fleetManager)) " +
+    @Query("select new com.nle.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.fleet_manager)) " +
         "from GateMove gm " +
         "where gm.depoOwnerAccount.companyEmail =:companyEmail " +
-        "group by gm.fleetManager")
+        "group by gm.fleet_manager")
     List<ShippingLineStatistic> countTotalGateMoveByShippingLine(@Param("companyEmail") String companyEmail);
 
     List<GateMove> findAllByStatus(String status);

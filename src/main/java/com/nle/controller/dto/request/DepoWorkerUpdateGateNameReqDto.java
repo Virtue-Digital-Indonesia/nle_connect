@@ -1,4 +1,4 @@
-package com.nle.controller.dto;
+package com.nle.controller.dto.request;
 
 import lombok.Data;
 

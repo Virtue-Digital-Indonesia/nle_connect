@@ -131,7 +131,7 @@ public class EmailServiceImpl implements EmailService {
         errors.forEach(ftpMoveDTOError -> {
             errorTable.append("<tr>");
             errorTable.append("<td>");
-            errorTable.append(ftpMoveDTOError.getFtpMoveDTO().toString());
+            errorTable.append(ftpMoveDTOError.getMoveDTO().toString());
             errorTable.append("</td>");
             errorTable.append("<td>");
             errorTable.append(ftpMoveDTOError.getErrorMessage());

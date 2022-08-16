@@ -2,25 +2,27 @@ package com.nle.service.gatemove;
 
 
 import com.nle.config.prop.AppProperties;
-import com.nle.constant.AppConstant;
 import com.nle.constant.GateMoveSource;
-import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
+import com.nle.controller.dto.request.CreateGateMoveReqDTO;
+import com.nle.controller.dto.request.UpdateGateMoveReqDTO;
+import com.nle.controller.dto.response.CreatedGateMoveResponseDTO;
+import com.nle.controller.dto.response.GateMoveResponseDTO;
+import com.nle.controller.dto.response.UpdatedGateMoveResponseDTO;
 import com.nle.controller.gavemove.GateMoveController;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.GateMove;
 import com.nle.entity.Media;
 import com.nle.exception.CommonException;
 import com.nle.exception.ResourceNotFoundException;
-import com.nle.mapper.GateMoveMapper;
 import com.nle.repository.GateMoveRepository;
 import com.nle.repository.MediaRepository;
 import com.nle.repository.dto.MoveStatistic;
 import com.nle.repository.dto.ShippingLineStatistic;
 import com.nle.security.SecurityUtils;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
-import com.nle.service.dto.GateMoveDTO;
 import com.nle.service.s3.S3StoreService;
+import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.nle.constant.AppConstant.SPLASH;
 import static org.apache.http.entity.ContentType.IMAGE_BMP;
@@ -59,17 +60,14 @@ public class GateMoveServiceImpl implements GateMoveService {
     private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
     private final GateMoveRepository gateMoveRepository;
-    private final GateMoveMapper gateMoveMapper;
     private final AppProperties appProperties;
     private final S3StoreService s3StoreService;
     private final MediaRepository mediaRepository;
     private final DepoOwnerAccountService depoOwnerAccountService;
 
     @Override
-    public GateMoveDTO createGateMove(GateMoveCreateDTO gateMoveCreateDTO) {
-        GateMoveDTO gateMoveDTO = new GateMoveDTO();
-        BeanUtils.copyProperties(gateMoveCreateDTO, gateMoveDTO);
-        GateMove gateMove = gateMoveMapper.toEntity(gateMoveDTO);
+    public CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO) {
+        GateMove gateMove = NleUtil.convertToGateMoveEntity(createGateMoveReqDTO, GateMoveSource.MOBILE);
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
@@ -77,32 +75,26 @@ public class GateMoveServiceImpl implements GateMoveService {
                 gateMove.setDepoOwnerAccount(depoOwnerAccount.get());
             }
         }
-        gateMove.setSource(GateMoveSource.MOBILE);
-        gateMove.setStatus(AppConstant.Status.WAITING);
-        gateMove.setTxDate(gateMoveCreateDTO.getTxDate());
-        gateMove.setTxDateFormatted(LocalDateTime.now());
-        gateMove.setNleId(UUID.randomUUID().toString());
         gateMove = gateMoveRepository.save(gateMove);
-        return gateMoveMapper.toDto(gateMove);
+        return convertToCreatedGateMoveResponseDTO(gateMove);
     }
 
     @Override
-    public GateMoveDTO updateGateMove(GateMoveDTO gateMoveDTO) {
-        Optional<GateMove> gateMoveOptional = gateMoveRepository.findById(gateMoveDTO.getId());
+    public UpdatedGateMoveResponseDTO updateGateMove(UpdateGateMoveReqDTO updateGateMoveReqDTO) {
+        Optional<GateMove> gateMoveOptional = gateMoveRepository.findById(updateGateMoveReqDTO.getId());
         if (gateMoveOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Gate move with id '" + gateMoveDTO.getId() + "' doesn't exist");
+            throw new ResourceNotFoundException("Gate move with id '" + updateGateMoveReqDTO.getId() + "' doesn't exist");
         }
-        GateMove gateMove = gateMoveOptional.get();
-        BeanUtils.copyProperties(gateMoveDTO, gateMove);
+        GateMove gateMove = NleUtil.convertToGateMoveEntity(updateGateMoveReqDTO, GateMoveSource.MOBILE);
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
-            if (depoOwnerAccount.isPresent()) {
-                gateMove.setDepoOwnerAccount(depoOwnerAccount.get());
-            }
+            depoOwnerAccount.ifPresent(gateMove::setDepoOwnerAccount);
         }
         GateMove updatedGateMove = gateMoveRepository.save(gateMove);
-        return gateMoveMapper.toDto(updatedGateMove);
+        UpdatedGateMoveResponseDTO updatedGateMoveResponseDTO = new UpdatedGateMoveResponseDTO();
+        BeanUtils.copyProperties(updatedGateMove, updatedGateMoveResponseDTO);
+        return updatedGateMoveResponseDTO;
     }
 
     @Override
@@ -129,8 +121,7 @@ public class GateMoveServiceImpl implements GateMoveService {
     }
 
     @Override
-    public PagingResponseModel<GateMoveDTO> findAll(Pageable pageable, LocalDateTime from, LocalDateTime to) {
-
+    public PagingResponseModel<GateMoveResponseDTO> findAll(Pageable pageable, LocalDateTime from, LocalDateTime to) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
             if (from == null) {
@@ -140,18 +131,18 @@ public class GateMoveServiceImpl implements GateMoveService {
                 to = LocalDateTime.now();
             }
             Page<GateMove> gateMoves = gateMoveRepository.findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(currentUserLogin.get(), from, to, pageable);
-            return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
+            return new PagingResponseModel<>(gateMoves.map(this::convertToGateMoveResponseDTO));
         }
         return new PagingResponseModel<>();
 
     }
 
     @Override
-    public PagingResponseModel<GateMoveDTO> findByType(Pageable pageable) {
+    public PagingResponseModel<GateMoveResponseDTO> findByType(Pageable pageable) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
             Page<GateMove> gateMoves = gateMoveRepository.findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(currentUserLogin.get(), "gate_in", pageable);
-            return new PagingResponseModel<>(gateMoves.map(gateMoveMapper::toDto));
+            return new PagingResponseModel<>(gateMoves.map(this::convertToGateMoveResponseDTO));
         }
         return new PagingResponseModel<>();
     }
@@ -201,5 +192,27 @@ public class GateMoveServiceImpl implements GateMoveService {
     private String generateUniquePath(String bucketName) {
         DateFormat writeFormat = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
         return bucketName + SPLASH + writeFormat.format(new Date());
+    }
+
+    private CreatedGateMoveResponseDTO convertToCreatedGateMoveResponseDTO(GateMove gateMove) {
+        CreatedGateMoveResponseDTO createdGateMoveResponseDTO = new CreatedGateMoveResponseDTO();
+        BeanUtils.copyProperties(gateMove, createdGateMoveResponseDTO);
+        if (gateMove.getClean()) {
+            createdGateMoveResponseDTO.setClean("yes");
+        } else {
+            createdGateMoveResponseDTO.setClean("no");
+        }
+        return createdGateMoveResponseDTO;
+    }
+
+    private GateMoveResponseDTO convertToGateMoveResponseDTO(GateMove gateMove) {
+        GateMoveResponseDTO gateMoveResponseDTO = new GateMoveResponseDTO();
+        BeanUtils.copyProperties(gateMove, gateMoveResponseDTO);
+        if (gateMove.getClean()) {
+            gateMoveResponseDTO.setClean("yes");
+        } else {
+            gateMoveResponseDTO.setClean("no");
+        }
+        return gateMoveResponseDTO;
     }
 }

@@ -2,7 +2,6 @@ package com.nle.service.ftp;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AccountStatus;
-import com.nle.constant.AppConstant;
 import com.nle.constant.GateMoveSource;
 import com.nle.entity.DepoOwnerAccount;
 import com.nle.entity.FtpFile;
@@ -10,8 +9,8 @@ import com.nle.entity.GateMove;
 import com.nle.repository.FtpFileRepository;
 import com.nle.repository.GateMoveRepository;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
-import com.nle.service.dto.ftp.FtpMoveDTO;
 import com.nle.service.dto.ftp.FtpMoveDTOError;
+import com.nle.service.dto.ftp.MoveDTO;
 import com.nle.service.email.EmailService;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
@@ -39,10 +38,10 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.nle.constant.AppConstant.MEMBER_FIELDS_TO_BIND_TO;
+import static com.nle.util.NleUtil.convertToGateMoveEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -123,8 +122,8 @@ public class FTPService {
                         log.info("Processing for file {}", ftpFile.getName());
                         Path localFilePath = Paths.get(ftpFile.getName());
                         Reader reader = Files.newBufferedReader(localFilePath);
-                        ColumnPositionMappingStrategy<FtpMoveDTO> strategy = new ColumnPositionMappingStrategy<FtpMoveDTO>();
-                        strategy.setType(FtpMoveDTO.class);
+                        ColumnPositionMappingStrategy<MoveDTO> strategy = new ColumnPositionMappingStrategy<MoveDTO>();
+                        strategy.setType(MoveDTO.class);
                         strategy.setColumnMapping(MEMBER_FIELDS_TO_BIND_TO);
 
                         CsvToBean csvToBean = new CsvToBeanBuilder(reader)
@@ -134,24 +133,24 @@ public class FTPService {
                             .withIgnoreLeadingWhiteSpace(true)
                             .build();
                         try {
-                            Iterator<FtpMoveDTO> ftpMoveDTOIterator = csvToBean.iterator();
+                            Iterator<MoveDTO> ftpMoveDTOIterator = csvToBean.iterator();
                             while (ftpMoveDTOIterator.hasNext()) {
-                                FtpMoveDTO ftpMoveDTO = ftpMoveDTOIterator.next();
+                                MoveDTO moveDTO = ftpMoveDTOIterator.next();
                                 // validate the record
-                                Set<ConstraintViolation<FtpMoveDTO>> constraintViolations = validator.validate(ftpMoveDTO);
-                                if(!constraintViolations.isEmpty()) {
+                                Set<ConstraintViolation<MoveDTO>> constraintViolations = validator.validate(moveDTO);
+                                if (!constraintViolations.isEmpty()) {
                                     String errorMessage = constraintViolations.stream()
                                         .map(ConstraintViolation::getMessage)
                                         .collect(Collectors.joining(", "));
-                                    errors.add(new FtpMoveDTOError(ftpMoveDTO, errorMessage));
+                                    errors.add(new FtpMoveDTOError(moveDTO, errorMessage));
                                     continue;
                                 }
                                 try {
-                                    GateMove entity = convertToEntity(ftpMoveDTO);
+                                    GateMove entity = convertToGateMoveEntity(moveDTO, GateMoveSource.FTP_SERVER);
                                     entity.setDepoOwnerAccount(depoOwnerAccount);
                                     gateMoveRepository.save(entity);
                                 } catch (Exception e) {
-                                    log.error("Error while importing gate move data {} {}", ftpMoveDTO, e);
+                                    log.error("Error while importing gate move data {} {}", moveDTO, e);
                                 }
 
                             }
@@ -170,64 +169,6 @@ public class FTPService {
                     }
                 }
             }
-        }
-    }
-
-    private GateMove convertToEntity(FtpMoveDTO ftpMoveDTO) {
-        GateMove gateMove = new GateMove();
-        if (ftpMoveDTO.getTx_date() != null) {
-            gateMove.setTxDate(ftpMoveDTO.getTx_date());
-            gateMove.setTxDateFormatted(formatTxDate(ftpMoveDTO.getTx_date()));
-        }
-        gateMove.setProcessType(ftpMoveDTO.getProcess_type());
-        gateMove.setGateMoveType(transformProcessTypeToGateMoveType(ftpMoveDTO.getProcess_type()));
-        gateMove.setDepot(ftpMoveDTO.getDepot());
-        gateMove.setFleetManager(ftpMoveDTO.getFleet_manager());
-        gateMove.setContainerNumber(ftpMoveDTO.getContainer_number());
-        gateMove.setIsoCode(ftpMoveDTO.getIso_code());
-        gateMove.setCondition(ftpMoveDTO.getCondition());
-        gateMove.setDateManufacturer(ftpMoveDTO.getDate_manufacturer());
-        gateMove.setClean("yes".equalsIgnoreCase(ftpMoveDTO.getClean()) || "true".equalsIgnoreCase(ftpMoveDTO.getClean()));
-        gateMove.setGrade(ftpMoveDTO.getGrade());
-        gateMove.setOrderNumber(ftpMoveDTO.getOrder_number());
-        gateMove.setCustomer(ftpMoveDTO.getCustomer());
-        gateMove.setVessel(ftpMoveDTO.getVessel());
-        gateMove.setVoyage(ftpMoveDTO.getVoyage());
-        gateMove.setDiscargePort(ftpMoveDTO.getDiscarge_port());
-        gateMove.setDeliveryPort(ftpMoveDTO.getDelivery_port());
-        gateMove.setCarrier(ftpMoveDTO.getCarrier());
-        gateMove.setTransportNumber(ftpMoveDTO.getTransport_number());
-        gateMove.setDriverName(ftpMoveDTO.getDriver_name());
-        gateMove.setTare(Double.valueOf(ftpMoveDTO.getTare()));
-        gateMove.setPayload(Double.valueOf(ftpMoveDTO.getPayload()));
-        gateMove.setMaxGross(Double.valueOf(ftpMoveDTO.getMax_gross()));
-        gateMove.setRemarks(ftpMoveDTO.getRemark());
-        gateMove.setSource(GateMoveSource.FTP_SERVER);
-        gateMove.setStatus(AppConstant.Status.WAITING);
-        gateMove.setNleId(UUID.randomUUID().toString());
-        return gateMove;
-    }
-
-    private String transformProcessTypeToGateMoveType(String processType) {
-        if (processType == null) {
-            return null;
-        }
-        if (GATE_IN.equals(processType) || GATE_IN_EMPTY.equals(processType)) {
-            return GATE_IN;
-        }
-        if (GATE_OUT.equals(processType) || GATE_OUT_EMPTY.equals(processType)) {
-            return GATE_OUT;
-        }
-        return null;
-    }
-
-    private LocalDateTime formatTxDate(String txDate) {
-        String replace = txDate.replace(AppConstant.TIME_ZONE, "");
-        try {
-            return LocalDateTime.parse(replace);
-        } catch (Exception exception) {
-            log.error("Can not format transaction date {}", txDate);
-            return null;
         }
     }
 

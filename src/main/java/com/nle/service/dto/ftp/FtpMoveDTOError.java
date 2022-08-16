@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FtpMoveDTOError {
-    private FtpMoveDTO ftpMoveDTO;
+    private MoveDTO moveDTO;
     private String errorMessage;
 }

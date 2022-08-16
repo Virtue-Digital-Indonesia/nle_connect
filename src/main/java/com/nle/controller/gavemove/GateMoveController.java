@@ -1,10 +1,13 @@
 package com.nle.controller.gavemove;
 
-import com.nle.controller.dto.GateMoveCreateDTO;
 import com.nle.controller.dto.pageable.PagingResponseModel;
+import com.nle.controller.dto.request.CreateGateMoveReqDTO;
+import com.nle.controller.dto.request.UpdateGateMoveReqDTO;
+import com.nle.controller.dto.response.CreatedGateMoveResponseDTO;
+import com.nle.controller.dto.response.GateMoveResponseDTO;
+import com.nle.controller.dto.response.UpdatedGateMoveResponseDTO;
 import com.nle.repository.dto.MoveStatistic;
 import com.nle.repository.dto.ShippingLineStatistic;
-import com.nle.service.dto.GateMoveDTO;
 import com.nle.service.gatemove.GateMoveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,10 +43,10 @@ public class GateMoveController {
     @Operation(description = "Create new Gate In / Gate Out container", operationId = "createGateMove", summary = "Create new Gate In / Gate Out container")
     @PostMapping
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<GateMoveDTO> createGateMove(@Valid @RequestBody GateMoveCreateDTO gateMoveCreateDTO)
+    public ResponseEntity<CreatedGateMoveResponseDTO> createGateMove(@Valid @RequestBody CreateGateMoveReqDTO gateMoveCreateDTO)
         throws URISyntaxException {
         log.debug("REST request to save GateMove : {}", gateMoveCreateDTO);
-        GateMoveDTO createdGateMove = gateMoveService.createGateMove(gateMoveCreateDTO);
+        CreatedGateMoveResponseDTO createdGateMove = gateMoveService.createGateMove(gateMoveCreateDTO);
         return ResponseEntity
             .created(new URI("/api/gate-moves/" + createdGateMove.getId()))
             .body(createdGateMove);
@@ -61,14 +64,14 @@ public class GateMoveController {
     @Operation(description = "Get list of gate move with paging", operationId = "findAllGateMoves", summary = "Get list of gate move with paging")
     @SecurityRequirement(name = "nleapi")
     @GetMapping
-    public ResponseEntity<PagingResponseModel<GateMoveDTO>> findAllGateMoves(Pageable pageable) {
+    public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> findAllGateMoves(Pageable pageable) {
         return ResponseEntity.ok(gateMoveService.findAll(pageable, null, null));
     }
 
     @Operation(description = "Update date Gate Move", operationId = "updateGateMove", summary = "Update date Gate Move")
     @SecurityRequirement(name = "nleapi")
     @PutMapping
-    public ResponseEntity<GateMoveDTO> updateGateMove(GateMoveDTO gateMoveDTO) {
+    public ResponseEntity<UpdatedGateMoveResponseDTO> updateGateMove(@Valid @RequestBody UpdateGateMoveReqDTO gateMoveDTO) {
         return ResponseEntity.ok(gateMoveService.updateGateMove(gateMoveDTO));
     }
 

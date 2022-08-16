@@ -40,31 +40,32 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private Long id;
 
     @Column(name = "tx_date")
-    private String txDate;
+    private String tx_date;
+
+    // mobile only
+    @Column(name = "longitude")
+    private String longitude;
+
+    @Column(name = "latitude")
+    private String latitude;
 
     @Column(name = "process_type")
-    private String processType;
-
-    @Column(name = "gate_move_type")
-    private String gateMoveType;
+    private String process_type;
 
     @Column(name = "depot")
     private String depot;
 
     @Column(name = "fleet_manager")
-    private String fleetManager;
+    private String fleet_manager;
 
     @Column(name = "container_number")
-    private String containerNumber;
+    private String container_number;
 
     @Column(name = "iso_code")
-    private String isoCode;
+    private String iso_code;
 
     @Column(name = "container_condition")
     private String condition;
-
-    @Column(name = "date_manufacturer")
-    private String dateManufacturer;
 
     @Column(name = "clean")
     private Boolean clean;
@@ -72,8 +73,14 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "grade")
     private String grade;
 
+    @Column(name = "damage_by")
+    private String damageBy;
+
+    @Column(name = "amount")
+    private Long amount;
+
     @Column(name = "order_number")
-    private String orderNumber;
+    private String order_number;
 
     @Column(name = "customer")
     private String customer;
@@ -85,19 +92,13 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private String voyage;
 
     @Column(name = "discarge_port")
-    private String discargePort;
-
-    @Column(name = "delivery_port")
-    private String deliveryPort;
+    private String discarge_port;
 
     @Column(name = "carrier")
     private String carrier;
 
     @Column(name = "transport_number")
-    private String transportNumber;
-
-    @Column(name = "driver_name")
-    private String driverName;
+    private String transport_number;
 
     @Column(name = "tare")
     private Double tare;
@@ -105,35 +106,26 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "payload")
     private Double payload;
 
-    @Column(name = "max_gross")
-    private Double maxGross;
+    @Column(name = "date_manufacturer")
+    private String date_manufacturer;
 
     @Column(name = "remarks")
     private String remarks;
-    // mobile only
-    @Column(name = "longitude")
-    private String longitude;
 
-    @Column(name = "latitude")
-    private String latitude;
+    @Column(name = "delivery_port")
+    private String delivery_port;
+
+    @Column(name = "driver_name")
+    private String driver_name;
+
+    @Column(name = "max_gross")
+    private Double max_gross;
 
     @Column(name = "link_to_google_map")
     private String linkToGoogleMap;
 
-    @Column(name = "shipping_line")
-    private String shippingLine;
-
-    @Column(name = "damage_by")
-    private String damageBy;
-
-    @Column(name = "cost")
-    private Double cost;
-
-    @Column(name = "trucker_name")
-    private String truckerName;
-
-    @Column(name = "truck_no")
-    private String truckNo;
+    @Column(name = "gate_move_type")
+    private String gateMoveType;
 
     @Column(name = "status")
     private String status;

@@ -55,7 +55,7 @@ public class TaxMinistryService {
         TaxMinistryRequestDTO taxMinistryRequestDTO = new TaxMinistryRequestDTO();
         BeanUtils.copyProperties(gateMove, taxMinistryRequestDTO);
         taxMinistryRequestDTO.setClean(gateMove.getClean() ? "yes" : "no");
-        taxMinistryRequestDTO.setDateManufacturing(gateMove.getDateManufacturer());
+        taxMinistryRequestDTO.setDateManufacturing(gateMove.getDate_manufacturer());
         return taxMinistryRequestDTO;
     }
 }
