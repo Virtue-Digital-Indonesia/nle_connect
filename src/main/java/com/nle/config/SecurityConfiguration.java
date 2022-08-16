@@ -90,7 +90,7 @@ public class SecurityConfiguration {
         SwitchUserFilter filter = new SwitchUserFilter();
         filter.setUserDetailsService(depoOwnerUserDetailsService);
         filter.setSwitchUserMatcher(new AntPathRequestMatcher("/impersonate", "GET", true, new UrlPathHelper()));
-        filter.setSwitchFailureUrl("/switchUser");
+        filter.setSwitchFailureUrl("/impersonate-fail");
         filter.setSuccessHandler(switchUserAuthenticationSuccessHandler);
         return filter;
     }

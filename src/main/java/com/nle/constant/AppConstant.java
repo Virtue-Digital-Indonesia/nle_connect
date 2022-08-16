@@ -30,6 +30,7 @@ public class AppConstant {
         "max_gross",
         "remark"};
     public static final String TIME_ZONE = "+07:00";
+    public static final String DEPO_OWNER_IMPERSONATE_TOKEN = "DEPO_OWNER_IMPERSONATE_TOKEN";
 
     private AppConstant() {
     }
@@ -49,6 +50,7 @@ public class AppConstant {
     public static class Pattern {
         public static final String EMAIL_PATTERN = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$";
         public static final String NAME_PATTERN = "^[a-zA-Z]{2,30}$";
+        public static final String NUMERIC_PATTERN = "^\\d+$";
         public static final String PASSWORD_PATTERN = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$";
         public static final String PHONE_NUMBER_PATTERN = "^\\d{5,15}$";
 
