@@ -91,7 +91,7 @@ public class FTPService {
                     processFiles(ftpFiles, ftpClient, depoOwnerAccount, errors);
                     if (!errors.isEmpty()) {
                         // send email to depo owner
-                        emailService.sendFTPSynErrorEmail(depoOwnerAccount, errors);
+                        // emailService.sendFTPSynErrorEmail(depoOwnerAccount, errors);
                     }
                 } else {
                     log.error("Can not login to FTP server");
