@@ -53,6 +53,8 @@ public class FTPService {
     public static final String GATE_IN_EMPTY = "gate_in_empty";
     public static final String GATE_OUT = "gate_out";
     public static final String GATE_OUT_EMPTY = "gate_out_empty";
+    public static final String GATE_IN_REPO = "gate_in_repo";
+    public static final String GATE_OUT_REPO = "gate_out_repo";
 
     private final DepoOwnerAccountService depoOwnerAccountService;
     private final AppProperties appProperties;
@@ -212,10 +214,10 @@ public class FTPService {
         if (processType == null) {
             return null;
         }
-        if (GATE_IN.equals(processType) || GATE_IN_EMPTY.equals(processType)) {
+        if (GATE_IN.equalsIgnoreCase(processType) || GATE_IN_EMPTY.equalsIgnoreCase(processType) || GATE_IN_REPO.equalsIgnoreCase(processType)) {
             return GATE_IN;
         }
-        if (GATE_OUT.equals(processType) || GATE_OUT_EMPTY.equals(processType)) {
+        if (GATE_OUT.equalsIgnoreCase(processType) || GATE_OUT_EMPTY.equalsIgnoreCase(processType) || GATE_OUT_REPO.equalsIgnoreCase(processType)) {
             return GATE_OUT;
         }
         return null;
