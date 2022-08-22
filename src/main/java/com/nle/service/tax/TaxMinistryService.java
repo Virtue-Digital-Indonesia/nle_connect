@@ -2,6 +2,7 @@ package com.nle.service.tax;
 
 import com.nle.config.openfeign.TaxMinistryServiceClient;
 import com.nle.constant.AppConstant;
+import com.nle.constant.enums.TaxMinistryStatusEnum;
 import com.nle.controller.depo.InventoryController;
 import com.nle.entity.GateMove;
 import com.nle.repository.GateMoveRepository;
@@ -31,6 +32,11 @@ public class TaxMinistryService {
         List<GateMove> waitingGateMove = gateMoveRepository.findAllByStatus(AppConstant.Status.WAITING);
         if (!waitingGateMove.isEmpty()) {
             for (GateMove gateMove : waitingGateMove) {
+
+                if (gateMove.getDepoOwnerAccount().getTaxMinistryStatusEnum() == TaxMinistryStatusEnum.DISABLE) {
+                    continue;
+                }
+
                 TaxMinistryRequestDTO taxMinistryRequestDTO = convertFromGateMove(gateMove);
                 try {
                     syncDataToTaxMinistry(taxMinistryRequestDTO);
