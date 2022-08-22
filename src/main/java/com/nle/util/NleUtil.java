@@ -21,7 +21,7 @@ public class NleUtil {
     public static final String GATE_OUT = "gate_out";
     public static final String GATE_OUT_EMPTY = "gate_out_empty";
     public static final String GATE_IN_REPO = "gate_in_repo";
-    public static final String GATE_OUT_REPO = "gate_in_repo";
+    public static final String GATE_OUT_REPO = "gate_out_repo";
 
 
     public static GateMove convertToGateMoveEntity(MoveDTO moveDTO, GateMoveSource gateMoveSource) {
