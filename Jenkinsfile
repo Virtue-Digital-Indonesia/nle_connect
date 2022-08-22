@@ -64,45 +64,46 @@ pipeline {
             }
         }
 
-        if (env.BRANCH_NAME == "new_develop") {
-                stage('Build docker image & update compose file') {
-                    steps {
-                        withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
-                            sh """
-                                cp Dockerfile target/
-                                cd target/
-                                docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
-                                cd ../
-                                export VERSION=${shortGitCommit}
-                                export DB_PASSWORD=$DB_PASSWORD
-                                cd src/main/docker/
-                                envsubst < docker-compose-template.yml > docker-compose.yml
-                            """
-                        }
-                    }
+        stage('Build docker image & update compose file') {
+            when {branch 'new_develop'}
+            steps {
+                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
+                    sh """
+                        cp Dockerfile target/
+                        cd target/
+                        docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
+                        cd ../
+                        export VERSION=${shortGitCommit}
+                        export DB_PASSWORD=$DB_PASSWORD
+                        cd src/main/docker/
+                        envsubst < docker-compose-template.yml > docker-compose.yml
+                    """
                 }
+            }
+        }
 
-                stage('Stop current backend') {
-                    steps {
-                        script {
-                            sh """
-                                cd src/main/docker/
-                                docker-compose down
-                            """
-                        }
-                    }
+        stage('Stop current backend') {
+            when {branch 'new_develop'}
+            steps {
+                script {
+                    sh """
+                        cd src/main/docker/
+                        docker-compose down
+                    """
                 }
+            }
+        }
 
-                stage('Start backend with new version') {
-                    steps {
-                        script {
-                            sh """
-                                cd src/main/docker/
-                                docker-compose up -d
-                            """
-                        }
-                    }
+        stage('Start backend with new version') {
+            when {branch 'new_develop'}
+            steps {
+                script {
+                    sh """
+                        cd src/main/docker/
+                        docker-compose up -d
+                    """
                 }
+            }
         }
     }
 }
