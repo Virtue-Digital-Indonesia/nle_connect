@@ -11,7 +11,6 @@ import com.nle.repository.GateMoveRepository;
 import com.nle.service.depoOwner.DepoOwnerAccountService;
 import com.nle.service.dto.ftp.FtpMoveDTOError;
 import com.nle.service.dto.ftp.MoveDTO;
-import com.nle.service.email.EmailService;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -47,18 +46,11 @@ import static com.nle.util.NleUtil.convertToGateMoveEntity;
 @RequiredArgsConstructor
 public class FTPService {
     private final Logger log = LoggerFactory.getLogger(FTPService.class);
-
-    public static final String GATE_IN = "gate_in";
-    public static final String GATE_IN_EMPTY = "gate_in_empty";
-    public static final String GATE_OUT = "gate_out";
-    public static final String GATE_OUT_EMPTY = "gate_out_empty";
-
     private final DepoOwnerAccountService depoOwnerAccountService;
     private final AppProperties appProperties;
     private final FtpFileRepository ftpFileRepository;
     private final GateMoveRepository gateMoveRepository;
     private final Validator validator;
-    private final EmailService emailService;
 
     @Scheduled(cron = "${app.scheduler.ftp-sync-cron}")
     public void syncDataFromFtpServer() {
