@@ -12,15 +12,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-import static com.nle.service.ftp.FTPService.GATE_IN;
-import static com.nle.service.ftp.FTPService.GATE_IN_EMPTY;
-import static com.nle.service.ftp.FTPService.GATE_OUT;
-import static com.nle.service.ftp.FTPService.GATE_OUT_EMPTY;
-
 public class NleUtil {
 
     private static final Logger log = LoggerFactory.getLogger(NleUtil.class);
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    public static final String GATE_IN = "gate_in";
+    public static final String GATE_IN_EMPTY = "gate_in_empty";
+    public static final String GATE_OUT = "gate_out";
+    public static final String GATE_OUT_EMPTY = "gate_out_empty";
+    public static final String GATE_IN_REPO = "gate_in_repo";
+    public static final String GATE_OUT_REPO = "gate_out_repo";
+
 
     public static GateMove convertToGateMoveEntity(MoveDTO moveDTO, GateMoveSource gateMoveSource) {
         GateMove gateMove = new GateMove();
@@ -46,10 +48,10 @@ public class NleUtil {
         if (processType == null) {
             return null;
         }
-        if (GATE_IN.equals(processType) || GATE_IN_EMPTY.equals(processType)) {
+        if (GATE_IN.equalsIgnoreCase(processType) || GATE_IN_EMPTY.equalsIgnoreCase(processType) || GATE_IN_REPO.equalsIgnoreCase(processType)) {
             return GATE_IN;
         }
-        if (GATE_OUT.equals(processType) || GATE_OUT_EMPTY.equals(processType)) {
+        if (GATE_OUT.equalsIgnoreCase(processType) || GATE_OUT_EMPTY.equalsIgnoreCase(processType) || GATE_OUT_REPO.equalsIgnoreCase(processType)) {
             return GATE_OUT;
         }
         return null;
