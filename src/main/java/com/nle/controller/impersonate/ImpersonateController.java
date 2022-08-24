@@ -26,8 +26,7 @@ public class ImpersonateController {
     @Operation(description = "Get impersonate token from session then response to client", operationId = "findByCode", summary = "Get impersonate token from session then response to client")
     @SecurityRequirement(name = "nleapi")
     @GetMapping
-    public ResponseEntity<JWTToken> switchUser(HttpServletRequest request, Authentication authentication) {
-        System.out.println(authentication.getPrincipal().toString());
+    public ResponseEntity<JWTToken> switchUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         String jwtToken = (String) session.getAttribute(DEPO_OWNER_IMPERSONATE_TOKEN);
         session.removeAttribute(DEPO_OWNER_IMPERSONATE_TOKEN);
