@@ -1,6 +1,5 @@
 package com.nle.controller.dto.request.search;
 
-import com.nle.constant.GateMoveSource;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +26,11 @@ public class GateMoveSearchRequest {
     private String gateMoveType;
     private String status;
     private String source;
+
+
+    private Double tare;
+    private Double payload;
+    private Double max_gross;
+
     private String globalSearch;
 }
