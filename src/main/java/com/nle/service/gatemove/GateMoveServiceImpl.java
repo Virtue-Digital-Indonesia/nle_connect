@@ -152,7 +152,10 @@ public class GateMoveServiceImpl implements GateMoveService {
     public PagingResponseModel<GateMoveResponseDTO> searchByCondition(Pageable pageable, GateMoveSearchRequest request){
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent())  {
-            Page<GateMove> listResults = gateMoveRepository.searchByCondition(currentUserLogin.get(), pageable);
+            Page<GateMove> listResults = gateMoveRepository.searchByCondition(
+                    currentUserLogin.get(),
+                    pageable,
+                    request);
             return new PagingResponseModel<>(listResults.map(this::convertToGateMoveResponseDTO));
         }
         return new PagingResponseModel<>();

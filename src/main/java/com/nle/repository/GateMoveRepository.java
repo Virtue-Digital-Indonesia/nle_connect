@@ -1,5 +1,6 @@
 package com.nle.repository;
 
+import com.nle.controller.dto.request.search.GateMoveSearchRequest;
 import com.nle.entity.GateMove;
 import com.nle.repository.dto.MoveStatistic;
 import com.nle.repository.dto.ShippingLineStatistic;
@@ -22,7 +23,39 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
 
 
     static final String SEARCH_GATEMOVE_QUERY = "SELECT gm FROM GateMove gm " +
-            "WHERE gm.depoOwnerAccount.companyEmail = :companyEmail";
+            "WHERE gm.depoOwnerAccount.companyEmail = :companyEmail " +
+            "AND (:#{#request.process_type} IS NULL OR LOWER(gm.process_type) LIKE LOWER(concat('%',:#{#request.process_type}, '%'))) " +
+            "AND (:#{#request.depot} IS NULL OR LOWER(gm.depot) LIKE LOWER(concat('%', :#{#request.depot}, '%'))) " +
+            "AND (:#{#request.fleet_manager} IS NULL OR LOWER(gm.fleet_manager) LIKE LOWER(concat('%', :#{#request.fleet_manager}, '%'))) " +
+            "AND (:#{#request.container_number} IS NULL OR gm.container_number LIKE concat('%', :#{#request.container_number}, '%')) " +
+            "AND (:#{#request.iso_code} IS NULL OR LOWER(gm.iso_code) LIKE LOWER(concat('%', :#{#request.iso_code}, '%'))) " +
+            "AND (:#{#request.condition} IS NULL OR LOWER(gm.condition) LIKE LOWER(concat('%', :#{#request.condition}, '%'))) " +
+            "AND (:#{#request.grade} IS NULL OR LOWER(gm.grade) LIKE LOWER(concat('%', :#{#request.grade}, '%'))) " +
+            "AND (:#{#request.order_number} IS NULL OR LOWER(gm.order_number) LIKE LOWER(concat('%', :#{#request.order_number}, '%'))) " +
+            "AND (:#{#request.customer} IS NULL OR LOWER(gm.customer) LIKE LOWER(concat('%', :#{#request.customer}, '%'))) " +
+            "AND (:#{#request.carrier} IS NULL OR LOWER(gm.carrier) LIKE LOWER(concat('%', :#{#request.carrier}, '%'))) " +
+            "AND (:#{#request.transport_number} IS NULL OR LOWER(gm.transport_number) LIKE LOWER(concat('%', :#{#request.transport_number}, '%'))) " +
+            "AND (:#{#request.date_manufacturer} IS NULL OR LOWER(gm.date_manufacturer) LIKE LOWER(concat('%', :#{#request.date_manufacturer}, '%'))) " +
+            "AND (:#{#request.gateMoveType} IS NULL OR LOWER(gm.gateMoveType) LIKE LOWER(concat('%', :#{#request.gateMoveType}, '%'))) " +
+            "AND (:#{#request.status} IS NULL OR LOWER(gm.status) LIKE LOWER(concat('%', :#{#request.status}, '%'))) " +
+            "AND (:#{#request.source} IS NULL OR gm.source LIKE :#{#request.source}) " +
+            "AND (:#{#request.globalSearch} IS NULL " +
+            "OR LOWER(gm.process_type) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.depot) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.fleet_manager) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.container_number) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.iso_code) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.condition) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.grade) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.order_number) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.customer) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.carrier) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.transport_number) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.date_manufacturer) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.gateMoveType) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.status) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(gm.source) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
+            ") ";
 
     Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(String depoOwnerAccount, LocalDateTime from, LocalDateTime to, Pageable pageable);
 
@@ -49,6 +82,8 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                                  @Param("id") Long id);
 
     @Query(value = SEARCH_GATEMOVE_QUERY)
-    Page<GateMove>searchByCondition(@Param("companyEmail") String companyEmail, Pageable pageable);
+    Page<GateMove>searchByCondition(@Param("companyEmail") String companyEmail,
+                                    Pageable pageable,
+                                    @Param("request") GateMoveSearchRequest request);
 
 }
