@@ -1,6 +1,7 @@
 package com.nle.service.dto.ftp;
 
 
+import com.nle.constant.GateMoveSource;
 import lombok.Data;
 import lombok.ToString;
 
@@ -74,4 +75,7 @@ public class MoveDTO {
 
     @NotNull(message = "Max Gross can not be null")
     private Double max_gross;
+
+    private String status;
+    private GateMoveSource source;
 }
