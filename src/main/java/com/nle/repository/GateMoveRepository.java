@@ -19,6 +19,11 @@ import java.util.List;
  */
 @Repository
 public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
+
+
+    static final String SEARCH_GATEMOVE_QUERY = "SELECT gm FROM GateMove gm " +
+            "WHERE gm.depoOwnerAccount.companyEmail = :companyEmail";
+
     Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(String depoOwnerAccount, LocalDateTime from, LocalDateTime to, Pageable pageable);
 
     Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(String depoOwnerAccount, String gateMoveType, Pageable pageable);
@@ -42,5 +47,8 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
     int updateGateMoveStatusById(@Param("status") String status,
                                  @Param("syncToTaxMinistryDate") LocalDateTime syncToTaxMinistryDate,
                                  @Param("id") Long id);
+
+    @Query(value = SEARCH_GATEMOVE_QUERY)
+    Page<GateMove>searchByCondition(@Param("companyEmail") String companyEmail, Pageable pageable);
 
 }
