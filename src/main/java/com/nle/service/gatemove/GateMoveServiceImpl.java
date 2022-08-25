@@ -6,6 +6,7 @@ import com.nle.constant.GateMoveSource;
 import com.nle.controller.dto.pageable.PagingResponseModel;
 import com.nle.controller.dto.request.CreateGateMoveReqDTO;
 import com.nle.controller.dto.request.UpdateGateMoveReqDTO;
+import com.nle.controller.dto.request.search.GateMoveSearchRequest;
 import com.nle.controller.dto.response.CreatedGateMoveResponseDTO;
 import com.nle.controller.dto.response.GateMoveResponseDTO;
 import com.nle.controller.dto.response.UpdatedGateMoveResponseDTO;
@@ -148,6 +149,19 @@ public class GateMoveServiceImpl implements GateMoveService {
     }
 
     @Override
+    public PagingResponseModel<GateMoveResponseDTO> searchByCondition(Pageable pageable, GateMoveSearchRequest request){
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent())  {
+            Page<GateMove> listResults = gateMoveRepository.searchByCondition(
+                    currentUserLogin.get(),
+                    pageable,
+                    request);
+            return new PagingResponseModel<>(listResults.map(this::convertToGateMoveResponseDTO));
+        }
+        return new PagingResponseModel<>();
+    };
+
+    @Override
     public List<MoveStatistic> countTotalGateMoveByType() {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
@@ -215,4 +229,5 @@ public class GateMoveServiceImpl implements GateMoveService {
         }
         return gateMoveResponseDTO;
     }
+
 }

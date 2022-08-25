@@ -3,6 +3,7 @@ package com.nle.controller.gavemove;
 import com.nle.controller.dto.pageable.PagingResponseModel;
 import com.nle.controller.dto.request.CreateGateMoveReqDTO;
 import com.nle.controller.dto.request.UpdateGateMoveReqDTO;
+import com.nle.controller.dto.request.search.GateMoveSearchRequest;
 import com.nle.controller.dto.response.CreatedGateMoveResponseDTO;
 import com.nle.controller.dto.response.GateMoveResponseDTO;
 import com.nle.controller.dto.response.UpdatedGateMoveResponseDTO;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,12 +47,12 @@ public class GateMoveController {
     @PostMapping
     @SecurityRequirement(name = "nleapi")
     public ResponseEntity<CreatedGateMoveResponseDTO> createGateMove(@Valid @RequestBody CreateGateMoveReqDTO gateMoveCreateDTO)
-        throws URISyntaxException {
+            throws URISyntaxException {
         log.debug("REST request to save GateMove : {}", gateMoveCreateDTO);
         CreatedGateMoveResponseDTO createdGateMove = gateMoveService.createGateMove(gateMoveCreateDTO);
         return ResponseEntity
-            .created(new URI("/api/gate-moves/" + createdGateMove.getId()))
-            .body(createdGateMove);
+                .created(new URI("/api/gate-moves/" + createdGateMove.getId()))
+                .body(createdGateMove);
     }
 
     @Operation(description = "Upload Gate In / Gate Out photo", operationId = "uploadGateMoveFile", summary = "Upload Gate In / Gate Out photo")
@@ -89,5 +92,15 @@ public class GateMoveController {
         return ResponseEntity.ok(gateMoveService.countTotalGateMoveByShippingLine());
     }
 
+    @Operation(description = "global search Gate Move by Query", operationId = "searchGateMove", summary = "global search gate move by query")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/search")
+    public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> searchGateMove(
+            @RequestBody GateMoveSearchRequest request,
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) Pageable pageable) {
+        return ResponseEntity.ok(gateMoveService.searchByCondition(pageable, request));
+    }
 
 }
