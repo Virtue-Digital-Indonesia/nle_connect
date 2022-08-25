@@ -26,6 +26,6 @@ public class GateMoveSearchRequest {
     private String date_manufacturer;
     private String gateMoveType;
     private String status;
-    private GateMoveSource source;
+    private String source;
     private String globalSearch;
 }

@@ -38,7 +38,7 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
             "AND (:#{#request.date_manufacturer} IS NULL OR LOWER(gm.date_manufacturer) LIKE LOWER(concat('%', :#{#request.date_manufacturer}, '%'))) " +
             "AND (:#{#request.gateMoveType} IS NULL OR LOWER(gm.gateMoveType) LIKE LOWER(concat('%', :#{#request.gateMoveType}, '%'))) " +
             "AND (:#{#request.status} IS NULL OR LOWER(gm.status) LIKE LOWER(concat('%', :#{#request.status}, '%'))) " +
-            "AND (:#{#request.source} IS NULL OR gm.source LIKE :#{#request.source}) " +
+            "AND (:#{#request.source} IS NULL OR UPPER(gm.source) LIKE UPPER(concat('%', :#{#request.source}, '%'))) " +
             "AND (:#{#request.globalSearch} IS NULL " +
             "OR LOWER(gm.process_type) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
             "OR LOWER(gm.depot) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
