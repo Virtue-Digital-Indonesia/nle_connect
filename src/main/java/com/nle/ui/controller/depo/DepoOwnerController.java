@@ -2,7 +2,7 @@ package com.nle.ui.controller.depo;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AppConstant;
-import com.nle.constant.VerificationType;
+import com.nle.constant.enums.VerificationType;
 import com.nle.ui.model.ActiveDto;
 import com.nle.ui.model.CheckExistDto;
 import com.nle.ui.model.JWTToken;

@@ -1,6 +1,6 @@
 package com.nle.service.dto;
 
-import com.nle.constant.AccountStatus;
+import com.nle.constant.enums.AccountStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

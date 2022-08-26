@@ -2,7 +2,7 @@ package com.nle.service.gatemove;
 
 
 import com.nle.config.prop.AppProperties;
-import com.nle.constant.GateMoveSource;
+import com.nle.constant.enums.GateMoveSource;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateGateMoveReqDTO;
 import com.nle.ui.model.request.UpdateGateMoveReqDTO;

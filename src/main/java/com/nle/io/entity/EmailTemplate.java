@@ -1,6 +1,6 @@
 package com.nle.io.entity;
 
-import com.nle.constant.EmailType;
+import com.nle.constant.enums.EmailType;
 import com.nle.io.entity.common.AbstractAuditingEntity;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
 package com.nle.io.entity.admin;
 
-import com.nle.constant.AccountStatus;
+import com.nle.constant.enums.AccountStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

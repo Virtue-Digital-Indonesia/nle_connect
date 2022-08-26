@@ -1,6 +1,6 @@
 package com.nle.ui.controller.depo;
 
-import com.nle.constant.AccountStatus;
+import com.nle.constant.enums.AccountStatus;
 import com.nle.ui.model.ActiveDto;
 import com.nle.ui.model.DepoWorkerActivationDTO;
 import com.nle.ui.model.DepoWorkerLoginDto;

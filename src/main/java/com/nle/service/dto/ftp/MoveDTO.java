@@ -1,7 +1,7 @@
 package com.nle.service.dto.ftp;
 
 
-import com.nle.constant.GateMoveSource;
+import com.nle.constant.enums.GateMoveSource;
 import lombok.Data;
 import lombok.ToString;
 

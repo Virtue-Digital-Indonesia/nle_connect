@@ -1,6 +1,6 @@
 package com.nle.service.dto;
 
-import com.nle.constant.EmailType;
+import com.nle.constant.enums.EmailType;
 import lombok.Getter;
 import lombok.Setter;
 

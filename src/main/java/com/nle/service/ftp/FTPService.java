@@ -1,8 +1,8 @@
 package com.nle.service.ftp;
 
 import com.nle.config.prop.AppProperties;
-import com.nle.constant.AccountStatus;
-import com.nle.constant.GateMoveSource;
+import com.nle.constant.enums.AccountStatus;
+import com.nle.constant.enums.GateMoveSource;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.FtpFile;
 import com.nle.io.entity.GateMove;

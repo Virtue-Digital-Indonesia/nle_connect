@@ -1,4 +1,4 @@
-package com.nle.constant;
+package com.nle.constant.enums;
 
 import lombok.Getter;
 

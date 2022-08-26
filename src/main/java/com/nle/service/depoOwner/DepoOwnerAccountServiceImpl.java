@@ -1,8 +1,8 @@
 package com.nle.service.depoOwner;
 
-import com.nle.constant.AccountStatus;
-import com.nle.constant.ApprovalStatus;
-import com.nle.constant.VerificationType;
+import com.nle.constant.enums.AccountStatus;
+import com.nle.constant.enums.ApprovalStatus;
+import com.nle.constant.enums.VerificationType;
 import com.nle.constant.enums.TaxMinistryStatusEnum;
 import com.nle.ui.model.ActiveDto;
 import com.nle.io.entity.DepoOwnerAccount;

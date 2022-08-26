@@ -1,6 +1,6 @@
 package com.nle.ui.model;
 
-import com.nle.constant.ApprovalStatus;
+import com.nle.constant.enums.ApprovalStatus;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 

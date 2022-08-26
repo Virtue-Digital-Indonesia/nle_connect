@@ -1,6 +1,6 @@
 package com.nle.service.depoWorker;
 
-import com.nle.constant.AccountStatus;
+import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.AppConstant;
 import com.nle.ui.model.DepoWorkerActivationDTO;
 import com.nle.ui.model.DepoWorkerLoginDto;
@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nle.constant.VerificationType.ACTIVE_ACCOUNT;
+import static com.nle.constant.enums.VerificationType.ACTIVE_ACCOUNT;
 
 @RequiredArgsConstructor
 @Service

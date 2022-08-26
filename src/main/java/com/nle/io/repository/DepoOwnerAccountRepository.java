@@ -1,7 +1,7 @@
 package com.nle.io.repository;
 
-import com.nle.constant.AccountStatus;
-import com.nle.constant.ApprovalStatus;
+import com.nle.constant.enums.AccountStatus;
+import com.nle.constant.enums.ApprovalStatus;
 import com.nle.io.entity.DepoOwnerAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,6 @@
 package com.nle.service;
 
-import com.nle.constant.VerificationType;
+import com.nle.constant.enums.VerificationType;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.VerificationToken;
 

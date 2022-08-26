@@ -1,6 +1,6 @@
 package com.nle.io.repository;
 
-import com.nle.constant.VerificationType;
+import com.nle.constant.enums.VerificationType;
 import com.nle.io.entity.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

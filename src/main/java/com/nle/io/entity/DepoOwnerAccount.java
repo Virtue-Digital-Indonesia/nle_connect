@@ -1,7 +1,7 @@
 package com.nle.io.entity;
 
-import com.nle.constant.AccountStatus;
-import com.nle.constant.ApprovalStatus;
+import com.nle.constant.enums.AccountStatus;
+import com.nle.constant.enums.ApprovalStatus;
 import com.nle.constant.enums.TaxMinistryStatusEnum;
 import com.nle.io.entity.common.AbstractAuditingEntity;
 import lombok.Getter;

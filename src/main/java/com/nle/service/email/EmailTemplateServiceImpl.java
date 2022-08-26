@@ -1,6 +1,6 @@
 package com.nle.service.email;
 
-import com.nle.constant.EmailType;
+import com.nle.constant.enums.EmailType;
 import com.nle.io.entity.EmailTemplate;
 import com.nle.io.repository.EmailTemplateRepository;
 import com.nle.service.dto.EmailTemplateDto;

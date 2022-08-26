@@ -1,7 +1,7 @@
 package com.nle.ui.controller.applicant;
 
-import com.nle.constant.AccountStatus;
-import com.nle.constant.ApprovalStatus;
+import com.nle.constant.enums.AccountStatus;
+import com.nle.constant.enums.ApprovalStatus;
 import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.response.ApplicantResponse;
