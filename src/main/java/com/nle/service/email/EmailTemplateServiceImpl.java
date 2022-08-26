@@ -1,8 +1,8 @@
 package com.nle.service.email;
 
 import com.nle.constant.EmailType;
-import com.nle.entity.EmailTemplate;
-import com.nle.repository.EmailTemplateRepository;
+import com.nle.io.entity.EmailTemplate;
+import com.nle.io.repository.EmailTemplateRepository;
 import com.nle.service.dto.EmailTemplateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;

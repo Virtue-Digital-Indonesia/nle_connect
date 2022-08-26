@@ -1,6 +1,6 @@
 package com.nle.mapper;
 
-import com.nle.entity.DepoWorkerAccount;
+import com.nle.io.entity.DepoWorkerAccount;
 import com.nle.service.dto.DepoWorkerAccountDTO;
 import org.mapstruct.Mapper;
 

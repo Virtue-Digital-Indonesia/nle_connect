@@ -2,16 +2,16 @@ package com.nle.service.applicant;
 
 import com.nle.constant.AccountStatus;
 import com.nle.constant.ApprovalStatus;
-import com.nle.controller.dto.ApplicantListReqDTO;
-import com.nle.controller.dto.pageable.PagingResponseModel;
-import com.nle.controller.dto.response.ApplicantDTO;
+import com.nle.ui.model.ApplicantListReqDTO;
+import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.response.ApplicantResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface ApplicantService {
-    PagingResponseModel<ApplicantDTO> findAll(ApplicantListReqDTO applicantListReqDTO, Pageable pageable);
+    PagingResponseModel<ApplicantResponse> findAll(ApplicantListReqDTO applicantListReqDTO, Pageable pageable);
 
-    ApplicantDTO updateApprovalStatus(Long applicantId, ApprovalStatus approvalStatus);
+    ApplicantResponse updateApprovalStatus(Long applicantId, ApprovalStatus approvalStatus);
 
-    ApplicantDTO updateAccountStatus(Long applicantId, AccountStatus accountStatus);
+    ApplicantResponse updateAccountStatus(Long applicantId, AccountStatus accountStatus);
 
 }

@@ -1,12 +1,12 @@
 package com.nle.service.admin;
 
-import com.nle.controller.dto.JWTToken;
-import com.nle.controller.dto.admin.AdminLoginDTO;
-import com.nle.controller.dto.admin.AdminProfileDTO;
-import com.nle.entity.admin.Admin;
+import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.admin.AdminLoginDTO;
+import com.nle.ui.model.admin.AdminProfileDTO;
+import com.nle.io.entity.admin.Admin;
 import com.nle.exception.CommonException;
 import com.nle.exception.ResourceNotFoundException;
-import com.nle.repository.AdminRepository;
+import com.nle.io.repository.AdminRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;

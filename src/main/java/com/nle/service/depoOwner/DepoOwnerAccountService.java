@@ -1,8 +1,8 @@
 package com.nle.service.depoOwner;
 
 import com.nle.constant.AccountStatus;
-import com.nle.controller.dto.ActiveDto;
-import com.nle.entity.DepoOwnerAccount;
+import com.nle.ui.model.ActiveDto;
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.service.dto.DepoOwnerAccountDTO;
 import com.nle.service.dto.DepoOwnerAccountProfileDTO;
 

@@ -1,8 +1,8 @@
 package com.nle.service;
 
 import com.nle.constant.VerificationType;
-import com.nle.entity.DepoOwnerAccount;
-import com.nle.entity.VerificationToken;
+import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.io.entity.VerificationToken;
 
 import java.util.Optional;
 

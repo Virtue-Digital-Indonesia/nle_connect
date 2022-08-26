@@ -1,9 +1,9 @@
 package com.nle.service.shippingline;
 
-import com.nle.entity.ShippingLine;
+import com.nle.io.entity.ShippingLine;
 import com.nle.exception.ResourceNotFoundException;
 import com.nle.mapper.ShippingLineMapper;
-import com.nle.repository.ShippingLineRepository;
+import com.nle.io.repository.ShippingLineRepository;
 import com.nle.service.dto.ShippingLineDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.nle.service.dto;
 
-import com.nle.entity.common.AbstractAuditingEntity;
+import com.nle.io.entity.common.AbstractAuditingEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

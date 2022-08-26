@@ -2,11 +2,11 @@ package com.nle.service;
 
 import com.nle.constant.AppConstant;
 import com.nle.constant.VerificationType;
-import com.nle.entity.DepoOwnerAccount;
-import com.nle.entity.VerificationToken;
+import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.io.entity.VerificationToken;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.ResourceNotFoundException;
-import com.nle.repository.VerificationTokenRepository;
+import com.nle.io.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

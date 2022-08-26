@@ -2,12 +2,12 @@ package com.nle.service.applicant;
 
 import com.nle.constant.AccountStatus;
 import com.nle.constant.ApprovalStatus;
-import com.nle.controller.dto.ApplicantListReqDTO;
-import com.nle.controller.dto.pageable.PagingResponseModel;
-import com.nle.controller.dto.response.ApplicantDTO;
-import com.nle.entity.DepoOwnerAccount;
+import com.nle.ui.model.ApplicantListReqDTO;
+import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.exception.ResourceNotFoundException;
-import com.nle.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.DepoOwnerAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
     @Override
-    public PagingResponseModel<ApplicantDTO> findAll(ApplicantListReqDTO applicantListReqDTO, Pageable pageable) {
+    public PagingResponseModel<ApplicantResponse> findAll(ApplicantListReqDTO applicantListReqDTO, Pageable pageable) {
         List<ApprovalStatus> approvalStatuses = null;
         if (applicantListReqDTO.getFrom() == null) {
             applicantListReqDTO.setFrom(EPOCH_TIME);
@@ -50,7 +50,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public ApplicantDTO updateApprovalStatus(Long applicantId, ApprovalStatus approvalStatus) {
+    public ApplicantResponse updateApprovalStatus(Long applicantId, ApprovalStatus approvalStatus) {
         Optional<DepoOwnerAccount> depoOwnerAccountOptional = depoOwnerAccountRepository.findById(applicantId);
         if (depoOwnerAccountOptional.isEmpty()) {
             throw new ResourceNotFoundException("Applicant with id: '" + applicantId + "' doesn't exist");
@@ -62,7 +62,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public ApplicantDTO updateAccountStatus(Long applicantId, AccountStatus accountStatus) {
+    public ApplicantResponse updateAccountStatus(Long applicantId, AccountStatus accountStatus) {
         Optional<DepoOwnerAccount> depoOwnerAccountOptional = depoOwnerAccountRepository.findById(applicantId);
         if (depoOwnerAccountOptional.isEmpty()) {
             throw new ResourceNotFoundException("Applicant with id: '" + applicantId + "' doesn't exist");
@@ -73,9 +73,9 @@ public class ApplicantServiceImpl implements ApplicantService {
         return convertFromEntity(updatedDepoOwnerAccount);
     }
 
-    public ApplicantDTO convertFromEntity(DepoOwnerAccount depoOwnerAccount) {
-        ApplicantDTO applicantDTO = new ApplicantDTO();
-        BeanUtils.copyProperties(depoOwnerAccount, applicantDTO);
-        return applicantDTO;
+    public ApplicantResponse convertFromEntity(DepoOwnerAccount depoOwnerAccount) {
+        ApplicantResponse applicantResponse = new ApplicantResponse();
+        BeanUtils.copyProperties(depoOwnerAccount, applicantResponse);
+        return applicantResponse;
     }
 }
