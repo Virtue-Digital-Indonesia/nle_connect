@@ -35,6 +35,8 @@ public class EmailServiceImpl implements EmailService {
     private final AppProperties appProperties;
     private final JavaMailSender javaMailSender;
 
+    private String ALT_IMAGE2 = "https://lh3.googleusercontent.com/XKrvxht3-WGL8BuY9q2pDvl0jZi4ZWlG8fbdDPO5eMZE8Or8AEJFZhFLK8MGNrXu3-ng-QS6oH_jljbWcseZy62CWp0mu4i1H4vvRRxgml4cp7_vwGqXlY2W8CrqR1dGkoJpGewNgnVYMw1KYzd2pWKdmQH-EjKDYNR0wwxZc-ucQoQA6Q_0xx1DYiJo3-y-FlpEatQEVt_RuUw5WQz-3iL9NklO_qXvc7z3jK_fZoJm20Q199iUOhG1UmerKWOl4w65jLiOmhyal7AHthbaC8N0jZ4wpVCdr84ZDLgYSLNbEXic8FZYxDc4lID1PvVd1FNjDVwhLLp-eRxxfWL6DdWtOWuxBwuIdCIOA1Wflrd0zzF1wFSH32TJ22T1KbOc1-1yJH2rAxbNqFHZaHMRDeqW1pS971CDj9BhaoU-E3udZ69ZB9uYF4SxlshBigH_fbCHdR5Uhi-e4RlWK8W2y2UYfRLq6sHVbjP6qBncEQT0wjS6dyukuyUofkvhSzmwXYyFzd0sfQdiekZOxNRIwmJL_Rb558EiTDF38udITh7itnzEthjfI82Al0Ku27jh3bsavSLTC1PhyWIOLz3py22-g7q9GZFx1-ysgWNQ8vctXwczcB1UERqTXpAMqGqy9aBJJZcMfaDbn07i9980yqc87nxa50bAL99qbDMuD25F30204BesZGIVYYr9ubNyvZl78Ni5UIVsDW97qH2T1VO05sfKf9N_CMHdqF9RmDfjYeqClnPhi5hY84gDYA=w26-h21-no?authuser=0";
+
     @Override
     public void sendDepoOwnerActiveEmail(DepoOwnerAccount depoOwnerAccount, String token) {
         Map<String, String> params = new HashMap<>();
@@ -105,6 +107,17 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private EmailDTO buildEmailDTO(EmailTemplateDto activeEmailTemplate, Map<String, String> params, String email) {
+
+        //set Image
+        params.put("IMAGE_TITLE", "https://api.nle-connect.id/product-nle-connect-uppercase.png");
+        params.put("MAIL_IMAGE", "https://api.nle-connect.id/mail.png");
+        params.put("PHONE_IMAGE", "https://api.nle-connect.id/phone.png");
+        params.put("WEB_IMAGE", "https://api.nle-connect.id/web.png");
+        params.put("FACEBOOK_IMAGE", "https://api.nle-connect.id/facebook.png");
+        params.put("INSTAGRAM_IMAGE", "https://api.nle-connect.id/template-instagram.png");
+        params.put("LINKEDIN_IMAGE", "https://api.nle-connect.id/template-linkedin.png");
+
+        //build emailDTO
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setFrom(activeEmailTemplate.getSendFrom());
         emailDTO.setTo(email);
