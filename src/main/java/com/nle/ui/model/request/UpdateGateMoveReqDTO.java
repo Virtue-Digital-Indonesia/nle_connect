@@ -1,6 +1,6 @@
 package com.nle.ui.model.request;
 
-import com.nle.service.dto.ftp.MoveDTO;
+import com.nle.shared.dto.ftp.MoveDTO;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

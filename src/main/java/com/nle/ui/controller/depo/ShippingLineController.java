@@ -1,7 +1,7 @@
 package com.nle.ui.controller.depo;
 
-import com.nle.service.dto.ShippingLineDTO;
-import com.nle.service.shippingline.ShippingLineService;
+import com.nle.shared.dto.ShippingLineDTO;
+import com.nle.shared.service.shippingline.ShippingLineService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;

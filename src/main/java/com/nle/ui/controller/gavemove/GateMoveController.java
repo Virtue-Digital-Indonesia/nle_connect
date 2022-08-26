@@ -9,7 +9,7 @@ import com.nle.ui.model.response.GateMoveResponseDTO;
 import com.nle.ui.model.response.UpdatedGateMoveResponseDTO;
 import com.nle.io.repository.dto.MoveStatistic;
 import com.nle.io.repository.dto.ShippingLineStatistic;
-import com.nle.service.gatemove.GateMoveService;
+import com.nle.shared.service.gatemove.GateMoveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.nle.ui.controller.ftp;
 
 import com.nle.ui.controller.depo.InventoryController;
-import com.nle.service.ftp.FTPService;
-import com.nle.service.tax.TaxMinistryService;
+import com.nle.shared.service.ftp.FTPService;
+import com.nle.shared.service.tax.TaxMinistryService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;

@@ -3,7 +3,7 @@ package com.nle.ui.controller.admin;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.admin.AdminLoginDTO;
 import com.nle.ui.model.admin.AdminProfileDTO;
-import com.nle.service.admin.AdminService;
+import com.nle.shared.service.admin.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;

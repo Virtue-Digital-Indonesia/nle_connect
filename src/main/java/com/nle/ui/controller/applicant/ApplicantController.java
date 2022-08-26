@@ -5,7 +5,7 @@ import com.nle.constant.enums.ApprovalStatus;
 import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.response.ApplicantResponse;
-import com.nle.service.applicant.ApplicantService;
+import com.nle.shared.service.applicant.ApplicantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;

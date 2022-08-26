@@ -2,7 +2,7 @@ package com.nle.ui.controller.depo;
 
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.response.GateMoveResponseDTO;
-import com.nle.service.gatemove.GateMoveService;
+import com.nle.shared.service.gatemove.GateMoveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
