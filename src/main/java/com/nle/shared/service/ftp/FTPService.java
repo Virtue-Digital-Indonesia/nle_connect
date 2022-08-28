@@ -105,6 +105,7 @@ public class FTPService {
             if (ftpFile.getName().endsWith(".csv")) {
                 List<FtpFile> allByFileName = ftpFileRepository.findAllByFileName(depoOwnerAccount.getCompanyEmail() + "_" + ftpFile.getName());
                 if (!allByFileName.isEmpty()) {
+                    //TODO INFO FILE NAME IS ALREADY USED
                     log.info("Ignore processed file {}", ftpFile.getName());
                 } else {
                     try (OutputStream os = new FileOutputStream(ftpFile.getName())) {
@@ -160,13 +161,14 @@ public class FTPService {
                     } catch (IOException e) {
                         log.error("Error while sync data from ftp server FTP server", e);
                     }
-                }
 
-                //delete in ftp server
-                try {
-                    client.deleteFile(ftpFile.getName());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    //delete in ftp server
+                    try {
+                        client.deleteFile(ftpFile.getName());
+                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+                        log.error("Error while delete file in ftp server", e);
+                    }
                 }
             }
         }
