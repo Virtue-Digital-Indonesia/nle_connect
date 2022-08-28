@@ -152,6 +152,7 @@ public class FTPService {
                             newFile.setImportDate(LocalDateTime.now());
                             newFile.setDepoOwnerAccount(depoOwnerAccount);
                             ftpFileRepository.save(newFile);
+                            //delete in local
                             Files.deleteIfExists(localFilePath);
                         } catch (Exception exception) {
                             log.error("Error while sync data from ftp server FTP server", exception);
@@ -160,8 +161,20 @@ public class FTPService {
                         log.error("Error while sync data from ftp server FTP server", e);
                     }
                 }
+
+                //delete in ftp server
+                try {
+                    client.deleteFile(ftpFile.getName());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
+    }
+
+    private boolean validation () {
+        //TODO validation for check ftp file is true
+        return true;
     }
 
 }
