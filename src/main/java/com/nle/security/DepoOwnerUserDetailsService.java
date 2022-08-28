@@ -1,8 +1,8 @@
 package com.nle.security;
 
-import com.nle.entity.DepoOwnerAccount;
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.exception.CommonException;
-import com.nle.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.DepoOwnerAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;

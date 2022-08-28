@@ -1,7 +1,7 @@
 package com.nle.mapper;
 
-import com.nle.entity.ShippingLine;
-import com.nle.service.dto.ShippingLineDTO;
+import com.nle.io.entity.ShippingLine;
+import com.nle.shared.dto.ShippingLineDTO;
 import org.mapstruct.Mapper;
 
 /**

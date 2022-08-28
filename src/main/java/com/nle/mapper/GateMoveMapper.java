@@ -1,7 +1,7 @@
 package com.nle.mapper;
 
-import com.nle.entity.GateMove;
-import com.nle.service.dto.ftp.MoveDTO;
+import com.nle.io.entity.GateMove;
+import com.nle.shared.dto.ftp.MoveDTO;
 import org.mapstruct.Mapper;
 
 /**

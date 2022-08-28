@@ -1,9 +1,9 @@
 package com.nle.util;
 
 import com.nle.constant.AppConstant;
-import com.nle.constant.GateMoveSource;
-import com.nle.entity.GateMove;
-import com.nle.service.dto.ftp.MoveDTO;
+import com.nle.constant.enums.GateMoveSource;
+import com.nle.io.entity.GateMove;
+import com.nle.shared.dto.ftp.MoveDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
