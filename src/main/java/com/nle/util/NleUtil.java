@@ -41,6 +41,9 @@ public class NleUtil {
         gateMove.setStatus(AppConstant.Status.WAITING);
         gateMove.setNleId(UUID.randomUUID().toString());
         gateMove.setSource(gateMoveSource);
+        gateMove.setRemarks(moveDTO.getRemarks());
+        gateMove.setDiscarge_port(moveDTO.getDiscarge_port());
+        gateMove.setDamageBy(moveDTO.getDamageBy());
         return gateMove;
     }
 
