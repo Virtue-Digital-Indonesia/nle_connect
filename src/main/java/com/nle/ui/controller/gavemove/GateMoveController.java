@@ -1,5 +1,6 @@
 package com.nle.ui.controller.gavemove;
 
+import com.nle.constant.enums.GateMoveSource;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateGateMoveReqDTO;
 import com.nle.ui.model.request.UpdateGateMoveReqDTO;
@@ -49,7 +50,7 @@ public class GateMoveController {
     public ResponseEntity<CreatedGateMoveResponseDTO> createGateMove(@Valid @RequestBody CreateGateMoveReqDTO gateMoveCreateDTO)
             throws URISyntaxException {
         log.debug("REST request to save GateMove : {}", gateMoveCreateDTO);
-        CreatedGateMoveResponseDTO createdGateMove = gateMoveService.createGateMove(gateMoveCreateDTO);
+        CreatedGateMoveResponseDTO createdGateMove = gateMoveService.createGateMove(gateMoveCreateDTO, GateMoveSource.API);
         return ResponseEntity
                 .created(new URI("/api/gate-moves/" + createdGateMove.getId()))
                 .body(createdGateMove);
@@ -75,7 +76,7 @@ public class GateMoveController {
     @SecurityRequirement(name = "nleapi")
     @PutMapping
     public ResponseEntity<UpdatedGateMoveResponseDTO> updateGateMove(@Valid @RequestBody UpdateGateMoveReqDTO gateMoveDTO) {
-        return ResponseEntity.ok(gateMoveService.updateGateMove(gateMoveDTO));
+        return ResponseEntity.ok(gateMoveService.updateGateMove(gateMoveDTO, GateMoveSource.API));
     }
 
     @Operation(description = "Count total GateMove by type", operationId = "countTotalGateMoveByType", summary = "Count total GateMove by type")
@@ -99,7 +100,8 @@ public class GateMoveController {
             @RequestBody GateMoveSearchRequest request,
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
-            }) Pageable pageable) {
+            })
+            Pageable pageable) {
         return ResponseEntity.ok(gateMoveService.searchByCondition(pageable, request));
     }
 

@@ -30,17 +30,47 @@ public class NleUtil {
         if (moveDTO.getTx_date() != null) {
             if (GateMoveSource.MOBILE == gateMoveSource) {
                 gateMove.setTxDateFormatted(LocalDateTime.parse(moveDTO.getTx_date(), DATE_TIME_FORMATTER));
+                gateMove.setLatitude(moveDTO.getLatitude());
+                gateMove.setLongitude(moveDTO.getLongitude());
+            } else if (GateMoveSource.API == gateMoveSource) {
+                gateMove.setTxDateFormatted(LocalDateTime.parse(moveDTO.getTx_date(), DATE_TIME_FORMATTER));
             } else if (GateMoveSource.FTP_SERVER == gateMoveSource) {
                 gateMove.setTxDateFormatted(formatTxDate(moveDTO.getTx_date()));
             }
         }
-        gateMove.setGateMoveType(transformProcessTypeToGateMoveType(moveDTO.getProcess_type()));
+        //copy variable
+        gateMove.setTx_date(moveDTO.getTx_date());
+        gateMove.setProcess_type(moveDTO.getProcess_type());
+        gateMove.setDepot(moveDTO.getDepot());
+        gateMove.setFleet_manager(moveDTO.getFleet_manager());
+        gateMove.setContainer_number(moveDTO.getContainer_number());
+        gateMove.setIso_code(moveDTO.getIso_code());
+        gateMove.setCondition(moveDTO.getCondition());
         gateMove.setClean("yes".equalsIgnoreCase(moveDTO.getClean()) || "true".equalsIgnoreCase(moveDTO.getClean()));
+        gateMove.setGrade(moveDTO.getGrade());
+        gateMove.setDamageBy(moveDTO.getDamageBy());
+        gateMove.setAmount(moveDTO.getAmount());
+        gateMove.setOrder_number(moveDTO.getOrder_number());
+        gateMove.setCustomer(moveDTO.getCustomer());
+        gateMove.setVessel(moveDTO.getVessel());
+        gateMove.setVoyage(moveDTO.getVoyage());
+        gateMove.setDiscarge_port(moveDTO.getDiscarge_port());
+        gateMove.setCarrier(moveDTO.getCarrier());
+        gateMove.setTransport_number(moveDTO.getTransport_number());
         gateMove.setTare(moveDTO.getTare());
         gateMove.setPayload(moveDTO.getPayload());
+        gateMove.setDate_manufacturer(moveDTO.getDate_manufacturer());
+        gateMove.setRemarks(moveDTO.getRemarks());
+        gateMove.setDelivery_port(moveDTO.getDelivery_port());
+        gateMove.setDriver_name(moveDTO.getDriver_name());
+        gateMove.setMax_gross(moveDTO.getMax_gross());
+//        gateMove.setLinkToGoogleMap(moveDTO.getLink);
+        gateMove.setGateMoveType(transformProcessTypeToGateMoveType(moveDTO.getProcess_type()));
         gateMove.setStatus(AppConstant.Status.WAITING);
         gateMove.setNleId(UUID.randomUUID().toString());
         gateMove.setSource(gateMoveSource);
+
+
         return gateMove;
     }
 

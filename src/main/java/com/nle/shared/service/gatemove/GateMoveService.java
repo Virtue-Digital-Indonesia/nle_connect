@@ -1,5 +1,6 @@
 package com.nle.shared.service.gatemove;
 
+import com.nle.constant.enums.GateMoveSource;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateGateMoveReqDTO;
 import com.nle.ui.model.request.UpdateGateMoveReqDTO;
@@ -16,9 +17,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface GateMoveService {
-    CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO);
+    CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO, GateMoveSource source);
 
-    UpdatedGateMoveResponseDTO updateGateMove(UpdateGateMoveReqDTO updateGateMoveReqDTO);
+    UpdatedGateMoveResponseDTO updateGateMove(UpdateGateMoveReqDTO updateGateMoveReqDTO, GateMoveSource source);
 
     void uploadFile(MultipartFile[] files, Long gateMoveId);
 

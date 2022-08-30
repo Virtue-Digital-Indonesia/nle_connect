@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public enum GateMoveSource {
     MOBILE,
-    FTP_SERVER
+    FTP_SERVER,
+    API
 }
