@@ -105,7 +105,7 @@ public class GateMoveController {
     @Parameters({
             @Parameter (in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
             @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
-            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id")
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
     })
     @PostMapping(value = "/search")
     public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> searchGateMove(
