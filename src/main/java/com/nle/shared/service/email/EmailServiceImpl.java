@@ -107,6 +107,17 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendResetPassword(DepoOwnerAccount depoOwnerAccount, String token) {
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setFrom("noreply@transporta.id");
+        emailDTO.setTo(depoOwnerAccount.getCompanyEmail());
+        emailDTO.setSubject("Reset Password");
+        emailDTO.setTemplateName("RESET_PASSWORD");
+        emailDTO.setTemplateContent("Test new Token : " + token);
+        sendSimpleEmail(emailDTO);
+    };
+
     private EmailDTO buildEmailDTO(EmailTemplateDto activeEmailTemplate, Map<String, String> params, String email) {
 
         //set Image

@@ -4,6 +4,7 @@ import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.constant.enums.VerificationType;
 import com.nle.constant.enums.TaxMinistryStatusEnum;
+import com.nle.security.jwt.TokenProvider;
 import com.nle.ui.model.ActiveDto;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.VerificationToken;
@@ -18,6 +19,7 @@ import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
 import com.nle.shared.service.ftp.SSHService;
+import com.nle.ui.model.JWTToken;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -53,6 +55,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     private final VerificationTokenRepository verificationTokenRepository;
 
     private final SSHService sshService;
+    private final TokenProvider tokenProvider;
 
     @Override
     public DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO) {
@@ -155,4 +158,15 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         BeanUtils.copyProperties(depoOwnerAccount.get(), depoOwnerAccountProfileDTO);
         return depoOwnerAccountProfileDTO;
     }
+
+    @Override
+    public JWTToken resetPassword (String email) {
+        Optional<DepoOwnerAccount> optionalDepoOwnerAccount = findByCompanyEmail(email);
+        String token = null;
+        if (!optionalDepoOwnerAccount.isEmpty()) {
+            token = tokenProvider.generateRandomToken();
+            emailService.sendResetPassword(optionalDepoOwnerAccount.get(), token);
+        }
+        return new JWTToken(token);
+    };
 }

@@ -35,13 +35,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -178,6 +172,12 @@ public class DepoOwnerController {
     @SecurityRequirement(name = "nleapi")
     public ResponseEntity<DepoOwnerAccountProfileDTO> getDepoOwnerAccountProfile() {
         return ResponseEntity.ok(depoOwnerAccountService.getProfileDetails());
+    }
+
+    @Operation(description = "reset password, send token to email", operationId = "resetPassword", summary = "reset password, send token to email")
+    @PostMapping(value = "/reset-password")
+    public ResponseEntity<JWTToken> generateResetToken (@RequestParam String email) {
+        return ResponseEntity.ok(depoOwnerAccountService.resetPassword(email));
     }
 
 }

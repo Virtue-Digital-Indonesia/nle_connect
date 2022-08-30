@@ -17,4 +17,6 @@ public interface EmailService {
     // void sendDepoWorkerApproveEmail(String workerFullName, String depoOwnerFullName, String email);
 
     void sendFTPSynErrorEmail(DepoOwnerAccount depoOwnerAccount, List<FtpMoveDTOError> errors);
+
+    void sendResetPassword(DepoOwnerAccount depoOwnerAccount, String token);
 }

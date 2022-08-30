@@ -103,4 +103,8 @@ public class TokenProvider {
         }
         return false;
     }
+
+    public String generateRandomToken () {
+        return "random";
+    }
 }
