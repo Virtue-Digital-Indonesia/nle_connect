@@ -12,12 +12,17 @@ import com.nle.io.repository.dto.MoveStatistic;
 import com.nle.io.repository.dto.ShippingLineStatistic;
 import com.nle.shared.service.gatemove.GateMoveService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -93,15 +98,22 @@ public class GateMoveController {
         return ResponseEntity.ok(gateMoveService.countTotalGateMoveByShippingLine());
     }
 
-    @Operation(description = "global search Gate Move by Query", operationId = "searchGateMove", summary = "global search gate move by query")
+    @Operation(description = "global search Gate Move by Query",
+            operationId = "searchGateMove",
+            summary = "global search gate move by query")
     @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter (in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id")
+    })
     @PostMapping(value = "/search")
     public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> searchGateMove(
             @RequestBody GateMoveSearchRequest request,
-            @SortDefault.SortDefaults({
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             })
-            Pageable pageable) {
+            @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.ok(gateMoveService.searchByCondition(pageable, request));
     }
 
