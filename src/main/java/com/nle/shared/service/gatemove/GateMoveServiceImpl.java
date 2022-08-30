@@ -67,8 +67,8 @@ public class GateMoveServiceImpl implements GateMoveService {
     private final DepoOwnerAccountService depoOwnerAccountService;
 
     @Override
-    public CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO) {
-        GateMove gateMove = NleUtil.convertToGateMoveEntity(createGateMoveReqDTO, GateMoveSource.MOBILE);
+    public CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO, GateMoveSource source) {
+        GateMove gateMove = NleUtil.convertToGateMoveEntity(createGateMoveReqDTO, source);
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
@@ -81,12 +81,12 @@ public class GateMoveServiceImpl implements GateMoveService {
     }
 
     @Override
-    public UpdatedGateMoveResponseDTO updateGateMove(UpdateGateMoveReqDTO updateGateMoveReqDTO) {
+    public UpdatedGateMoveResponseDTO updateGateMove(UpdateGateMoveReqDTO updateGateMoveReqDTO, GateMoveSource source) {
         Optional<GateMove> gateMoveOptional = gateMoveRepository.findById(updateGateMoveReqDTO.getId());
         if (gateMoveOptional.isEmpty()) {
             throw new ResourceNotFoundException("Gate move with id '" + updateGateMoveReqDTO.getId() + "' doesn't exist");
         }
-        GateMove gateMove = NleUtil.convertToGateMoveEntity(updateGateMoveReqDTO, GateMoveSource.MOBILE);
+        GateMove gateMove = NleUtil.convertToGateMoveEntity(updateGateMoveReqDTO, source);
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent()) {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
