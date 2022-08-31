@@ -74,7 +74,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private String grade;
 
     @Column(name = "damage_by")
-    private String damageBy;
+    private String damage_by;
 
     @Column(name = "amount")
     private Long amount;
@@ -92,7 +92,7 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     private String voyage;
 
     @Column(name = "discarge_port")
-    private String discarge_port;
+    private String discharge_port;
 
     @Column(name = "carrier")
     private String carrier;
