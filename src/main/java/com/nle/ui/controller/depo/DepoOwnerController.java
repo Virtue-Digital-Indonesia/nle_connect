@@ -22,6 +22,7 @@ import com.nle.shared.service.depoWorker.DepoWorkerAccountService;
 import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
+import com.nle.ui.model.request.ForgotPasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -178,6 +179,12 @@ public class DepoOwnerController {
     @PostMapping(value = "/reset-password")
     public ResponseEntity<JWTToken> generateResetToken (@RequestParam String email) {
         return ResponseEntity.ok(depoOwnerAccountService.resetPasswordToken(email));
+    }
+
+    @Operation(description = "change password for forgot password", operationId = "resetPassword", summary = "change password for forgot password")
+    @PostMapping(value = "/forgot-password")
+    public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest request) {
+        return ResponseEntity.ok(request.getToken());
     }
 
 }

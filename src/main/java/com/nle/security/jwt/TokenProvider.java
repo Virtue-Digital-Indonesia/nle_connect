@@ -1,6 +1,7 @@
 package com.nle.security.jwt;
 
 import com.nle.config.prop.AppProperties;
+import com.nle.io.entity.DepoOwnerAccount;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
@@ -104,7 +105,18 @@ public class TokenProvider {
         return false;
     }
 
-    public String generateRandomToken () {
-        return "random";
+    public String generateManualToken (DepoOwnerAccount depoOwnerAccount, String authority) {
+
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+
+        return Jwts
+                .builder()
+                .setSubject(depoOwnerAccount.getCompanyEmail())
+                .claim(AUTHORITIES_KEY, authority)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(validity)
+                .compact();
+
     }
 }
