@@ -177,7 +177,7 @@ public class DepoOwnerController {
     @Operation(description = "reset password, send token to email", operationId = "resetPassword", summary = "reset password, send token to email")
     @PostMapping(value = "/reset-password")
     public ResponseEntity<JWTToken> generateResetToken (@RequestParam String email) {
-        return ResponseEntity.ok(depoOwnerAccountService.resetPassword(email));
+        return ResponseEntity.ok(depoOwnerAccountService.resetPasswordToken(email));
     }
 
 }

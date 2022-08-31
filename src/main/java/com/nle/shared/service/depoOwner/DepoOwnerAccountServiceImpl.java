@@ -160,7 +160,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     }
 
     @Override
-    public JWTToken resetPassword (String email) {
+    public JWTToken resetPasswordToken (String email) {
         Optional<DepoOwnerAccount> optionalDepoOwnerAccount = findByCompanyEmail(email);
         String token = null;
         if (!optionalDepoOwnerAccount.isEmpty()) {

@@ -109,12 +109,13 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendResetPassword(DepoOwnerAccount depoOwnerAccount, String token) {
-        EmailDTO emailDTO = new EmailDTO();
-        emailDTO.setFrom("noreply@transporta.id");
-        emailDTO.setTo(depoOwnerAccount.getCompanyEmail());
-        emailDTO.setSubject("Reset Password");
-        emailDTO.setTemplateName("RESET_PASSWORD");
-        emailDTO.setTemplateContent("Test new Token : " + token);
+        Map<String, String> params = new HashMap<>();
+        params.put("fullname", depoOwnerAccount.getFullName());
+//        params.put("activeUrl", appProperties.getUrl().getActiveUrl() + token);
+        params.put("activeUrl", "https://nle-connect.id/reset-password?token=" + token);
+        // get email template content from DB
+        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.RESET_PASSWORD);
+        EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, depoOwnerAccount.getCompanyEmail());
         sendSimpleEmail(emailDTO);
     };
 

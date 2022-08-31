@@ -28,5 +28,5 @@ public interface DepoOwnerAccountService {
 
     DepoOwnerAccountProfileDTO getProfileDetails();
 
-    JWTToken resetPassword(String email);
+    JWTToken resetPasswordToken(String email);
 }
