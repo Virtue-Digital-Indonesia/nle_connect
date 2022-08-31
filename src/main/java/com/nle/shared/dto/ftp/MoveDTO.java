@@ -41,7 +41,7 @@ public class MoveDTO {
     @NotNull(message = "grade can not be null")
     private String grade;
 
-    private String damageBy;
+    private String damage_by;
 
     private Long amount;
 
@@ -53,7 +53,7 @@ public class MoveDTO {
 
     private String vessel;
     private String voyage;
-    private String discarge_port;
+    private String discharge_port;
 
     @NotNull(message = "carrier can not be null")
     private String carrier;

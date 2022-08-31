@@ -48,13 +48,13 @@ public class NleUtil {
         gateMove.setCondition(moveDTO.getCondition());
         gateMove.setClean("yes".equalsIgnoreCase(moveDTO.getClean()) || "true".equalsIgnoreCase(moveDTO.getClean()));
         gateMove.setGrade(moveDTO.getGrade());
-        gateMove.setDamageBy(moveDTO.getDamageBy());
+        gateMove.setDamageBy(moveDTO.getDamage_by());
         gateMove.setAmount(moveDTO.getAmount());
         gateMove.setOrder_number(moveDTO.getOrder_number());
         gateMove.setCustomer(moveDTO.getCustomer());
         gateMove.setVessel(moveDTO.getVessel());
         gateMove.setVoyage(moveDTO.getVoyage());
-        gateMove.setDiscarge_port(moveDTO.getDiscarge_port());
+        gateMove.setDiscarge_port(moveDTO.getDischarge_port());
         gateMove.setCarrier(moveDTO.getCarrier());
         gateMove.setTransport_number(moveDTO.getTransport_number());
         gateMove.setTare(moveDTO.getTare());
