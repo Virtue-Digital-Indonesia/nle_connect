@@ -167,6 +167,8 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
             token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get(), "RESET_PASSWORD");
             emailService.sendResetPassword(optionalDepoOwnerAccount.get(), token);
         }
+        else
+            throw new BadRequestException("Email is not register!");
         return new JWTToken(token);
     };
 
@@ -174,24 +176,24 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     public String changeForgotPassword(ForgotPasswordRequest request, Map<String, String> token) {
 
         if (!token.get("auth").equals("RESET_PASSWORD"))
-            throw new BadRequestException("this is not token for reset password");
+            throw new BadRequestException("This is not token for reset password!");
 
-        if (request.getPassword() == null) throw new BadRequestException("password cannot be null");
+        if (request.getPassword() == null) throw new BadRequestException("Password cannot be null!");
 
         if (request.getPassword().isEmpty() || request.getConfirm_password().isEmpty())
-            throw new BadRequestException("password cannot be empty");
+            throw new BadRequestException("Password cannot be empty!");
 
         if (!request.getPassword().equals(request.getConfirm_password()))
-            throw new BadRequestException("invalid confirm password");
+            throw new BadRequestException("Invalid confirm password!");
 
         String email = token.get("sub");
         Optional<DepoOwnerAccount> foundEntity = depoOwnerAccountRepository.findByCompanyEmail(email);
         if (foundEntity.isEmpty())
-            throw new BadRequestException("no depo owner with this email");
+            throw new BadRequestException("No depo owner with this email!");
 
         DepoOwnerAccount entity = foundEntity.get();
         entity.setPassword(passwordEncoder.encode(request.getPassword()));
         depoOwnerAccountRepository.save(entity);
-        return "Success to reset password with user email : " + email;
+        return "Success to reset password with user email : " + email + "!";
     };
 }
