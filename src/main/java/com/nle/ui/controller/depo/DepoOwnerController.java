@@ -189,7 +189,7 @@ public class DepoOwnerController {
     @PostMapping(value = "/forgot-password")
     public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest request) {
         Map<String, String> authBody = DecodeUtil.decodeToken(request.getToken());
-        return ResponseEntity.ok(request.getToken());
+        return ResponseEntity.ok(depoOwnerAccountService.changeForgotPassword(request, authBody));
     }
 
 }

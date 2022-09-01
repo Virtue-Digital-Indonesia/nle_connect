@@ -4,6 +4,7 @@ import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.constant.enums.VerificationType;
 import com.nle.constant.enums.TaxMinistryStatusEnum;
+import com.nle.exception.BadRequestException;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.ui.model.ActiveDto;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -20,6 +21,7 @@ import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
 import com.nle.shared.service.ftp.SSHService;
 import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.request.ForgotPasswordRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -29,9 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.nle.constant.AppConstant.VerificationStatus.ACTIVE;
 import static com.nle.constant.AppConstant.VerificationStatus.ALREADY_ACTIVE;
@@ -168,5 +168,27 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
             emailService.sendResetPassword(optionalDepoOwnerAccount.get(), token);
         }
         return new JWTToken(token);
+    };
+
+    @Override
+    public String changeForgotPassword(ForgotPasswordRequest request, Map<String, String> token) {
+
+        if (!token.get("auth").equals("RESET_PASSWORD"))
+            throw new BadRequestException("this is not token for reset password");
+
+        if (request.getPassword() == null) throw new BadRequestException("password cannot be null");
+
+        if (request.getPassword().isEmpty() || request.getConfirm_password().isEmpty())
+            throw new BadRequestException("password cannot be empty");
+
+        if (!request.getPassword().equals(request.getConfirm_password()))
+            throw new BadRequestException("invalid confirm password");
+
+        Optional<DepoOwnerAccount> entity = depoOwnerAccountRepository.findByCompanyEmail(token.get("sub"));
+        if (entity.isEmpty())
+            throw new BadRequestException("no depo owner with this email");
+
+
+        return "Success to reset password with user email : ";
     };
 }
