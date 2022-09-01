@@ -184,11 +184,14 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         if (!request.getPassword().equals(request.getConfirm_password()))
             throw new BadRequestException("invalid confirm password");
 
-        Optional<DepoOwnerAccount> entity = depoOwnerAccountRepository.findByCompanyEmail(token.get("sub"));
-        if (entity.isEmpty())
+        String email = token.get("sub");
+        Optional<DepoOwnerAccount> foundEntity = depoOwnerAccountRepository.findByCompanyEmail(email);
+        if (foundEntity.isEmpty())
             throw new BadRequestException("no depo owner with this email");
 
-
-        return "Success to reset password with user email : ";
+        DepoOwnerAccount entity = foundEntity.get();
+        entity.setPassword(passwordEncoder.encode(request.getPassword()));
+        depoOwnerAccountRepository.save(entity);
+        return "Success to reset password with user email : " + email;
     };
 }
