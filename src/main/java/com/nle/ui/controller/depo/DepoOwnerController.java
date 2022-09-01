@@ -23,6 +23,7 @@ import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
 import com.nle.ui.model.request.ForgotPasswordRequest;
+import com.nle.util.DecodeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.nle.constant.AppConstant.VerificationStatus.ALREADY_ACTIVE;
@@ -184,6 +188,7 @@ public class DepoOwnerController {
     @Operation(description = "change password for forgot password", operationId = "resetPassword", summary = "change password for forgot password")
     @PostMapping(value = "/forgot-password")
     public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest request) {
+        Map<String, String> authBody = DecodeUtil.decodeToken(request.getToken());
         return ResponseEntity.ok(request.getToken());
     }
 

@@ -164,7 +164,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         Optional<DepoOwnerAccount> optionalDepoOwnerAccount = findByCompanyEmail(email);
         String token = null;
         if (!optionalDepoOwnerAccount.isEmpty()) {
-            token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get(), "DEPO_OWNER");
+            token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get(), "RESET_PASSWORD");
             emailService.sendResetPassword(optionalDepoOwnerAccount.get(), token);
         }
         return new JWTToken(token);
