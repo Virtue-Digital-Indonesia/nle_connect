@@ -23,6 +23,7 @@ import com.nle.io.repository.dto.ShippingLineStatistic;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.depoOwner.DepoOwnerAccountService;
 import com.nle.shared.service.s3.S3StoreService;
+import com.nle.ui.model.response.count.CountResponse;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -229,5 +230,18 @@ public class GateMoveServiceImpl implements GateMoveService {
         }
         return gateMoveResponseDTO;
     }
+
+    public CountResponse countTotalGateMoveByDuration(Double duration){
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        Double totalAll = 0.0;
+        if (currentUserLogin.isPresent()) {
+            String email = currentUserLogin.get();
+            List<GateMove> gateMoves = gateMoveRepository.findAll();
+        }
+
+        return CountResponse.builder()
+                .total_moves(totalAll)
+                .build();
+    };
 
 }

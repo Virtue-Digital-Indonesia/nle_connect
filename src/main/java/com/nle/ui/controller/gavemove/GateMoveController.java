@@ -11,6 +11,7 @@ import com.nle.ui.model.response.UpdatedGateMoveResponseDTO;
 import com.nle.io.repository.dto.MoveStatistic;
 import com.nle.io.repository.dto.ShippingLineStatistic;
 import com.nle.shared.service.gatemove.GateMoveService;
+import com.nle.ui.model.response.count.CountResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -96,6 +97,13 @@ public class GateMoveController {
     @GetMapping(value = "count-shipping-line")
     public ResponseEntity<List<ShippingLineStatistic>> countTotalGateMoveByShippingLine() {
         return ResponseEntity.ok(gateMoveService.countTotalGateMoveByShippingLine());
+    }
+
+    @Operation(description = "Count total GateMove last days", operationId = "countTotalGateMoveByDuration", summary = "Count total GateMove by Duration")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "count-duration")
+    public ResponseEntity<CountResponse> countTotalGateMoveByDuration(@RequestParam Double duration) {
+        return ResponseEntity.ok(gateMoveService.countTotalGateMoveByDuration(duration));
     }
 
     @Operation(description = "global search Gate Move by Query",
