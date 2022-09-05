@@ -89,4 +89,7 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                                     Pageable pageable,
                                     @Param("request") GateMoveSearchRequest request);
 
+    @Query(value = "SELECT gm FROM GateMove gm WHERE gm.depoOwnerAccount.companyEmail = :companyEmail GROUP BY gm.tx_date")
+    List<GateMove> countTotalGateMoveByDuration(@Param("companyEmail") String companyEmail);
+
 }

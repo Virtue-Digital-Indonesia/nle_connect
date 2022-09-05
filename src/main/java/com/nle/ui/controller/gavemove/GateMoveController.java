@@ -102,7 +102,7 @@ public class GateMoveController {
     @Operation(description = "Count total GateMove last days", operationId = "countTotalGateMoveByDuration", summary = "Count total GateMove by Duration")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "count-duration")
-    public ResponseEntity<CountResponse> countTotalGateMoveByDuration(@RequestParam Double duration) {
+    public ResponseEntity<CountResponse> countTotalGateMoveByDuration(@RequestParam Long duration) {
         return ResponseEntity.ok(gateMoveService.countTotalGateMoveByDuration(duration));
     }
 
