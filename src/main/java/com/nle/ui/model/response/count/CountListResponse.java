@@ -10,6 +10,7 @@ import lombok.Setter;
 @Data
 @Builder
 public class CountListResponse {
+    private String tx_date;
     private Double total_gate_in;
     private Double total_gate_out;
     private Double total_gateMove;

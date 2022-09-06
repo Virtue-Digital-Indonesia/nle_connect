@@ -41,6 +41,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -244,12 +245,53 @@ public class GateMoveServiceImpl implements GateMoveService {
             LocalDateTime to = now.plusHours(23 - now.getHour()).plusMinutes(59 - now.getMinute()).plusSeconds(59 - now.getSecond());
             LocalDateTime from = now.minusDays(duration).minusHours(now.getHour()).minusMinutes(now.getMinute()).minusSeconds(now.getSecond());
 
-            List<GateMove> list = gateMoveRepository.countTotalGateMoveByDuration(email);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            System.out.println(from.format(formatter));
+            System.out.println(to.format(formatter));
+
+            List<GateMove> list = gateMoveRepository.countTotalGateMoveByDuration(email, from.format(formatter), to.format(formatter));
             if (!list.isEmpty()) {
+                totalAll += list.size();
+                String m = "flag";
+                Double totalGate = 0.0;
+                Double totalGateIN = 0.0;
+                Double totalGateOUT = 0.0;
                 for (GateMove gateMove : list) {
-                    System.out.println(gateMove.getTx_date());
-                    System.out.println(gateMove.getTxDateFormatted());
+                    String tx_date = gateMove.getTx_date().substring(0, 10);
+                    System.out.print(tx_date + " ");
+                    if (tx_date.equals(m)) {
+                        totalGate++;
+                    }
+                    else {
+
+                        if (totalGate > 0) {
+                            CountListResponse response = CountListResponse.builder()
+                                    .tx_date(m)
+                                    .total_gateMove(totalGate)
+                                    .total_gate_in(totalGateIN)
+                                    .total_gate_out(totalGateOUT)
+                                    .build();
+                            listResponses.add(response);
+                        }
+                        m = tx_date;
+                        totalGate = 1.0;
+                        totalGateIN = 0.0;
+                        totalGateOUT = 0.0;
+                    }
+
+                    System.out.println(gateMove.getGateMoveType());
+                    if (gateMove.getGateMoveType().equals("gate_in"))totalGateIN++;
+                    else if (gateMove.getGateMoveType().equals("gate_out"))totalGateOUT++;
+
                 }
+
+                CountListResponse response = CountListResponse.builder()
+                        .tx_date(m)
+                        .total_gateMove(totalGate)
+                        .total_gate_in(totalGateIN)
+                        .total_gate_out(totalGateOUT)
+                        .build();
+                listResponses.add(response);
             }
         }
 
