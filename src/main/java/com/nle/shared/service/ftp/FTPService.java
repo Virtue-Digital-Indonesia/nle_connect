@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.constraints.NotNull;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -138,6 +139,12 @@ public class FTPService {
                                     errors.add(new FtpMoveDTOError(moveDTO, errorMessage));
                                     continue;
                                 }
+
+                                List<String> errorMessage =  validation(moveDTO);
+                                if (!errorMessage.isEmpty()) {
+                                    continue;
+                                }
+
                                 try {
                                     GateMove entity = convertToGateMoveEntity(moveDTO, GateMoveSource.FTP_SERVER);
                                     entity.setDepoOwnerAccount(depoOwnerAccount);
@@ -174,9 +181,33 @@ public class FTPService {
         }
     }
 
-    private boolean validation () {
-        //TODO validation for check ftp file is true
-        return true;
+    private List<String> validation (MoveDTO moveDTO) {
+        //check karena csv ada kemungkinan "" tapi tidak null
+        List<String> errorMessage = new ArrayList<>();
+
+        if (moveDTO.getAmount() == null) {
+            moveDTO.setAmount((long) 0);
+        }
+
+        if (moveDTO.getTx_date().isEmpty()) errorMessage.add("- Tx_Date cannot be null\n");
+        if (moveDTO.getProcess_type().isEmpty()) errorMessage.add("- process_type cannot be null\n");
+        if (moveDTO.getDepot().isEmpty()) errorMessage.add("- depot cannot be null\n");
+        if (moveDTO.getFleet_manager().isEmpty()) errorMessage.add("- Fleet_Manager cannot be null\n");
+        if (moveDTO.getContainer_number().isEmpty()) errorMessage.add("- container_number cannot be null\n");
+        if (moveDTO.getIso_code().isEmpty()) errorMessage.add("- Iso_code cannot be null\n");
+        if (moveDTO.getCondition().isEmpty()) errorMessage.add("- condition cannot be null\n");
+        if (moveDTO.getClean().isEmpty()) errorMessage.add("- clean cannot be null\n");
+        if (moveDTO.getGrade().isEmpty()) errorMessage.add("- grade cannot be null\n");
+        if (moveDTO.getOrder_number().isEmpty()) errorMessage.add("- order_number cannot be null\n");
+        if (moveDTO.getCustomer().isEmpty()) errorMessage.add("- customer cannot be null\n");
+        if (moveDTO.getCarrier().isEmpty()) errorMessage.add("- carrier cannot be null\n");
+        if (moveDTO.getDate_manufacturer().isEmpty()) errorMessage.add("- date_manufacture cannot be null\n");
+
+        if (moveDTO.getTare().isNaN() || moveDTO.getTare() == null) errorMessage.add("- Tare cannot be null\n");
+        if (moveDTO.getPayload().isNaN() || moveDTO.getPayload() == null) errorMessage.add("- payload cannot be null\n");
+        if (moveDTO.getMax_gross().isNaN() || moveDTO.getMax_gross() == null) errorMessage.add("- max gross cannot be null\n");
+
+        return errorMessage;
     }
 
 }
