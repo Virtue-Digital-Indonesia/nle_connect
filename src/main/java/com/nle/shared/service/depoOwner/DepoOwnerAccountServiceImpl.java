@@ -192,7 +192,9 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
             throw new BadRequestException("No depo owner with this email!");
 
         DepoOwnerAccount entity = foundEntity.get();
+        sshService.changePasswordFtpUser(email, request.getPassword());
         entity.setPassword(passwordEncoder.encode(request.getPassword()));
+        entity.setFtpPassword(Base64.getEncoder().encodeToString(request.getPassword().getBytes()));
         depoOwnerAccountRepository.save(entity);
         return "Success to reset password with user email : " + email + "!";
     };
