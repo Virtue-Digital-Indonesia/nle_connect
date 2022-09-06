@@ -10,6 +10,7 @@ import com.nle.ui.model.response.GateMoveResponseDTO;
 import com.nle.ui.model.response.UpdatedGateMoveResponseDTO;
 import com.nle.io.repository.dto.MoveStatistic;
 import com.nle.io.repository.dto.ShippingLineStatistic;
+import com.nle.ui.model.response.count.CountResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,4 +33,6 @@ public interface GateMoveService {
     List<ShippingLineStatistic> countTotalGateMoveByShippingLine();
 
     PagingResponseModel<GateMoveResponseDTO> searchByCondition(Pageable pageable, GateMoveSearchRequest request);
+
+    CountResponse countTotalGateMoveByDuration(Long duration);
 }

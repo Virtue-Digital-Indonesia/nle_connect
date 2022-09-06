@@ -23,6 +23,8 @@ import com.nle.io.repository.dto.ShippingLineStatistic;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.depoOwner.DepoOwnerAccountService;
 import com.nle.shared.service.s3.S3StoreService;
+import com.nle.ui.model.response.count.CountListResponse;
+import com.nle.ui.model.response.count.CountResponse;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -39,6 +41,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -228,6 +231,68 @@ public class GateMoveServiceImpl implements GateMoveService {
             gateMoveResponseDTO.setClean("no");
         }
         return gateMoveResponseDTO;
+    }
+
+    public CountResponse countTotalGateMoveByDuration(Long duration) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        Double totalAll = 0.0;
+        List<CountListResponse> listResponses = new ArrayList<>();
+
+        if (currentUserLogin.isPresent()) {
+            String email = currentUserLogin.get();
+           List<GateMove> list = getListGateMoveByDuration(duration, email);
+
+            if (!list.isEmpty()) {
+                totalAll += list.size();
+                String m = "flag";
+                Double totalGate = 0.0;
+                Double totalGateIN = 0.0;
+                Double totalGateOUT = 0.0;
+                for (GateMove gateMove : list) {
+                    String tx_date = gateMove.getTx_date().substring(0, 10);
+                    if (tx_date.equals(m)) {
+                        totalGate++;
+                    }
+                    else {
+                        if (totalGate > 0) {
+                            listResponses.add(countListResponseFactory(m, totalGate, totalGateIN, totalGateOUT));
+                        }
+                        m = tx_date;
+                        totalGate = 1.0;
+                        totalGateIN = 0.0;
+                        totalGateOUT = 0.0;
+                    }
+
+                    if (gateMove.getGateMoveType().equals("gate_in"))totalGateIN++;
+                    else if (gateMove.getGateMoveType().equals("gate_out"))totalGateOUT++;
+
+                }
+                listResponses.add(countListResponseFactory(m, totalGate, totalGateIN, totalGateOUT));
+            }
+        }
+
+        return CountResponse.builder()
+                .total_moves(totalAll)
+                .list_moves(listResponses)
+                .build();
+    };
+
+    private List<GateMove> getListGateMoveByDuration (Long duration, String email) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime to = now.plusHours(23 - now.getHour()).plusMinutes(59 - now.getMinute()).plusSeconds(59 - now.getSecond());
+        LocalDateTime from = now.minusDays(duration).minusHours(now.getHour()).minusMinutes(now.getMinute()).minusSeconds(now.getSecond());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return gateMoveRepository.countTotalGateMoveByDuration(email, from.format(formatter), to.format(formatter));
+    }
+
+    private CountListResponse countListResponseFactory (String tx_date, Double totalGate, Double totalGateIN, Double totalGateOUT) {
+        return  CountListResponse.builder()
+                .tx_date(tx_date)
+                .total_gateMove(totalGate)
+                .total_gate_in(totalGateIN)
+                .total_gate_out(totalGateOUT)
+                .build();
     }
 
 }
