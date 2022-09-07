@@ -107,6 +107,17 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendResetPassword(DepoOwnerAccount depoOwnerAccount, String token) {
+        Map<String, String> params = new HashMap<>();
+        params.put("fullname", depoOwnerAccount.getFullName());
+        params.put("activeUrl", "https://nle-connect.id/reset-password?token=" + token);
+        // get email template content from DB
+        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.RESET_PASSWORD);
+        EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, depoOwnerAccount.getCompanyEmail());
+        sendSimpleEmail(emailDTO);
+    };
+
     private EmailDTO buildEmailDTO(EmailTemplateDto activeEmailTemplate, Map<String, String> params, String email) {
 
         //set Image

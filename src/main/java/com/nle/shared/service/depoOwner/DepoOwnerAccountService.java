@@ -5,8 +5,11 @@ import com.nle.ui.model.ActiveDto;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
+import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.request.ForgotPasswordRequest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -26,4 +29,8 @@ public interface DepoOwnerAccountService {
     List<DepoOwnerAccount> findAllByStatus(AccountStatus accountStatus);
 
     DepoOwnerAccountProfileDTO getProfileDetails();
+
+    JWTToken resetPasswordToken(String email);
+
+    String changeForgotPassword(ForgotPasswordRequest request, Map<String, String> token);
 }

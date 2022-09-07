@@ -4,6 +4,8 @@ import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.constant.enums.VerificationType;
 import com.nle.constant.enums.TaxMinistryStatusEnum;
+import com.nle.exception.BadRequestException;
+import com.nle.security.jwt.TokenProvider;
 import com.nle.ui.model.ActiveDto;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.VerificationToken;
@@ -18,6 +20,8 @@ import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
 import com.nle.shared.service.ftp.SSHService;
+import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.request.ForgotPasswordRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -27,9 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.nle.constant.AppConstant.VerificationStatus.ACTIVE;
 import static com.nle.constant.AppConstant.VerificationStatus.ALREADY_ACTIVE;
@@ -53,6 +55,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     private final VerificationTokenRepository verificationTokenRepository;
 
     private final SSHService sshService;
+    private final TokenProvider tokenProvider;
 
     @Override
     public DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO) {
@@ -155,4 +158,44 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         BeanUtils.copyProperties(depoOwnerAccount.get(), depoOwnerAccountProfileDTO);
         return depoOwnerAccountProfileDTO;
     }
+
+    @Override
+    public JWTToken resetPasswordToken (String email) {
+        Optional<DepoOwnerAccount> optionalDepoOwnerAccount = findByCompanyEmail(email);
+        String token = null;
+        if (!optionalDepoOwnerAccount.isEmpty()) {
+            token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get(), "RESET_PASSWORD");
+            emailService.sendResetPassword(optionalDepoOwnerAccount.get(), token);
+        }
+        else
+            throw new BadRequestException("Email is not register!");
+        return new JWTToken(token);
+    };
+
+    @Override
+    public String changeForgotPassword(ForgotPasswordRequest request, Map<String, String> token) {
+
+        if (!token.get("auth").equals("RESET_PASSWORD"))
+            throw new BadRequestException("This is not token for reset password!");
+
+        if (request.getPassword() == null) throw new BadRequestException("Password cannot be null!");
+
+        if (request.getPassword().isEmpty() || request.getConfirm_password().isEmpty())
+            throw new BadRequestException("Password cannot be empty!");
+
+        if (!request.getPassword().equals(request.getConfirm_password()))
+            throw new BadRequestException("Invalid confirm password!");
+
+        String email = token.get("sub");
+        Optional<DepoOwnerAccount> foundEntity = depoOwnerAccountRepository.findByCompanyEmail(email);
+        if (foundEntity.isEmpty())
+            throw new BadRequestException("No depo owner with this email!");
+
+        DepoOwnerAccount entity = foundEntity.get();
+        sshService.changePasswordFtpUser(email, request.getPassword());
+        entity.setPassword(passwordEncoder.encode(request.getPassword()));
+        entity.setFtpPassword(Base64.getEncoder().encodeToString(request.getPassword().getBytes()));
+        depoOwnerAccountRepository.save(entity);
+        return "Success to reset password with user email : " + email + "!";
+    };
 }

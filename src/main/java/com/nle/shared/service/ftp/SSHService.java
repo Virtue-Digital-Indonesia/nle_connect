@@ -39,4 +39,26 @@ public class SSHService {
             throw new CommonException("Error while trying to create FTP user" + Arrays.toString(e.getStackTrace()));
         }
     }
+
+    public String changePasswordFtpUser (String username, String password) {
+        try {
+            StringBuilder triggerURL = new StringBuilder();
+            triggerURL.append("http://54.251.3.0:8080/buildByToken/buildWithParameters?job=Change-Password-FTP");
+            triggerURL.append("&token=");
+            triggerURL.append(appProperties.getSecurity().getFtp().getTriggerToken());
+            triggerURL.append("&username=");
+            triggerURL.append(username);
+            triggerURL.append("&password=");
+            triggerURL.append(password);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(triggerURL.toString()))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            return response.body();
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new CommonException("Error while trying to create FTP user" + Arrays.toString(e.getStackTrace()));
+        }
+    }
 }

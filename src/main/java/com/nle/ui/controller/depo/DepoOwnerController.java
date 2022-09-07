@@ -22,6 +22,8 @@ import com.nle.shared.service.depoWorker.DepoWorkerAccountService;
 import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
+import com.nle.ui.model.request.ForgotPasswordRequest;
+import com.nle.util.DecodeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -35,17 +37,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.nle.constant.AppConstant.VerificationStatus.ALREADY_ACTIVE;
@@ -178,6 +177,19 @@ public class DepoOwnerController {
     @SecurityRequirement(name = "nleapi")
     public ResponseEntity<DepoOwnerAccountProfileDTO> getDepoOwnerAccountProfile() {
         return ResponseEntity.ok(depoOwnerAccountService.getProfileDetails());
+    }
+
+    @Operation(description = "reset password, send token to email", operationId = "resetPassword", summary = "reset password, send token to email")
+    @PostMapping(value = "/reset-password")
+    public ResponseEntity<JWTToken> generateResetToken (@RequestParam String email) {
+        return ResponseEntity.ok(depoOwnerAccountService.resetPasswordToken(email));
+    }
+
+    @Operation(description = "change password for forgot password", operationId = "resetPassword", summary = "change password for forgot password")
+    @PostMapping(value = "/forgot-password")
+    public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest request) {
+        Map<String, String> authBody = DecodeUtil.decodeToken(request.getToken());
+        return ResponseEntity.ok(depoOwnerAccountService.changeForgotPassword(request, authBody));
     }
 
 }
