@@ -1,14 +1,14 @@
 package com.nle.ui.model.response.count;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 @Data
-@Builder
+@SuperBuilder
 public class CountListResponse {
     private String tx_date;
     private Double total_gate_in;

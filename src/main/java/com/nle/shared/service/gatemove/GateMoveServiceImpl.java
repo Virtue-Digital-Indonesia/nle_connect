@@ -25,6 +25,7 @@ import com.nle.shared.service.depoOwner.DepoOwnerAccountService;
 import com.nle.shared.service.s3.S3StoreService;
 import com.nle.ui.model.response.count.CountListResponse;
 import com.nle.ui.model.response.count.CountResponse;
+import com.nle.ui.model.response.count.CountWithFleetManagerResponse;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -274,6 +275,17 @@ public class GateMoveServiceImpl implements GateMoveService {
         return CountResponse.builder()
                 .total_moves(totalAll)
                 .list_moves(listResponses)
+                .build();
+    };
+
+    public CountResponse countTotalGateMoveByDurationWithFleetManager(Long duration) {
+        List<CountListResponse> lists = new ArrayList<>();
+        Double totalAll = 0.0;
+
+        return CountResponse
+                .builder()
+                .total_moves(totalAll)
+                .list_moves(lists)
                 .build();
     };
 
