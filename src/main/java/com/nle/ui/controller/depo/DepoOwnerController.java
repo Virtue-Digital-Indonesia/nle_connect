@@ -179,14 +179,14 @@ public class DepoOwnerController {
         return ResponseEntity.ok(depoOwnerAccountService.getProfileDetails());
     }
 
-    @Operation(description = "reset password, send token to email", operationId = "resetPassword", summary = "reset password, send token to email")
-    @PostMapping(value = "/reset-password")
+    @Operation(description = "forgot password, send token to email", operationId = "forgotPassword", summary = "forgot password, send token to email")
+    @PostMapping(value = "/forgot-password")
     public ResponseEntity<JWTToken> generateResetToken (@RequestParam String email) {
         return ResponseEntity.ok(depoOwnerAccountService.resetPasswordToken(email));
     }
 
-    @Operation(description = "change password for forgot password", operationId = "resetPassword", summary = "change password for forgot password")
-    @PostMapping(value = "/forgot-password")
+    @Operation(description = "reset password for forgot password", operationId = "resetPassword", summary = "reset password for forgot password")
+    @PostMapping(value = "/reset-password")
     public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest request) {
         Map<String, String> authBody = DecodeUtil.decodeToken(request.getToken());
         return ResponseEntity.ok(depoOwnerAccountService.changeForgotPassword(request, authBody));
