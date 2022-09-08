@@ -43,13 +43,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.nle.constant.AppConstant.SPLASH;
 import static org.apache.http.entity.ContentType.IMAGE_BMP;
@@ -241,7 +235,7 @@ public class GateMoveServiceImpl implements GateMoveService {
 
         if (currentUserLogin.isPresent()) {
             String email = currentUserLogin.get();
-           List<GateMove> list = getListGateMoveByDuration(duration, email);
+            List<GateMove> list = getListGateMoveByDuration(duration, email);
 
             if (!list.isEmpty()) {
                 totalAll += list.size();
@@ -256,7 +250,7 @@ public class GateMoveServiceImpl implements GateMoveService {
                     }
                     else {
                         if (totalGate > 0) {
-                            listResponses.add(countListResponseFactory(m, totalGate, totalGateIN, totalGateOUT));
+                            listResponses.add(CountListResponse.factory(m, totalGate, totalGateIN, totalGateOUT));
                         }
                         m = tx_date;
                         totalGate = 1.0;
@@ -268,7 +262,7 @@ public class GateMoveServiceImpl implements GateMoveService {
                     else if (gateMove.getGateMoveType().equals("gate_out"))totalGateOUT++;
 
                 }
-                listResponses.add(countListResponseFactory(m, totalGate, totalGateIN, totalGateOUT));
+                listResponses.add(CountListResponse.factory(m, totalGate, totalGateIN, totalGateOUT));
             }
         }
 
@@ -279,9 +273,54 @@ public class GateMoveServiceImpl implements GateMoveService {
     };
 
     public CountResponse countTotalGateMoveByDurationWithFleetManager(Long duration) {
-        List<CountListResponse> lists = new ArrayList<>();
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        TreeMap<String, List<CountWithFleetManagerResponse>> hashList = new TreeMap<>();
         Double totalAll = 0.0;
+        List<CountListResponse> lists = new ArrayList<>();
 
+        if (currentUserLogin.isPresent()) {
+            String email = currentUserLogin.get();
+            List<GateMove> listGateMove = getListGateMoveByDuration(duration, email);
+
+            if (!listGateMove.isEmpty()) {
+                totalAll += listGateMove.size();
+                String m = "flag"; //tx_date
+                String m2 = ""; //fleet_manager
+                Double totalGate = 0.0;
+                Double totalGateIN = 0.0;
+                Double totalGateOUT = 0.0;
+
+                for (GateMove gateMove : listGateMove) {
+                    String tx_date = gateMove.getTx_date().substring(0, 10);
+                    String fleetManager = gateMove.getFleet_manager();
+                    if (tx_date.equals(m) && fleetManager.equals(m2)) {
+                        totalGate++;
+                    }
+                    else {
+                        if (totalGate > 0) {
+                            insertHash(hashList, m, m2, totalGate, totalGateIN, totalGateOUT);
+                        }
+                        m = tx_date;
+                        m2 = gateMove.getFleet_manager();
+                        totalGate = 1.0;
+                        totalGateIN = 0.0;
+                        totalGateOUT = 0.0;
+                    }
+
+                    if (gateMove.getGateMoveType().equals("gate_in"))totalGateIN++;
+                    else if (gateMove.getGateMoveType().equals("gate_out"))totalGateOUT++;
+
+                }
+                insertHash(hashList, m, m2, totalGate, totalGateIN, totalGateOUT);
+                hashList.forEach((key, value) -> {
+                    for (CountListResponse temp : value) {
+                        lists.add(temp);
+                    }
+                });
+            }
+        }
+
+//        return hashList;
         return CountResponse
                 .builder()
                 .total_moves(totalAll)
@@ -298,13 +337,34 @@ public class GateMoveServiceImpl implements GateMoveService {
         return gateMoveRepository.countTotalGateMoveByDuration(email, from.format(formatter), to.format(formatter));
     }
 
-    private CountListResponse countListResponseFactory (String tx_date, Double totalGate, Double totalGateIN, Double totalGateOUT) {
-        return  CountListResponse.builder()
-                .tx_date(tx_date)
-                .total_gateMove(totalGate)
-                .total_gate_in(totalGateIN)
-                .total_gate_out(totalGateOUT)
-                .build();
+    private void insertHash(TreeMap<String, List<CountWithFleetManagerResponse>> hashList, String m, String m2, Double totalGate, Double totalGateIN, Double totalGateOUT) {
+        //hashing logic with array 2 dimesions
+        if (hashList.containsKey(m)) {
+            List<CountWithFleetManagerResponse> tempList = hashList.get(m);
+
+            boolean flag = false;
+            for (CountWithFleetManagerResponse data : tempList) {
+                if (data.getFleet_manager().equals(m2)) {
+                    data.setTotal_gateMove(data.getTotal_gateMove() + totalGate);
+                    data.setTotal_gate_in(data.getTotal_gate_in() + totalGateIN);
+                    data.setTotal_gate_out(data.getTotal_gate_out() + totalGateOUT);
+                    flag = true;
+                }
+
+                if (flag == true) break;
+            }
+
+            if (flag == false)
+                tempList.add(CountWithFleetManagerResponse.factory(m2, m, totalGate, totalGateIN, totalGateOUT));
+
+        }
+        else if (!hashList.containsKey(m)) {
+            List<CountWithFleetManagerResponse> tempList = new ArrayList<>();
+            tempList.add(CountWithFleetManagerResponse.factory(m2, m, totalGate, totalGateIN, totalGateOUT));
+            hashList.put(m, tempList);
+        }
     }
+
+
 
 }
