@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface DepoWorkerAccountRepository extends JpaRepository<DepoWorkerAccount, Long> {
     Optional<DepoWorkerAccount> findByAndroidId(String androidId);
 
-    @Query (value = "SELECT * FROM depo_worker_account WHERE organization_code = :code" , nativeQuery = true)
+    @Query (value = "SELECT dwc FROM DepoWorkerAccount dwc WHERE dwc.organizationCode = :code")
     Page<DepoWorkerAccount> findAllWorker (@Param("code") String code,
                                            Pageable pageable);
 }
