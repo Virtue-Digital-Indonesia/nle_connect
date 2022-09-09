@@ -106,6 +106,13 @@ public class GateMoveController {
         return ResponseEntity.ok(gateMoveService.countTotalGateMoveByDuration(duration));
     }
 
+    @Operation(description = "Count total GateMove last days with fleet manager", operationId = "countTotalGateMoveByDurationWithFleetManager", summary = "Count total GateMove last days with fleet manager")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/count-duration/fleet-manager")
+    public ResponseEntity<CountResponse> countTotalGateMoveByDurationWithFleetManager(@RequestParam Long duration) {
+        return ResponseEntity.ok(gateMoveService.countTotalGateMoveByDurationWithFleetManager(duration));
+    }
+
     @Operation(description = "global search Gate Move by Query",
             operationId = "searchGateMove",
             summary = "global search gate move by query")
