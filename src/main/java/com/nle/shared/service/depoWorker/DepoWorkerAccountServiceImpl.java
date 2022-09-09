@@ -2,6 +2,8 @@ package com.nle.shared.service.depoWorker;
 
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.AppConstant;
+import com.nle.exception.BadRequestException;
+import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.ui.model.DepoWorkerActivationDTO;
 import com.nle.ui.model.DepoWorkerLoginDto;
 import com.nle.ui.model.JWTToken;
@@ -49,6 +51,7 @@ import static com.nle.constant.enums.VerificationType.ACTIVE_ACCOUNT;
 public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
     private final Logger log = LoggerFactory.getLogger(DepoWorkerAccountServiceImpl.class);
     private final DepoWorkerAccountRepository depoWorkerAccountRepository;
+    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final VerificationTokenService verificationTokenService;
     private final EmailService emailService;
     private final DepoWorkerAccountMapper depoWorkerAccountMapper;
@@ -137,8 +140,24 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
 
     @Override
     public PagingResponseModel<DepoWorkerListDTO> findAll(Pageable pageable) {
-        Page<DepoWorkerAccount> depoWorkerAccounts = depoWorkerAccountRepository.findAll(pageable);
-        return new PagingResponseModel<>(depoWorkerAccounts.map(this::convertFromEntity));
+
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+
+        if (currentUserLogin.isPresent()) {
+            String email = currentUserLogin.get();
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(email);
+
+            if (!depoOwnerAccount.isEmpty()) {
+                DepoOwnerAccount entity = depoOwnerAccount.get();
+                Page<DepoWorkerAccount> depoWorkerAccounts = depoWorkerAccountRepository.findAllWorker(entity.getOrganizationCode(), pageable);
+                return new PagingResponseModel<>(depoWorkerAccounts.map(this::convertFromEntity));
+            }
+            else throw new BadRequestException("this email is not register");
+
+        }
+
+
+        return new PagingResponseModel<>();
     }
 
     @Override
