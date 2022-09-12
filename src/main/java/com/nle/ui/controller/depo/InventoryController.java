@@ -1,5 +1,6 @@
 package com.nle.ui.controller.depo;
 
+import com.nle.shared.service.inventory.InventoryService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.response.GateMoveResponseDTO;
 import com.nle.shared.service.gatemove.GateMoveService;
@@ -25,6 +26,7 @@ public class InventoryController {
     private final Logger log = LoggerFactory.getLogger(InventoryController.class);
 
     private final GateMoveService gateMoveService;
+    private final InventoryService inventoryService;
 
     @Operation(description = "Get list of inventory move with paging", operationId = "findAllInventories", summary = "Get list of inventory move with paging")
     @SecurityRequirement(name = "nleapi")
