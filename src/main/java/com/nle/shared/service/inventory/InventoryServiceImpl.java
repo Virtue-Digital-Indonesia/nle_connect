@@ -21,4 +21,8 @@ public class InventoryServiceImpl implements InventoryService{
         inventory.setGateInId(gateMove);
         inventoryRepository.save(inventory);
     };
-}
+
+    public void triggerGateOutInventory(GateMove gateMove) {
+        //TODO search inventory with something, input gateOutId, save in database
+    }
+};

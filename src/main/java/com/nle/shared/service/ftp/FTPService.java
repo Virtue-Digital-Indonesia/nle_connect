@@ -41,8 +41,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.nle.constant.AppConstant.MEMBER_FIELDS_TO_BIND_TO;
-import static com.nle.util.NleUtil.GATE_IN;
-import static com.nle.util.NleUtil.convertToGateMoveEntity;
+import static com.nle.util.NleUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -149,6 +148,9 @@ public class FTPService {
                                     //trigger inventory
                                     if (entity.getGateMoveType().equalsIgnoreCase(GATE_IN)) {
                                         inventoryService.triggerCreateInventory(entity);
+                                    }
+                                    else if (entity.getGateMoveType().equalsIgnoreCase(GATE_OUT_REPO)) {
+                                        inventoryService.triggerGateOutInventory(entity);
                                     }
 
                                 } catch (Exception e) {
