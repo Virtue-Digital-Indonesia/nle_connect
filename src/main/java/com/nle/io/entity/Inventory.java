@@ -58,11 +58,11 @@ public class Inventory extends AbstractAuditingEntity implements Serializable {
     private DepoOwnerAccount depoOwnerAccount;
 
     @OneToOne
-    @JoinColumn(name = "gate_move_in_id", referencedColumnName = "id")
+    @JoinColumn(name = "gate_in_id", referencedColumnName = "id")
     private GateMove gateInId;
 
     @OneToOne
-    @JoinColumn(name = "gate_move_out_id", referencedColumnName = "id")
+    @JoinColumn(name = "gate_out_id", referencedColumnName = "id")
     private GateMove gateOutId;
 
 }

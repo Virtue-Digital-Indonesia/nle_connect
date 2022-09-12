@@ -11,6 +11,7 @@ import com.nle.io.repository.GateMoveRepository;
 import com.nle.shared.service.depoOwner.DepoOwnerAccountService;
 import com.nle.shared.dto.ftp.FtpMoveDTOError;
 import com.nle.shared.dto.ftp.MoveDTO;
+import com.nle.shared.service.inventory.InventoryService;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -40,6 +41,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.nle.constant.AppConstant.MEMBER_FIELDS_TO_BIND_TO;
+import static com.nle.util.NleUtil.GATE_IN;
 import static com.nle.util.NleUtil.convertToGateMoveEntity;
 
 @Service
@@ -51,6 +53,7 @@ public class FTPService {
     private final FtpFileRepository ftpFileRepository;
     private final GateMoveRepository gateMoveRepository;
     private final Validator validator;
+    private final InventoryService inventoryService;
 
     @Scheduled(cron = "${app.scheduler.ftp-sync-cron}")
     public void syncDataFromFtpServer() {
@@ -142,6 +145,12 @@ public class FTPService {
                                     GateMove entity = convertToGateMoveEntity(moveDTO, GateMoveSource.FTP_SERVER);
                                     entity.setDepoOwnerAccount(depoOwnerAccount);
                                     gateMoveRepository.save(entity);
+
+                                    //trigger inventory
+                                    if (entity.getGateMoveType().equalsIgnoreCase(GATE_IN)) {
+                                        inventoryService.triggerCreateInventory(entity);
+                                    }
+
                                 } catch (Exception e) {
                                     log.error("Error while importing gate move data {} {}", moveDTO, e);
                                 }
