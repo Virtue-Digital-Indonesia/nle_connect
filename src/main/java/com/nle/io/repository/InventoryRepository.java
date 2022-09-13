@@ -16,6 +16,8 @@ import java.util.Optional;
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
+     static final String SEARCH_INVETORY_QUERY = "SELECT inv FROM Inventory inv " +
+             "WHERE inv.depoOwnerAccount.companyEmail = :companyEmail ";
 
     @Query(value = "SELECT inv FROM Inventory inv WHERE inv.depoOwnerAccount.companyEmail = :companyEmail AND inv.gateOutId IS NULL")
     Page<Inventory> getAllInventory (@Param("companyEmail") String companyEmail, Pageable pageable);
@@ -27,4 +29,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             "LIMIT 1", nativeQuery = true)
     Optional<Inventory> findTopByContainerNumber (@Param("depoId") Long depoId,
             @Param("containerNo") String containerNumber);
+
+    @Query(value = SEARCH_INVETORY_QUERY)
+    Page<Inventory> searchByCondition(@Param("companyEmail") String companyEmail,
+                                      Pageable pageable);
 }

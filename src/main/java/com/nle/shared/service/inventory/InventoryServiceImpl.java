@@ -6,6 +6,7 @@ import com.nle.io.entity.Inventory;
 import com.nle.io.repository.InventoryRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.search.InventorySearchRequest;
 import com.nle.ui.model.response.InventoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -63,6 +64,18 @@ public class InventoryServiceImpl implements InventoryService{
             Page<Inventory> listResults = inventoryRepository.getAllInventory(email, pageable);
             return new PagingResponseModel<>(listResults.map(this::convertToResponse));
         }
+        return new PagingResponseModel<>();
+    }
+
+    public PagingResponseModel<InventoryResponse> searchByCondition (InventorySearchRequest request, Pageable pageable) {
+
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isPresent())  {
+            String email = currentUserLogin.get();
+            Page<Inventory> listResults = inventoryRepository.searchByCondition(email, pageable);
+            return new PagingResponseModel<>(listResults.map(this::convertToResponse));
+        }
+
         return new PagingResponseModel<>();
     }
 
