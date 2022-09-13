@@ -1,5 +1,6 @@
 package com.nle.shared.service.inventory;
 
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.GateMove;
 import com.nle.io.entity.Inventory;
 import com.nle.io.repository.InventoryRepository;
@@ -15,12 +16,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.nle.util.NleUtil.GATE_IN;
+import static com.nle.util.NleUtil.GATE_OUT;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class InventoryServiceImpl implements InventoryService{
 
     private final InventoryRepository inventoryRepository;
+
+    public void triggerInventory(GateMove gateMove) {
+
+        if (gateMove.getGateMoveType().equalsIgnoreCase(GATE_IN)) {
+            triggerCreateInventory(gateMove);
+        }
+        else if (gateMove.getGateMoveType().equalsIgnoreCase(GATE_OUT)) {
+            triggerGateOutInventory(gateMove);
+        }
+    }
+
     public void triggerCreateInventory(GateMove gateMove) {
         Inventory inventory = new Inventory();
         BeanUtils.copyProperties(gateMove, inventory);
@@ -30,7 +45,15 @@ public class InventoryServiceImpl implements InventoryService{
     };
 
     public void triggerGateOutInventory(GateMove gateMove) {
-        //TODO search inventory with something, input gateOutId, save in database
+        DepoOwnerAccount depoOwnerAccount = gateMove.getDepoOwnerAccount();
+        Long depoId = depoOwnerAccount.getId();
+        Optional<Inventory> optionalInventory = inventoryRepository.findTopByContainerNumber(depoId, gateMove.getContainer_number());
+
+        if (!optionalInventory.isEmpty()) {
+            Inventory inventory = optionalInventory.get();
+            inventory.setGateOutId(gateMove);
+            inventoryRepository.save(inventory);
+        }
     }
 
     public PagingResponseModel<InventoryResponse> getAllInventory (Pageable pageable){

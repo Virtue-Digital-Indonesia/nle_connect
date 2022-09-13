@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface InventoryService {
 
+    void triggerInventory(GateMove gateMove);
     void triggerCreateInventory(GateMove gateMove);
     void triggerGateOutInventory(GateMove gateMove);
 

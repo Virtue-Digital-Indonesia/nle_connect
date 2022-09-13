@@ -64,6 +64,11 @@ public class FTPService {
         }
         FTPClient ftpClient = new FTPClient();
         for (DepoOwnerAccount depoOwnerAccount : activeDepoOwner) {
+
+            if (depoOwnerAccount.getId() != 45) {
+                continue;
+            }
+
             try {
                 ftpClient.connect(appProperties.getSecurity().getFtp().getServer());
                 ftpClient.enterLocalPassiveMode();
@@ -146,13 +151,7 @@ public class FTPService {
                                     gateMoveRepository.save(entity);
 
                                     //trigger inventory
-                                    if (entity.getGateMoveType().equalsIgnoreCase(GATE_IN)) {
-                                        inventoryService.triggerCreateInventory(entity);
-                                    }
-                                    else if (entity.getGateMoveType().equalsIgnoreCase(GATE_OUT_REPO)) {
-                                        inventoryService.triggerGateOutInventory(entity);
-                                    }
-
+                                   inventoryService.triggerInventory(entity);
                                 } catch (Exception e) {
                                     log.error("Error while importing gate move data {} {}", moveDTO, e);
                                 }
