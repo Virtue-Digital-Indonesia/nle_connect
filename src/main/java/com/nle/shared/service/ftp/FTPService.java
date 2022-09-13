@@ -64,11 +64,6 @@ public class FTPService {
         }
         FTPClient ftpClient = new FTPClient();
         for (DepoOwnerAccount depoOwnerAccount : activeDepoOwner) {
-
-            if (depoOwnerAccount.getId() != 45) {
-                continue;
-            }
-
             try {
                 ftpClient.connect(appProperties.getSecurity().getFtp().getServer());
                 ftpClient.enterLocalPassiveMode();

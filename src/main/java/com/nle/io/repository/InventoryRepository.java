@@ -23,6 +23,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     @Query(value = "SELECT * FROM inventories " +
             "WHERE inventories.depo_owner_account_id = :depoId " +
             "AND inventories.container_number = :containerNo " +
+            "AND inventories.gate_out_id IS NULL " +
             "LIMIT 1", nativeQuery = true)
     Optional<Inventory> findTopByContainerNumber (@Param("depoId") Long depoId,
             @Param("containerNo") String containerNumber);

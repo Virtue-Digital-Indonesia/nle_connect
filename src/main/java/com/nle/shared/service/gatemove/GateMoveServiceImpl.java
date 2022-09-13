@@ -3,6 +3,7 @@ package com.nle.shared.service.gatemove;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.GateMoveSource;
+import com.nle.shared.service.inventory.InventoryService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateGateMoveReqDTO;
 import com.nle.ui.model.request.UpdateGateMoveReqDTO;
@@ -63,6 +64,7 @@ public class GateMoveServiceImpl implements GateMoveService {
     private final S3StoreService s3StoreService;
     private final MediaRepository mediaRepository;
     private final DepoOwnerAccountService depoOwnerAccountService;
+    private final InventoryService inventoryService;
 
     @Override
     public CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO, GateMoveSource source) {
@@ -72,10 +74,12 @@ public class GateMoveServiceImpl implements GateMoveService {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountService.findByCompanyEmail(currentUserLogin.get());
             if (depoOwnerAccount.isPresent()) {
                 gateMove.setDepoOwnerAccount(depoOwnerAccount.get());
+                GateMove savedEntity = gateMoveRepository.save(gateMove);
+                inventoryService.triggerInventory(savedEntity);
+                return convertToCreatedGateMoveResponseDTO(savedEntity);
             }
         }
-        gateMove = gateMoveRepository.save(gateMove);
-        return convertToCreatedGateMoveResponseDTO(gateMove);
+        return new CreatedGateMoveResponseDTO();
     }
 
     @Override
