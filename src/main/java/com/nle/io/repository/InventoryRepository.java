@@ -1,6 +1,7 @@
 package com.nle.io.repository;
 
 import com.nle.io.entity.Inventory;
+import com.nle.ui.model.request.search.InventorySearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +18,9 @@ import java.util.Optional;
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
      static final String SEARCH_INVETORY_QUERY = "SELECT inv FROM Inventory inv " +
-             "WHERE inv.depoOwnerAccount.companyEmail = :companyEmail ";
+             "WHERE inv.depoOwnerAccount.companyEmail = :companyEmail " +
+             "AND inv.gateOutId IS NULL " +
+             "AND (:#{#request.depot} IS NULL OR LOWER(inv.depot) LIKE LOWER(CONCAT('%', :#{#request.depot}, '%')))";
 
     @Query(value = "SELECT inv FROM Inventory inv WHERE inv.depoOwnerAccount.companyEmail = :companyEmail AND inv.gateOutId IS NULL")
     Page<Inventory> getAllInventory (@Param("companyEmail") String companyEmail, Pageable pageable);
@@ -32,5 +35,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     @Query(value = SEARCH_INVETORY_QUERY)
     Page<Inventory> searchByCondition(@Param("companyEmail") String companyEmail,
+                                      @Param("request") InventorySearchRequest request,
                                       Pageable pageable);
 }

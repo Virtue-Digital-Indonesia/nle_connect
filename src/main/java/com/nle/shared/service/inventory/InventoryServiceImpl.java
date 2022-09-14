@@ -72,7 +72,7 @@ public class InventoryServiceImpl implements InventoryService{
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isPresent())  {
             String email = currentUserLogin.get();
-            Page<Inventory> listResults = inventoryRepository.searchByCondition(email, pageable);
+            Page<Inventory> listResults = inventoryRepository.searchByCondition(email, request, pageable);
             return new PagingResponseModel<>(listResults.map(this::convertToResponse));
         }
 
