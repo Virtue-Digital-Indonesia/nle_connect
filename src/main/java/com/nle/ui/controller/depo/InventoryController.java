@@ -2,6 +2,7 @@ package com.nle.ui.controller.depo;
 
 import com.nle.shared.service.inventory.InventoryService;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.search.InventorySearchRequest;
 import com.nle.ui.model.response.GateMoveResponseDTO;
 import com.nle.shared.service.gatemove.GateMoveService;
 import com.nle.ui.model.response.InventoryResponse;
@@ -20,10 +21,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -60,6 +58,23 @@ public class InventoryController {
         @PathVariable(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
         Pageable pageable) {
         return ResponseEntity.ok(gateMoveService.findAll(pageable, from, to));
+    }
+
+    @Operation(description = "global search for inventory", operationId = "searchByCondition", summary = "global search for inventory")
+    @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
+    @PostMapping("/search")
+    public ResponseEntity<PagingResponseModel<InventoryResponse>> searchByCondition(
+            @RequestBody InventorySearchRequest request,
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            })
+            @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.ok(inventoryService.searchByCondition(request, pageable));
     }
 
 }
