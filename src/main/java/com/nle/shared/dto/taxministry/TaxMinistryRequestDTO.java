@@ -31,5 +31,5 @@ public class TaxMinistryRequestDTO {
     private String txDate;
     private String vessel;
     private String voyage;
-    private String amount;
+    private Long amount;
 }
