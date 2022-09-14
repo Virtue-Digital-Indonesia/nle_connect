@@ -49,7 +49,11 @@ public class TaxMinistryService {
 
 
     public void syncDataToTaxMinistry(TaxMinistryRequestDTO taxMinistryRequestDTO) {
+        System.out.println(taxMinistryRequestDTO);
         TaxMinistryResponseDTO taxMinistryResponseDTO = taxMinistryServiceClient.syncDataToTaxMinistry(taxMinistryRequestDTO);
+        System.out.println(taxMinistryResponseDTO.getStatus());
+        System.out.println(taxMinistryResponseDTO.getMessage());
+
         if (taxMinistryResponseDTO.getStatus()) {
             gateMoveRepository.updateGateMoveStatusById(AppConstant.Status.SUBMITTED, LocalDateTime.now(), taxMinistryRequestDTO.getId());
         } else {
@@ -70,12 +74,12 @@ public class TaxMinistryService {
         taxMinistryRequestDTO.setIsoCode(gateMove.getIso_code());
         taxMinistryRequestDTO.setMaxGross(gateMove.getMax_gross());
         taxMinistryRequestDTO.setOrderNumber(gateMove.getOrder_number());
-        taxMinistryRequestDTO.setProcessType(gateMove.getProcess_type());
+        taxMinistryRequestDTO.setProcessType(gateMove.getProcess_type().toLowerCase());
         taxMinistryRequestDTO.setRemark(gateMove.getRemarks());
         taxMinistryRequestDTO.setTransportNumber(gateMove.getTransport_number());
         taxMinistryRequestDTO.setTxDate(gateMove.getTx_date());
         taxMinistryRequestDTO.setVessel(gateMove.getVessel());
-        taxMinistryRequestDTO.setAmount(gateMove.getAmount().toString());
+        taxMinistryRequestDTO.setAmount(gateMove.getAmount());
         return taxMinistryRequestDTO;
     }
 }

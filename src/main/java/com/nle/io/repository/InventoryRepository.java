@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
+
 
 /**
  * Spring Data SQL repository for the Inventory entity.
@@ -23,8 +24,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     @Query(value = "SELECT * FROM inventories " +
             "WHERE inventories.depo_owner_account_id = :depoId " +
             "AND inventories.container_number = :containerNo " +
-            "AND inventories.gate_out_id IS NULL " +
-            "LIMIT 1", nativeQuery = true)
-    Optional<Inventory> findTopByContainerNumber (@Param("depoId") Long depoId,
-            @Param("containerNo") String containerNumber);
+            "AND inventories.gate_out_id IS NULL",
+            nativeQuery = true)
+    List<Inventory> findTopByContainerNumber (@Param("depoId") Long depoId,
+                                              @Param("containerNo") String containerNumber);
 }

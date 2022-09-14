@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.nle.util.NleUtil.GATE_IN;
@@ -47,12 +48,13 @@ public class InventoryServiceImpl implements InventoryService{
     public void triggerGateOutInventory(GateMove gateMove) {
         DepoOwnerAccount depoOwnerAccount = gateMove.getDepoOwnerAccount();
         Long depoId = depoOwnerAccount.getId();
-        Optional<Inventory> optionalInventory = inventoryRepository.findTopByContainerNumber(depoId, gateMove.getContainer_number());
+        List<Inventory> optionalInventory = inventoryRepository.findTopByContainerNumber(depoId, gateMove.getContainer_number());
 
         if (!optionalInventory.isEmpty()) {
-            Inventory inventory = optionalInventory.get();
-            inventory.setGateOutId(gateMove);
-            inventoryRepository.save(inventory);
+            for (Inventory inventory : optionalInventory) {
+                inventory.setGateOutId(gateMove);
+                inventoryRepository.save(inventory);
+            }
         }
     }
 
