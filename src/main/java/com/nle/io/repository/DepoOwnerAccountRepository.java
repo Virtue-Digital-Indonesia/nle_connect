@@ -19,6 +19,9 @@ import java.util.Optional;
  */
 @Repository
 public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccount, Long> {
+
+    static String DEPO_OWNER_SEARCH_QUERRY =
+            "SELECT doa FROM DepoOwnerAccount doa";
     Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail);
 
     Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber);
@@ -34,4 +37,6 @@ public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccou
                                   @Param("approvalStatuses") List<ApprovalStatus> approvalStatuses,
                                   Pageable pageable);
 
+    @Query(value = DEPO_OWNER_SEARCH_QUERRY)
+    Page<DepoOwnerAccount> searchByCondition(Pageable pageable);
 }

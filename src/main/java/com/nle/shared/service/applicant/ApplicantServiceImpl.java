@@ -2,8 +2,10 @@ package com.nle.shared.service.applicant;
 
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
+import com.nle.security.SecurityUtils;
 import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.exception.ResourceNotFoundException;
@@ -71,6 +73,16 @@ public class ApplicantServiceImpl implements ApplicantService {
         depoOwnerAccount.setAccountStatus(accountStatus);
         DepoOwnerAccount updatedDepoOwnerAccount = depoOwnerAccountRepository.save(depoOwnerAccount);
         return convertFromEntity(updatedDepoOwnerAccount);
+    }
+
+    public PagingResponseModel<ApplicantResponse> searchByCondition(ApplicantSearchRequest request, Pageable pageable){
+        Optional<String> currentadmin = SecurityUtils.getCurrentUserLogin();
+        if (!currentadmin.isEmpty()) {
+            Page<DepoOwnerAccount> list = depoOwnerAccountRepository.searchByCondition(pageable);
+            return new PagingResponseModel<>(list.map(this::convertFromEntity));
+        }
+
+        return new PagingResponseModel<>();
     }
 
     public ApplicantResponse convertFromEntity(DepoOwnerAccount depoOwnerAccount) {
