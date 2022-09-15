@@ -3,6 +3,7 @@ package com.nle.io.repository;
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,8 +21,20 @@ import java.util.Optional;
 @Repository
 public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccount, Long> {
 
-    static String DEPO_OWNER_SEARCH_QUERRY =
-            "SELECT doa FROM DepoOwnerAccount doa";
+    static final String DEPO_OWNER_SEARCH_QUERRY = "SELECT doa FROM DepoOwnerAccount doa " +
+            "WHERE (:#{#request.companyEmail} IS NULL OR LOWER(doa.companyEmail) LIKE LOWER(CONCAT('%', :#{#request.companyEmail}, '%'))) " +
+            "AND (:#{#request.phoneNumber} IS NULL OR LOWER (doa.phoneNumber) LIKE LOWER(CONCAT('%', :#{#request.phoneNumber}, '%'))) " +
+            "AND (:#{#request.fullName} IS NULL OR LOWER(doa.fullName) LIKE LOWER(CONCAT('%', :#{#request.fullName}, '%'))) " +
+            "AND (:#{#request.organizationName} IS NULL OR LOWER(doa.organizationName) LIKE LOWER(CONCAT('%', :#{#request.organizationName}, '%'))) " +
+            "AND (:#{#request.organizationCode} IS NULL OR LOWER(doa.organizationCode) LIKE LOWER(CONCAT('%', :#{#request.organizationCode}, '%'))) " +
+            "AND (:#{#request.globalSearch} IS NULL " +
+            "OR LOWER(doa.companyEmail) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(doa.phoneNumber) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(doa.fullName) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(doa.organizationName) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(doa.organizationCode) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            ")";
+
     Optional<DepoOwnerAccount> findByCompanyEmail(String companyEmail);
 
     Optional<DepoOwnerAccount> findByPhoneNumber(String phoneNumber);
@@ -38,5 +51,6 @@ public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccou
                                   Pageable pageable);
 
     @Query(value = DEPO_OWNER_SEARCH_QUERRY)
-    Page<DepoOwnerAccount> searchByCondition(Pageable pageable);
+    Page<DepoOwnerAccount> searchByCondition(@Param("request") ApplicantSearchRequest request,
+                                             Pageable pageable);
 }

@@ -78,7 +78,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     public PagingResponseModel<ApplicantResponse> searchByCondition(ApplicantSearchRequest request, Pageable pageable){
         Optional<String> currentadmin = SecurityUtils.getCurrentUserLogin();
         if (!currentadmin.isEmpty()) {
-            Page<DepoOwnerAccount> list = depoOwnerAccountRepository.searchByCondition(pageable);
+            Page<DepoOwnerAccount> list = depoOwnerAccountRepository.searchByCondition(request, pageable);
             return new PagingResponseModel<>(list.map(this::convertFromEntity));
         }
 
