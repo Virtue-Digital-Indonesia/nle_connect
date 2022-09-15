@@ -36,7 +36,17 @@ public class ApplicantController {
     @Operation(description = "Get list of applicant with paging", operationId = "getApplicantsList", summary = "Get list of applicant with paging")
     @PostMapping(value = "/applicants")
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<PagingResponseModel<ApplicantResponse>> getApplicantsList(Pageable pageable, @RequestBody ApplicantListReqDTO applicantListReqDTO) {
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
+    public ResponseEntity<PagingResponseModel<ApplicantResponse>> getApplicantsList(
+            @RequestBody ApplicantListReqDTO applicantListReqDTO,
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            })
+            @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.ok(applicantService.findAll(applicantListReqDTO, pageable));
     }
 
