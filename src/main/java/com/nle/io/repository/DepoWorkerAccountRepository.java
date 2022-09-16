@@ -24,7 +24,16 @@ public interface DepoWorkerAccountRepository extends JpaRepository<DepoWorkerAcc
 
     @Query(value = "SELECT dwc FROM DepoWorkerAccount dwc " +
             "WHERE dwc.organizationCode = :code " +
-            "AND (:#{#request.androidId} IS NULL OR LOWER(dwc.androidId) LIKE LOWER(CONCAT('%', :#{#request.androidId}, '%'))) ")
+            "AND (:#{#request.androidId} IS NULL OR LOWER(dwc.androidId) LIKE LOWER(CONCAT('%', :#{#request.androidId}, '%'))) " +
+            "AND (:#{#request.fullName} IS NULL OR LOWER(dwc.fullName) LIKE LOWER(CONCAT('%', :#{#request.fullName}, '%'))) " +
+            "AND (:#{#request.gateName} IS NULL OR LOWER(dwc.gateName) LIKE LOWER(CONCAT('%', :#{#request.gateName}, '%'))) " +
+            "AND (:#{#request.accountStatus} IS NULL OR UPPER(dwc.accountStatus) LIKE LOWER(CONCAT('%', :#{#request.accountStatus}, '%'))) " +
+            "AND (:#{#request.globalSearch} IS NULL " +
+            "OR LOWER(dwc.androidId) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(dwc.fullName) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR LOWER(dwc.gateName) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR UPPER(dwc.accountStatus) LIKE UPPER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            ")")
     Page<DepoWorkerAccount> searchByCondition(@Param("code") String code,
                                               @Param("request")DepoWorkerSearchRequest request,
                                               Pageable pageable);

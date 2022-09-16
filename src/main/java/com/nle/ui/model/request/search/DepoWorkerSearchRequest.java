@@ -12,7 +12,6 @@ public class DepoWorkerSearchRequest {
 
     private String androidId;
     private String fullName;
-    private String organizationCode;
     private String gateName;
     private String accountStatus;
     private String globalSearch;
