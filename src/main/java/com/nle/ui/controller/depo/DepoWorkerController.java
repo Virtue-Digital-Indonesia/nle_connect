@@ -7,6 +7,7 @@ import com.nle.ui.model.DepoWorkerLoginDto;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoWorkerUpdateGateNameReqDto;
+import com.nle.ui.model.request.search.DepoWorkerSearchRequest;
 import com.nle.ui.model.response.DepoWorkerListDTO;
 import com.nle.exception.ApiResponse;
 import com.nle.shared.service.depoWorker.DepoWorkerAccountService;
@@ -93,6 +94,22 @@ public class DepoWorkerController {
     @SecurityRequirement(name = "nleapi")
     public ResponseEntity<DepoWorkerAccountDTO> getDepoWorkerAccountDetails() {
         return ResponseEntity.ok(depoWorkerAccountService.getDepoWorkerAccountDetails());
+    }
+
+    @Operation(description = "global search depo worker account with paging", operationId = "searchByCondition", summary = "global search depo worker account with paging")
+    @PostMapping(value = "/search")
+    @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter (in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
+    public ResponseEntity<PagingResponseModel<DepoWorkerListDTO>> searchByCondition(
+            @RequestBody DepoWorkerSearchRequest request,
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.ok(depoWorkerAccountService.searchByCondition(request, pageable));
     }
 
 }

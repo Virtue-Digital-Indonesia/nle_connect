@@ -10,6 +10,7 @@ import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoWorkerApproveReqDto;
 import com.nle.ui.model.request.DepoWorkerUpdateGateNameReqDto;
+import com.nle.ui.model.request.search.DepoWorkerSearchRequest;
 import com.nle.ui.model.response.DepoWorkerListDTO;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.DepoWorkerAccount;
@@ -197,6 +198,22 @@ public class DepoWorkerAccountServiceImpl implements DepoWorkerAccountService {
             return depoWorkerAccountDTO;
         }
         return null;
+    }
+
+    @Override
+    public PagingResponseModel<DepoWorkerListDTO> searchByCondition(DepoWorkerSearchRequest request, Pageable pageable) {
+        Optional<String> currentUser = SecurityUtils.getCurrentUserLogin();
+        if (!currentUser.isEmpty()) {
+            String email = currentUser.get();
+            Optional<DepoOwnerAccount> owner = depoOwnerAccountRepository.findByCompanyEmail(email);
+            if (!owner.isEmpty()) {
+                String organizationCode = owner.get().getOrganizationCode();
+                Page<DepoWorkerAccount> list = depoWorkerAccountRepository.searchByCondition(organizationCode, request, pageable);
+                return new PagingResponseModel<>(list.map(this::convertFromEntity));
+            }
+        }
+
+        return new PagingResponseModel<>();
     }
 
     private DepoWorkerListDTO convertFromEntity(DepoWorkerAccount depoWorkerAccount) {
