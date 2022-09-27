@@ -78,7 +78,10 @@ public class SecurityConfiguration {
                         , "/api/reset-password"
                         , "/api/forgot-password"
                 ).permitAll()
-            .antMatchers("/impersonate", "/api/admins/profile", "/api/switchUser**").access("hasRole('ADMIN')")
+            .antMatchers("/impersonate",
+                    "/api/admins/profile",
+                    "/api/applicants/**",
+                    "/api/switchUser/**").access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
             .and()
