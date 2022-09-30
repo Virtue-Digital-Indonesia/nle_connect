@@ -43,7 +43,7 @@ public class SSHService {
     public String changePasswordFtpUser (String username, String password) {
         try {
             StringBuilder triggerURL = new StringBuilder();
-            triggerURL.append("http://54.169.71.70:8080/buildByToken/buildWithParameters?job=Change-Password-FTP");
+            triggerURL.append("http://210.247.245.144:8080/buildByToken/buildWithParameters?job=Change-Password-FTP");
             triggerURL.append("&token=");
             triggerURL.append(appProperties.getSecurity().getFtp().getTriggerToken());
             triggerURL.append("&username=");
