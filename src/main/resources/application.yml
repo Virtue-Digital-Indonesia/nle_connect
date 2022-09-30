@@ -18,7 +18,7 @@ app:
     ftp:
       server: "ftp.nle-connect.id"
       path: "files"
-      TRIGGER_URL: "http://54.251.3.0:8080/buildByToken/buildWithParameters?job=Update-FTP-User"
+      TRIGGER_URL: "http://210.247.245.144:8080/buildByToken/buildWithParameters?job=Update-FTP-User"
       TRIGGER_TOKEN: "sTbF18KYYkrr17CHhfpp"
   springdoc:
     name:  Nlebackend API
@@ -50,7 +50,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://108.137.45.198:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://210.247.245.143:3308/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: TXPSfYUiX9C4MmocXX0O
     hikari:
