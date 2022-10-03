@@ -12,6 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class SSHService {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(triggerURL.toString()))
                 .GET()
+                .header("Authorization", getBasicAuthenticationHeader("admin", "TcdYFy1VHJ58"))
                 .build();
             HttpResponse<String> response = HttpClient.newHttpClient()
                 .send(request, HttpResponse.BodyHandlers.ofString());
@@ -53,6 +55,7 @@ public class SSHService {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(triggerURL.toString()))
                     .GET()
+                    .header("Authorization", getBasicAuthenticationHeader("admin", "TcdYFy1VHJ58"))
                     .build();
             HttpResponse<String> response = HttpClient.newHttpClient()
                     .send(request, HttpResponse.BodyHandlers.ofString());
@@ -60,5 +63,10 @@ public class SSHService {
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new CommonException("Error while change FTP password" + Arrays.toString(e.getStackTrace()));
         }
+    }
+
+    private final String getBasicAuthenticationHeader(String username, String password) {
+        String valueToEncode = username + ":" + password;
+        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 }
