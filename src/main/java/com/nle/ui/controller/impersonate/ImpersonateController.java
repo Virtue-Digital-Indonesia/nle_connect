@@ -3,7 +3,6 @@ package com.nle.ui.controller.impersonate;
 import com.nle.ui.model.JWTToken;
 import com.nle.security.impersonate.SwitchUserAuthenticationSuccessHandler;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

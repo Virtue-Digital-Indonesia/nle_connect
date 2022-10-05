@@ -32,7 +32,9 @@ public class SSHService {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(triggerURL.toString()))
                 .GET()
-                .header("Authorization", getBasicAuthenticationHeader("admin", "TcdYFy1VHJ58"))
+                .header("Authorization", getBasicAuthenticationHeader(
+                        appProperties.getSecurity().getFtp().getFtpUsername(),
+                        appProperties.getSecurity().getFtp().getFtpPassword()))
                 .build();
             HttpResponse<String> response = HttpClient.newHttpClient()
                 .send(request, HttpResponse.BodyHandlers.ofString());
@@ -55,7 +57,9 @@ public class SSHService {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(triggerURL.toString()))
                     .GET()
-                    .header("Authorization", getBasicAuthenticationHeader("admin", "TcdYFy1VHJ58"))
+                    .header("Authorization", getBasicAuthenticationHeader(
+                            appProperties.getSecurity().getFtp().getFtpUsername(),
+                            appProperties.getSecurity().getFtp().getFtpPassword()))
                     .build();
             HttpResponse<String> response = HttpClient.newHttpClient()
                     .send(request, HttpResponse.BodyHandlers.ofString());
