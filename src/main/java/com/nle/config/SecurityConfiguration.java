@@ -80,8 +80,7 @@ public class SecurityConfiguration {
                 ).permitAll()
             .antMatchers("/impersonate",
                     "/api/admins/profile",
-                    "/api/applicants/**",
-                    "/api/switchUser/**").access("hasRole('ADMIN')")
+                    "/api/applicants/**").access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
             .and()
