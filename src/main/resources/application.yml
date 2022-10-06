@@ -14,12 +14,14 @@ app:
         access-key: "AKIAWJCGQ2JNAL4BLUZL"
         secret-key: "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"
     tax-ministry:
-      api-key: "ae33fe80-8a30-49cf-bcc3-01aaa5aa8b4a"
+      api-key: ${TAX_MINISTRY_API_KEY}
     ftp:
       server: "ftp.nle-connect.id"
       path: "files"
-      TRIGGER_URL: "http://210.247.245.144:8080/job/Update-FTP-User/buildWithParameters?"
-      TRIGGER_TOKEN: "sTbF18KYYkrr17CHhfpp"
+      TRIGGER_URL: ${TRIGGER_URL}
+      TRIGGER_TOKEN: ${TRIGGER_TOKEN}
+      FTP_USERNAME: ${FTP_USERNAME}
+      FTP_PASSWORD: ${FTP_PASSWORD}
   springdoc:
     name:  Nlebackend API
     url: http://api.nle-connect.id/
@@ -52,7 +54,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://210.247.245.143:3308/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
-    password: TXPSfYUiX9C4MmocXX0O
+    password: ${DB_PASSWORD}
     hikari:
       poolName: Hikari
       auto-commit: false
