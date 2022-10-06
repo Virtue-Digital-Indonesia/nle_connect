@@ -77,11 +77,11 @@ public class SecurityConfiguration {
                         , "/api/depo-worker-accounts/authenticate"
                         , "/api/reset-password"
                         , "/api/forgot-password"
-                        , "/api/switchUser/impersonate/**"
                 ).permitAll()
             .antMatchers("/impersonate",
                     "/api/admins/profile",
-                    "/api/applicants/**").access("hasRole('ADMIN')")
+                    "/api/applicants/**",
+                    "/api/switchUser/impersonate/**").access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
             .and()

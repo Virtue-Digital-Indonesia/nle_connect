@@ -145,6 +145,10 @@
 
     </dependencies>
 
+    <http>
+        <intercept-url pattern="/**" access="ADMIN" requires-channel="https"/>
+    </http>
+
     <build>
         <finalName>nlebackend</finalName>
         <plugins>
