@@ -38,7 +38,7 @@ pipeline {
                     string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                     string(credentialsId: 'TRIGGER_URL', variable: 'TRIGGER_URL'),
                     string(credentialsId: 'TRIGGER_TOKEN', variable: 'TRIGGER_TOKEN'),
-                    string(credentialsId: 'TAX_MINISTRY_API_KEY', variable: 'TAX_MINISTRY_API_KEY')
+                    string(credentialsId: 'TAX_MINISTRY_API_KEY', variable: 'TAX_MINISTRY_API_KEY'),
                     usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME')
                     ]) {
                     sh """
