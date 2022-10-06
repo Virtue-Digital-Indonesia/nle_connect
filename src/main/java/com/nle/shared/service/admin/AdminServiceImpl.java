@@ -1,5 +1,8 @@
 package com.nle.shared.service.admin;
 
+import com.nle.exception.BadRequestException;
+import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.admin.AdminLoginDTO;
 import com.nle.ui.model.admin.AdminProfileDTO;
@@ -30,6 +33,7 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
 
     @Override
     public JWTToken loginAdmin(AdminLoginDTO adminLoginDTO) {
@@ -66,5 +70,20 @@ public class AdminServiceImpl implements AdminService {
             return adminProfileDTO;
         }
         return null;
+    }
+
+    public JWTToken forcedImpersonate(String email) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (!currentUserLogin.isEmpty()) {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(email);
+
+            if (depoOwnerAccount.isEmpty())
+                throw new BadRequestException("Cannot find depo with email "+ email +"!");
+
+            String token = tokenProvider.generateManualToken(depoOwnerAccount.get(),"ROLE_PREVIOUS_ADMINISTRATOR,DEPO_OWNER");
+            return  new JWTToken(token);
+        }
+
+        return new JWTToken("null");
     }
 }

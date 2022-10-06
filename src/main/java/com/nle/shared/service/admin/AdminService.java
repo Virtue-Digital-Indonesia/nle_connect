@@ -8,4 +8,6 @@ public interface AdminService {
     JWTToken loginAdmin(AdminLoginDTO adminLoginDTO);
 
     AdminProfileDTO getAdminProfile();
+
+    JWTToken forcedImpersonate(String email);
 }
