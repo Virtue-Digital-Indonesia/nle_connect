@@ -64,7 +64,9 @@ public class InventoryServiceImpl implements InventoryService{
         Optional<Inventory> optional = inventoryRepository.findByGateMoveIn(gateMove.getId());
         if (!optional.isEmpty()) {
             Inventory inventory = optional.get();
+            Long id = inventory.getId();
             BeanUtils.copyProperties(gateMove, inventory);
+            inventory.setId(id);
             inventory.setGateInId(gateMove);
             inventory.setDepoOwnerAccount(gateMove.getDepoOwnerAccount());
             inventoryRepository.save(inventory);
