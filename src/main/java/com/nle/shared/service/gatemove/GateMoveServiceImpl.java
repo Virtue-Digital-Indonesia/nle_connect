@@ -95,6 +95,7 @@ public class GateMoveServiceImpl implements GateMoveService {
             depoOwnerAccount.ifPresent(gateMove::setDepoOwnerAccount);
         }
         GateMove updatedGateMove = gateMoveRepository.save(gateMove);
+        inventoryService.triggerUpdate(updatedGateMove);
         UpdatedGateMoveResponseDTO updatedGateMoveResponseDTO = new UpdatedGateMoveResponseDTO();
         BeanUtils.copyProperties(updatedGateMove, updatedGateMoveResponseDTO);
         return updatedGateMoveResponseDTO;

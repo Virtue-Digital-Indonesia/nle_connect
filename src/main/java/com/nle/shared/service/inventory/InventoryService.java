@@ -11,6 +11,7 @@ public interface InventoryService {
     void triggerInventory(GateMove gateMove);
     void triggerCreateInventory(GateMove gateMove);
     void triggerGateOutInventory(GateMove gateMove);
+    void triggerUpdate(GateMove gateMove);
 
     PagingResponseModel<InventoryResponse> getAllInventory (Pageable pageable);
 
