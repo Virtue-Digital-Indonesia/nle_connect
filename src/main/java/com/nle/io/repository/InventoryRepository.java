@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -57,4 +58,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Page<Inventory> searchByCondition(@Param("companyEmail") String companyEmail,
                                       @Param("request") InventorySearchRequest request,
                                       Pageable pageable);
+
+    @Query(value = "SELECT * FROM inventories WHERE inventories.gate_in_id = :gateInID AND inventories.gate_out_id IS NULL", nativeQuery = true)
+    Optional<Inventory> findByGateMoveIn(@Param("gateInID") Long gateInID);
 }

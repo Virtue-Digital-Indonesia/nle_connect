@@ -41,7 +41,7 @@ public class InventoryServiceImpl implements InventoryService{
     public void triggerCreateInventory(GateMove gateMove) {
         Inventory inventory = new Inventory();
         BeanUtils.copyProperties(gateMove, inventory);
-        inventory.setDepoOwnerAccount(inventory.getDepoOwnerAccount());
+        inventory.setDepoOwnerAccount(gateMove.getDepoOwnerAccount());
         inventory.setGateInId(gateMove);
         inventoryRepository.save(inventory);
     };
@@ -57,6 +57,21 @@ public class InventoryServiceImpl implements InventoryService{
                 inventoryRepository.save(inventory);
             }
         }
+    }
+
+    public void triggerUpdate(GateMove gateMove) {
+
+        Optional<Inventory> optional = inventoryRepository.findByGateMoveIn(gateMove.getId());
+        if (!optional.isEmpty()) {
+            Inventory inventory = optional.get();
+            Long id = inventory.getId();
+            BeanUtils.copyProperties(gateMove, inventory);
+            inventory.setId(id);
+            inventory.setGateInId(gateMove);
+            inventory.setDepoOwnerAccount(gateMove.getDepoOwnerAccount());
+            inventoryRepository.save(inventory);
+        }
+
     }
 
     public PagingResponseModel<InventoryResponse> getAllInventory (Pageable pageable){
