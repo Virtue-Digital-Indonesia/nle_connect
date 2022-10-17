@@ -80,7 +80,7 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
 
     @Modifying
     @Query("update GateMove gm set gm.status =:status, " +
-            "gm.syncToTaxMinistryDate =:syncToTaxMinistryDate " +
+            "gm.syncToTaxMinistryDate =:syncToTaxMinistryDate, " +
             "gm.nleId = :IdTraffic " +
             "where gm.id =:id")
     int updateGateMoveStatusById(@Param("status") String status,
