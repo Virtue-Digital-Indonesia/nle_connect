@@ -79,9 +79,13 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
     List<GateMove> findAllByStatus(String status);
 
     @Modifying
-    @Query("update GateMove gm set gm.status =:status, gm.syncToTaxMinistryDate =:syncToTaxMinistryDate where gm.id =:id")
+    @Query("update GateMove gm set gm.status =:status, " +
+            "gm.syncToTaxMinistryDate =:syncToTaxMinistryDate " +
+            "gm.nleId = :IdTraffic " +
+            "where gm.id =:id")
     int updateGateMoveStatusById(@Param("status") String status,
                                  @Param("syncToTaxMinistryDate") LocalDateTime syncToTaxMinistryDate,
+                                 @Param("IdTraffic") String IdTraffic,
                                  @Param("id") Long id);
 
     @Query(value = SEARCH_GATEMOVE_QUERY)

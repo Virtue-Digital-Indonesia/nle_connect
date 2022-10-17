@@ -67,7 +67,7 @@ public class NleUtil {
 //        gateMove.setLinkToGoogleMap(moveDTO.getLink);
         gateMove.setGateMoveType(transformProcessTypeToGateMoveType(moveDTO.getProcess_type()));
         gateMove.setStatus(AppConstant.Status.WAITING);
-        gateMove.setNleId(UUID.randomUUID().toString());
+//        gateMove.setNleId(UUID.randomUUID().toString());
         gateMove.setSource(gateMoveSource);
 
 
