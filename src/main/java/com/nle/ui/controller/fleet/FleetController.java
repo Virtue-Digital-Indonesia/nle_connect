@@ -2,6 +2,7 @@ package com.nle.ui.controller.fleet;
 
 import com.nle.shared.service.fleet.FleetService;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.FleetRequest;
 import com.nle.ui.model.response.FleetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,9 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/fleets")
@@ -41,6 +40,13 @@ public class FleetController {
             @Parameter(hidden = true) Pageable pageable
     ) {
         return ResponseEntity.ok(fleetService.getAllFleets(pageable));
+    }
+
+    @Operation(description = "create fleet", operationId = "createFleet", summary = "create fleet")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping
+    public ResponseEntity<FleetResponse> createFleet(@RequestBody FleetRequest request) {
+        return ResponseEntity.ok(fleetService.createFleet(request));
     }
 
 }
