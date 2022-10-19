@@ -77,6 +77,7 @@ public class SecurityConfiguration {
                         , "/api/depo-worker-accounts/authenticate"
                         , "/api/reset-password"
                         , "/api/forgot-password"
+                        , "/api/fleets/**"
                 ).permitAll()
             .antMatchers("/impersonate",
                     "/api/admins/profile",
