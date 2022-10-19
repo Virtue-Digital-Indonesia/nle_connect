@@ -1,5 +1,6 @@
 package com.nle.shared.service.fleet;
 
+import com.nle.exception.BadRequestException;
 import com.nle.io.entity.Fleet;
 import com.nle.io.repository.FleetRepository;
 import com.nle.ui.model.pageable.PagingResponseModel;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,12 @@ public class FleetServiceImpl implements FleetService{
 
     @Override
     public FleetResponse createFleet(FleetRequest request) {
+        String code = request.getCode();
+        Optional<Fleet> check = fleetRepository.getByCode(code);
+
+        if (!check.isEmpty())
+            throw new BadRequestException("Code is already in use!");
+
         Fleet fleet = new Fleet();
         BeanUtils.copyProperties(request, fleet);
         Fleet savedEntity = fleetRepository.save(fleet);
