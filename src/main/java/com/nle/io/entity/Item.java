@@ -16,6 +16,8 @@ public class Item extends AbstractAuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "item_name")
@@ -31,6 +33,7 @@ public class Item extends AbstractAuditingEntity implements Serializable {
     private int price;
 
     @Column(name = "item_type")
+    @Enumerated(EnumType.STRING)
     private ItemTypeEnum type;
 
     @Column(name = "item_status")

@@ -2,6 +2,7 @@ package com.nle.ui.controller.depo;
 
 import com.nle.shared.service.item.ItemService;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.CreateItemRequest;
 import com.nle.ui.model.response.ItemResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,9 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/items")
@@ -41,6 +40,13 @@ public class ItemController {
             @Parameter(hidden = true) Pageable pageable
     ) {
         return ResponseEntity.ok(itemService.getListItem(pageable));
+    }
+
+    @Operation(description = "create new item in depo owner", operationId = "createItem", summary = "create new item in depo owner")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping
+    public ResponseEntity<ItemResponse> createItem(@RequestBody CreateItemRequest request) {
+        return ResponseEntity.ok(itemService.createItem(request));
     }
 
 }
