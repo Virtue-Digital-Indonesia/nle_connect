@@ -1,5 +1,6 @@
 package com.nle.shared.service.fleet;
 
+import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -50,6 +51,10 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             Optional<Fleet> fleet = fleetRepository.getByCode(fleetCode);
             if (fleet.isEmpty())
                 throw new CommonException("Cannot find fleet code");
+
+            Optional<Fleet> flagFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), fleetCode);
+            if (!flagFleet.isEmpty())
+                throw new BadRequestException("Fleet is already registered in depo!");
 
             DepoFleet depoFleet = new DepoFleet();
             depoFleet.setDepoOwnerAccount(depoOwnerAccount.get());
