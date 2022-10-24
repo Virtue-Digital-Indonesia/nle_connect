@@ -2,6 +2,8 @@ package com.nle.ui.controller.depo;
 
 import com.nle.shared.service.fleet.DepoFleetService;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.DepoFleetRegisterRequest;
+import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.FleetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,8 +29,8 @@ public class DepoFleetController {
     @Operation(description = "register fleet to depo fleet list", operationId = "registerFleet", summary = "register fleet to depo fleet list")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/register")
-    public ResponseEntity<FleetResponse> registerFleet (@RequestParam("code") String fleetCode) {
-        return ResponseEntity.ok(depoFleetService.registerFleet(fleetCode));
+    public ResponseEntity<DepoFleetResponse> registerFleet (@RequestBody DepoFleetRegisterRequest request) {
+        return ResponseEntity.ok(depoFleetService.registerFleet(request));
     }
 
     @Operation(description = "Get List fleet of depo owner with paging", operationId = "getListDepoFleet", summary = "Get List fleet of depo owner with paging")
@@ -39,7 +41,7 @@ public class DepoFleetController {
             @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
     })
     @GetMapping()
-    public ResponseEntity<PagingResponseModel<FleetResponse>> getListDepoFleet(
+    public ResponseEntity<PagingResponseModel<DepoFleetResponse>> getListDepoFleet(
             @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             })

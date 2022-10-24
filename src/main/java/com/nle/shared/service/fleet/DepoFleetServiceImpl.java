@@ -10,6 +10,8 @@ import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.FleetRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.DepoFleetRegisterRequest;
+import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.FleetResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -30,10 +32,10 @@ public class DepoFleetServiceImpl implements DepoFleetService{
     private final FleetRepository fleetRepository;
 
     @Override
-    public PagingResponseModel<FleetResponse> getAllFleetsDepo (Pageable pageable){
+    public PagingResponseModel<DepoFleetResponse> getAllFleetsDepo (Pageable pageable){
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (!currentUserLogin.isEmpty()) {
-            Page<Fleet> listFleet = depoFleetRepository.getAllDepoFleet(currentUserLogin.get(), pageable);
+            Page<DepoFleet> listFleet = depoFleetRepository.getAllDepoFleet(currentUserLogin.get(), pageable);
             return new PagingResponseModel<>(listFleet.map(this::convertFleetToResponse));
         }
 
@@ -41,34 +43,44 @@ public class DepoFleetServiceImpl implements DepoFleetService{
     }
 
     @Override
-    public FleetResponse registerFleet(String fleetCode) {
+    public DepoFleetResponse registerFleet(DepoFleetRegisterRequest request) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (!currentUserLogin.isEmpty()) {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
             if (depoOwnerAccount.isEmpty())
                 throw new CommonException("Cannot find Depo Owner Account!");
 
-            Optional<Fleet> fleet = fleetRepository.getByCode(fleetCode);
+            Optional<Fleet> fleet = fleetRepository.getByCode(request.getFleet_code());
             if (fleet.isEmpty())
                 throw new CommonException("Cannot find fleet code");
 
-            Optional<Fleet> flagFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), fleetCode);
+            Optional<Fleet> flagFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleet_code());
             if (!flagFleet.isEmpty())
                 throw new BadRequestException("Fleet is already registered in depo!");
 
             DepoFleet depoFleet = new DepoFleet();
             depoFleet.setDepoOwnerAccount(depoOwnerAccount.get());
             depoFleet.setFleet(fleet.get());
+
+            if(request.getName().isEmpty() || request.getName().equalsIgnoreCase("")) {
+                depoFleet.setName(fleet.get().getFleet_manager_company());
+            }
+            else {
+                depoFleet.setName(request.getName());
+            }
+
             DepoFleet entity = depoFleetRepository.save(depoFleet);
-            return this.convertFleetToResponse(entity.getFleet());
+            return this.convertFleetToResponse(entity);
         }
 
         return null;
     }
 
-    private FleetResponse convertFleetToResponse (Fleet fleet) {
-        FleetResponse fleetResponse = new FleetResponse();
-        BeanUtils.copyProperties(fleet, fleetResponse);
-        return fleetResponse;
+    private DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {
+        DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
+        BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
+        depoFleetResponse.setId(depoFleet.getId());
+        depoFleetResponse.setName(depoFleet.getName());
+        return depoFleetResponse;
     }
 }
