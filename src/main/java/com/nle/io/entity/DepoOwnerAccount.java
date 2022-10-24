@@ -82,6 +82,9 @@ public class DepoOwnerAccount extends AbstractAuditingEntity implements Serializ
     @Enumerated(EnumType.STRING)
     private TaxMinistryStatusEnum taxMinistryStatusEnum;
 
+    @Column(name = "depo_address")
+    private String address;
+
     @OneToMany(mappedBy = "depoOwnerAccount")
     private Set<GateMove> gateMoves = new HashSet<>();
 

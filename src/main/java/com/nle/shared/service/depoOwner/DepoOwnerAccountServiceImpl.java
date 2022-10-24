@@ -78,6 +78,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccountDTO.setOrganizationCode(organizationCode);
         // map to entity
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountMapper.toEntity(depoOwnerAccountDTO);
+        depoOwnerAccount.setAddress(depoOwnerAccountDTO.getAddress());
         depoOwnerAccount.setAccountStatus(AccountStatus.INACTIVE);
         depoOwnerAccount.setApprovalStatus(ApprovalStatus.REQUEST);
         depoOwnerAccount.setTaxMinistryStatusEnum(TaxMinistryStatusEnum.DISABLE);
@@ -86,7 +87,9 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount, VerificationType.ACTIVE_ACCOUNT);
         // send activation email
         emailService.sendDepoOwnerActiveEmail(depoOwnerAccount, verificationToken.getToken());
-        return depoOwnerAccountMapper.toDto(depoOwnerAccount);
+        DepoOwnerAccountDTO response = depoOwnerAccountMapper.toDto(depoOwnerAccount);
+        response.setAddress(depoOwnerAccount.getAddress());
+        return response;
     }
 
     @Override

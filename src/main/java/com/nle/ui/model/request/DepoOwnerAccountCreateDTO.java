@@ -1,6 +1,8 @@
 package com.nle.ui.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -8,6 +10,8 @@ import java.io.Serializable;
 
 import static com.nle.constant.AppConstant.Pattern.EMAIL_PATTERN;
 
+@Setter
+@Getter
 public class DepoOwnerAccountCreateDTO implements Serializable {
 
     @Pattern(regexp = EMAIL_PATTERN, message = "Email is not valid!")
@@ -25,45 +29,7 @@ public class DepoOwnerAccountCreateDTO implements Serializable {
 
     private String organizationName;
 
-    public String getCompanyEmail() {
-        return companyEmail;
-    }
-
-    public void setCompanyEmail(String companyEmail) {
-        this.companyEmail = companyEmail;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getOrganizationName() {
-        return organizationName;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
-    }
+    private String address;
 
     @Override
     public String toString() {
@@ -73,6 +39,7 @@ public class DepoOwnerAccountCreateDTO implements Serializable {
             ", password='" + password + '\'' +
             ", fullName='" + fullName + '\'' +
             ", organizationName='" + organizationName + '\'' +
+            ", address='" + address + '\'' +
             '}';
     }
 }
