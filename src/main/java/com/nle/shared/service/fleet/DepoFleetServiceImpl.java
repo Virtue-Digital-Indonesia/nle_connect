@@ -11,6 +11,7 @@ import com.nle.io.repository.FleetRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoFleetRegisterRequest;
+import com.nle.ui.model.request.DepoFleetUpdateRequest;
 import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.FleetResponse;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +75,37 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         }
 
         return null;
+    }
+
+    @Override
+    public DepoFleetResponse updateRegisterFleet(DepoFleetUpdateRequest request) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty()) throw new BadRequestException("You are not log in");
+        else {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
+            if (depoOwnerAccount.isEmpty()) throw new CommonException("Cannot find Depo Owner Account!");
+        }
+
+        Optional<DepoFleet> optionalDepoFleet = depoFleetRepository.findById(request.getId());
+        if (optionalDepoFleet.isEmpty())
+            throw new CommonException("Cannot find depo-fleet in this depo");
+
+        Optional<Fleet> fleet = fleetRepository.getByCode(request.getFleet_code());
+        if (fleet.isEmpty())
+            throw new CommonException("Cannot find fleet code");
+
+        DepoFleet depoFleet = optionalDepoFleet.get();
+        depoFleet.setFleet(fleet.get());
+
+        if (request.getName().isEmpty()) {
+            depoFleet.setName(fleet.get().getFleet_manager_company());
+        }
+        else {
+            depoFleet.setName(request.getName());
+        }
+
+        DepoFleet saved = depoFleetRepository.save(depoFleet);
+        return this.convertFleetToResponse(saved);
     }
 
     private DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {

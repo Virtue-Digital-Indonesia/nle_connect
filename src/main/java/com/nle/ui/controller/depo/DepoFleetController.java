@@ -3,6 +3,7 @@ package com.nle.ui.controller.depo;
 import com.nle.shared.service.fleet.DepoFleetService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoFleetRegisterRequest;
+import com.nle.ui.model.request.DepoFleetUpdateRequest;
 import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.FleetResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,6 +49,13 @@ public class DepoFleetController {
             @Parameter(hidden = true) Pageable pageable
     ) {
         return ResponseEntity.ok(depoFleetService.getAllFleetsDepo(pageable));
+    }
+
+    @Operation(description = "update or edit depo fleet", operationId = "editDepoFleet", summary = "edit depo fleet")
+    @SecurityRequirement(name = "nleapi")
+    @PutMapping()
+    public ResponseEntity<DepoFleetResponse> editDepoFleet(@RequestBody DepoFleetUpdateRequest request) {
+        return ResponseEntity.ok(depoFleetService.updateRegisterFleet(request));
     }
 
 
