@@ -1,12 +1,16 @@
 package com.nle.shared.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Setter
+@Getter
 public class DepoOwnerAccountDTO implements Serializable {
 
     private Long id;
@@ -22,68 +26,13 @@ public class DepoOwnerAccountDTO implements Serializable {
     @JsonIgnore
     private String password;
 
+    private String address;
+
     private String fullName;
 
     private String organizationName;
 
     private String organizationCode;
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCompanyEmail() {
-        return companyEmail;
-    }
-
-    public void setCompanyEmail(String companyEmail) {
-        this.companyEmail = companyEmail;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getOrganizationName() {
-        return organizationName;
-    }
-
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
-    }
-
-    public String getOrganizationCode() {
-        return organizationCode;
-    }
-
-    public void setOrganizationCode(String organizationCode) {
-        this.organizationCode = organizationCode;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -113,6 +62,7 @@ public class DepoOwnerAccountDTO implements Serializable {
             "id=" + getId() +
             ", companyEmail='" + getCompanyEmail() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
+            ", address='" + getAddress() + "'" +
             ", password='" + getPassword() + "'" +
             ", fullName='" + getFullName() + "'" +
             ", organizationName='" + getOrganizationName() + "'" +

@@ -15,6 +15,8 @@ public class DepoOwnerAccountProfileDTO implements Serializable {
 
     private String fullName;
 
+    private String address;
+
     private String organizationName;
 
     private String organizationCode;
