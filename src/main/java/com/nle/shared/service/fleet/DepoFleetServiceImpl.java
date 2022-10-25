@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -55,7 +56,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             if (fleet.isEmpty())
                 throw new CommonException("Cannot find fleet code");
 
-            Optional<Fleet> flagFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleet_code());
+            Optional<DepoFleet> flagFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleet_code());
             if (!flagFleet.isEmpty())
                 throw new BadRequestException("Fleet is already registered in depo!");
 
@@ -106,6 +107,22 @@ public class DepoFleetServiceImpl implements DepoFleetService{
 
         DepoFleet saved = depoFleetRepository.save(depoFleet);
         return this.convertFleetToResponse(saved);
+    }
+
+    @Override
+    public DepoFleetResponse deleteDepoFleet(String fleet_code) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty()) throw new BadRequestException("You are not log in");
+        else {
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
+            if (depoOwnerAccount.isEmpty()) throw new CommonException("Cannot find Depo Owner Account!");
+        }
+
+        Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), fleet_code);
+        if (depoFleet.isEmpty()) throw new CommonException("Cannot find depo-fleet in this depo");
+
+        depoFleetRepository.delete(depoFleet.get());
+        return this.convertFleetToResponse(depoFleet.get());
     }
 
     private DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {

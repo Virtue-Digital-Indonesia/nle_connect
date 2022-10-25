@@ -12,4 +12,5 @@ public interface DepoFleetService {
     PagingResponseModel<DepoFleetResponse> getAllFleetsDepo (Pageable pageable);
     DepoFleetResponse registerFleet(DepoFleetRegisterRequest request);
     DepoFleetResponse updateRegisterFleet(DepoFleetUpdateRequest request);
+    DepoFleetResponse deleteDepoFleet(String fleet_code);
 }
