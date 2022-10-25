@@ -29,6 +29,8 @@ public class ApplicantResponse implements Serializable {
 
     private String organizationCode;
 
+    private String address;
+
     private AccountStatus accountStatus;
 
     private ApprovalStatus approvalStatus;
