@@ -1,6 +1,7 @@
 package com.nle.shared.service.item;
 
 import com.nle.exception.CommonException;
+import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Fleet;
 import com.nle.io.entity.Item;
@@ -52,14 +53,14 @@ public class ItemServiceImpl implements ItemService{
         if (depoOwnerAccount.isEmpty())
             throw new CommonException("Cannot find this depo owner ");
 
-        Optional<Fleet> fleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
+        Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
         if (fleet.isEmpty())
             throw new CommonException("this fleet code is not register in depo");
 
         Item item = new Item();
         BeanUtils.copyProperties(request, item);
         item.setDepoOwnerAccount(depoOwnerAccount.get());
-        item.setFleet(fleet.get());
+        item.setFleet(fleet.get().getFleet());
         Item savedItem = itemRepository.save(item);
         return this.convertToResponse(savedItem);
     }
