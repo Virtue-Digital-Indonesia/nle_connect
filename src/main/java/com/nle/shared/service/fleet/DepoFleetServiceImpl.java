@@ -62,7 +62,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             depoFleet.setDepoOwnerAccount(depoOwnerAccount.get());
             depoFleet.setFleet(fleet.get());
 
-            if(request.getName().isEmpty() || request.getName().equalsIgnoreCase("")) {
+            if(request.getName() == null || request.getName().trim().isEmpty()) {
                 depoFleet.setName(fleet.get().getFleet_manager_company());
             }
             else {
@@ -93,10 +93,14 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         if (fleet.isEmpty())
             throw new CommonException("Cannot find fleet code");
 
+        Optional<DepoFleet> flagSame = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleet_code());
+        if (!flagSame.isEmpty() && flagSame.get().getId() != request.getId())
+            throw new BadRequestException("Fleet is already registered in different name");
+
         DepoFleet depoFleet = optionalDepoFleet.get();
         depoFleet.setFleet(fleet.get());
 
-        if (request.getName().isEmpty()) {
+        if(request.getName() == null || request.getName().trim().isEmpty()) {
             depoFleet.setName(fleet.get().getFleet_manager_company());
         }
         else {
