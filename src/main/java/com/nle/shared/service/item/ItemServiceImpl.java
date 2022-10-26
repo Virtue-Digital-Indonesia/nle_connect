@@ -53,14 +53,18 @@ public class ItemServiceImpl implements ItemService{
         if (depoOwnerAccount.isEmpty())
             throw new CommonException("Cannot find this depo owner ");
 
-        Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
-        if (fleet.isEmpty())
-            throw new CommonException("this fleet code is not register in depo");
-
         Item item = new Item();
         BeanUtils.copyProperties(request, item);
         item.setDepoOwnerAccount(depoOwnerAccount.get());
-        item.setFleet(fleet.get().getFleet());
+
+        if (request.getFleetCode() != null && !request.getFleetCode().trim().isEmpty()) {
+            Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
+            if (fleet.isEmpty())
+                throw new CommonException("this fleet code is not register in depo");
+
+            item.setFleet(fleet.get().getFleet());
+        }
+
         Item savedItem = itemRepository.save(item);
         return this.convertToResponse(savedItem);
     }
@@ -69,11 +73,12 @@ public class ItemServiceImpl implements ItemService{
         ItemResponse itemResponse = new ItemResponse();
         BeanUtils.copyProperties(item, itemResponse);
 
-        Fleet fleet = item.getFleet();
-        FleetResponse fleetResponse = new FleetResponse();
-        BeanUtils.copyProperties(fleet, fleetResponse);
-
-        itemResponse.setFleet(fleetResponse);
+        if (item.getFleet() != null) {
+            Fleet fleet = item.getFleet();
+            FleetResponse fleetResponse = new FleetResponse();
+            BeanUtils.copyProperties(fleet, fleetResponse);
+            itemResponse.setFleet(fleetResponse);
+        }
         return itemResponse;
     }
 
