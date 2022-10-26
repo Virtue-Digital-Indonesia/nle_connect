@@ -62,7 +62,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             depoFleet.setDepoOwnerAccount(depoOwnerAccount.get());
             depoFleet.setFleet(fleet.get());
 
-            if(request.getName().isEmpty() || request.getName().equalsIgnoreCase("")) {
+            if(request.getName() == null || request.getName().trim().isEmpty()) {
                 depoFleet.setName(fleet.get().getFleet_manager_company());
             }
             else {
@@ -96,7 +96,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         DepoFleet depoFleet = optionalDepoFleet.get();
         depoFleet.setFleet(fleet.get());
 
-        if (request.getName().isEmpty()) {
+        if(request.getName() == null || request.getName().trim().isEmpty()) {
             depoFleet.setName(fleet.get().getFleet_manager_company());
         }
         else {
