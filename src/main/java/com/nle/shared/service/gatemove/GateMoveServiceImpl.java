@@ -83,6 +83,17 @@ public class GateMoveServiceImpl implements GateMoveService {
     }
 
     @Override
+    public List<CreatedGateMoveResponseDTO> multipleCreateGateMove(List<CreateGateMoveReqDTO> reqDTOList) {
+        List<CreatedGateMoveResponseDTO> responseDTOList = new ArrayList<>();
+
+        for (CreateGateMoveReqDTO reqDTO : reqDTOList) {
+            CreatedGateMoveResponseDTO responseDTO = this.createGateMove(reqDTO, GateMoveSource.API);
+            responseDTOList.add(responseDTO);
+        }
+        return responseDTOList;
+    }
+
+    @Override
     public UpdatedGateMoveResponseDTO updateGateMove(UpdateGateMoveReqDTO updateGateMoveReqDTO, GateMoveSource source) {
         Optional<GateMove> gateMoveOptional = gateMoveRepository.findById(updateGateMoveReqDTO.getId());
         if (gateMoveOptional.isEmpty()) {

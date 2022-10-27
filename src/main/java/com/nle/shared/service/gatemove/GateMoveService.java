@@ -19,6 +19,7 @@ import java.util.List;
 
 public interface GateMoveService {
     CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO, GateMoveSource source);
+    List<CreatedGateMoveResponseDTO> multipleCreateGateMove(List<CreateGateMoveReqDTO> reqDTOList);
 
     UpdatedGateMoveResponseDTO updateGateMove(UpdateGateMoveReqDTO updateGateMoveReqDTO, GateMoveSource source);
 
