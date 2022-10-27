@@ -130,7 +130,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
     private DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {
         DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
         BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
-        depoFleetResponse.setId(depoFleet.getId());
+        depoFleetResponse.setDepo_fleet_id(depoFleet.getId());
         depoFleetResponse.setName(depoFleet.getName());
         return depoFleetResponse;
     }
