@@ -11,6 +11,7 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
+import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.FleetResponse;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.RequiredArgsConstructor;
@@ -74,10 +75,15 @@ public class ItemServiceImpl implements ItemService{
         BeanUtils.copyProperties(item, itemResponse);
 
         if (item.getFleet() != null) {
-            Fleet fleet = item.getFleet();
-            FleetResponse fleetResponse = new FleetResponse();
-            BeanUtils.copyProperties(fleet, fleetResponse);
-            itemResponse.setFleet(fleetResponse);
+            Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(
+                    item.getDepoOwnerAccount().getCompanyEmail(),
+                    item.getFleet().getCode());
+
+            DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
+            BeanUtils.copyProperties(depoFleet.get().getFleet(), depoFleetResponse);
+            depoFleetResponse.setDepo_fleet_id(depoFleet.get().getId());
+            depoFleetResponse.setName(depoFleet.get().getName());
+            itemResponse.setDepoFleet(depoFleetResponse);
         }
         return itemResponse;
     }
