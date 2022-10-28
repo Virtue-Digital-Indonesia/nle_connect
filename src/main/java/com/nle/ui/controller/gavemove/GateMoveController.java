@@ -132,4 +132,11 @@ public class GateMoveController {
         return ResponseEntity.ok(gateMoveService.searchByCondition(pageable, request));
     }
 
+    @Operation(description = "multiple create gate move", operationId = "multipleGateMove", summary = "multiple create gate move from list")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/multiple")
+    public ResponseEntity<List<CreatedGateMoveResponseDTO>> multipleGateMove(@RequestBody List<CreateGateMoveReqDTO> listCreate) {
+        return ResponseEntity.ok(gateMoveService.multipleCreateGateMove(listCreate));
+    }
+
 }
