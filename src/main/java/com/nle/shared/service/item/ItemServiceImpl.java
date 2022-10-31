@@ -1,5 +1,6 @@
 package com.nle.shared.service.item;
 
+import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -72,6 +73,37 @@ public class ItemServiceImpl implements ItemService{
         return this.convertToResponse(savedItem);
     }
 
+    @Override
+    public ItemResponse updateItem (Long id, CreateItemRequest request) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty()) {
+            return new ItemResponse();
+        }
+
+        Optional<Item> optionalItem = itemRepository.findById(id);
+
+        if (optionalItem.isEmpty()) throw new CommonException("cannot find item id");
+        Item item = optionalItem.get();
+        if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(currentUserLogin.get()))
+            throw new BadRequestException("this item is not in this depo ");
+
+        BeanUtils.copyProperties(request, item);
+
+        if (request.getFleetCode() != null && !request.getFleetCode().trim().isEmpty()) {
+            Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
+            if (depoFleet.isEmpty())
+                throw new CommonException("cannot find this fleet in this depo");
+            item.setDepoFleet(depoFleet.get());
+        }
+        else if (request.getFleetCode() == null || request.getFleetCode().trim().isEmpty()) {
+            item.setDepoFleet(null);
+        }
+
+        Item savedItem = itemRepository.save(item);
+        return this.convertToResponse(savedItem);
+    }
+
+    @Override
     public List<ItemResponse> multipleDeleteItem(List<Long> listID) {
         List<ItemResponse> responseList = new ArrayList<>();
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();

@@ -10,5 +10,6 @@ import java.util.List;
 public interface ItemService {
     PagingResponseModel<ItemResponse> getListItem(Pageable pageable);
     ItemResponse createItem (CreateItemRequest request);
+    ItemResponse updateItem (Long id, CreateItemRequest request);
     List<ItemResponse> multipleDeleteItem(List<Long> listID);
 }
