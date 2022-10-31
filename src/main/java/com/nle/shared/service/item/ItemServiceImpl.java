@@ -11,6 +11,7 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
+import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.FleetResponse;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class ItemServiceImpl implements ItemService{
             if (fleet.isEmpty())
                 throw new CommonException("this fleet code is not register in depo");
 
-            item.setFleet(fleet.get().getFleet());
+            item.setDepoFleet(fleet.get());
         }
 
         Item savedItem = itemRepository.save(item);
@@ -73,11 +74,13 @@ public class ItemServiceImpl implements ItemService{
         ItemResponse itemResponse = new ItemResponse();
         BeanUtils.copyProperties(item, itemResponse);
 
-        if (item.getFleet() != null) {
-            Fleet fleet = item.getFleet();
-            FleetResponse fleetResponse = new FleetResponse();
-            BeanUtils.copyProperties(fleet, fleetResponse);
-            itemResponse.setFleet(fleetResponse);
+        if (item.getDepoFleet() != null) {
+            DepoFleet depoFleet = item.getDepoFleet();
+            DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
+            BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
+            depoFleetResponse.setDepo_fleet_id(depoFleet.getId());
+            depoFleetResponse.setName(depoFleet.getName());
+            itemResponse.setFleet(depoFleetResponse);
         }
         return itemResponse;
     }

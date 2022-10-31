@@ -8,5 +8,6 @@ import lombok.ToString;
 @Getter
 @ToString
 public class DepoFleetResponse extends FleetResponse{
+    private Long depo_fleet_id;
     private String name;
 }

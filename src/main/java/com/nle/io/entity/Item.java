@@ -39,13 +39,16 @@ public class Item extends AbstractAuditingEntity implements Serializable {
     @Column(name = "item_status")
     private Boolean status;
 
+    @Column(name = "deleted")
+    private Boolean deleted = false;
+
 
     @ManyToOne
     @JoinColumn(name = "depo_owner_account_id", referencedColumnName = "id")
     private DepoOwnerAccount depoOwnerAccount;
 
     @ManyToOne
-    @JoinColumn(name = "fleet_id", referencedColumnName = "id")
-    private Fleet fleet;
+    @JoinColumn(name = "depo_fleet_id", referencedColumnName = "id")
+    private DepoFleet depoFleet;
 
 }

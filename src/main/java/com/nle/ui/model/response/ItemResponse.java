@@ -16,6 +16,7 @@ public class ItemResponse {
     private int price;
     private ItemTypeEnum type;
     private Boolean status;
-    private FleetResponse fleet;
+    private Boolean deleted;
+    private DepoFleetResponse fleet;
 
 }
