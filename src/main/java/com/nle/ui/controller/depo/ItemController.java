@@ -18,6 +18,8 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/items")
 @RequiredArgsConstructor
@@ -47,6 +49,13 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<ItemResponse> createItem(@RequestBody CreateItemRequest request) {
         return ResponseEntity.ok(itemService.createItem(request));
+    }
+
+    @Operation(description = "delete list item in depo owner", operationId = "multipleDeleteItem", summary = "create new item in depo owner")
+    @SecurityRequirement(name = "nleapi")
+    @DeleteMapping
+    public ResponseEntity<List<ItemResponse>> multipleDeleteItem(@RequestBody List<Long> listId) {
+        return ResponseEntity.ok(itemService.multipleDeleteItem(listId));
     }
 
 }

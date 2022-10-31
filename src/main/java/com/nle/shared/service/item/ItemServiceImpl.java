@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,6 +70,28 @@ public class ItemServiceImpl implements ItemService{
 
         Item savedItem = itemRepository.save(item);
         return this.convertToResponse(savedItem);
+    }
+
+    public List<ItemResponse> multipleDeleteItem(List<Long> listID) {
+        List<ItemResponse> responseList = new ArrayList<>();
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            return responseList;
+
+        String email = currentUserLogin.get();
+        for (Long id : listID) {
+            Optional<Item> optionalItem = itemRepository.findById(id);
+            if (optionalItem.isEmpty()) continue;
+
+            Item item = optionalItem.get();
+            if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(email)) continue;
+            if (item.getDeleted() == true) continue;
+
+            item.setDeleted(true);
+            Item savedItem = itemRepository.save(item);
+            responseList.add(this.convertToResponse(savedItem));
+        }
+        return responseList;
     }
 
     private ItemResponse convertToResponse (Item item) {
