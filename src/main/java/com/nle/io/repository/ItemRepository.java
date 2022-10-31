@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.companyEmail = :companyEmail")
+    @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.companyEmail = :companyEmail AND it.deleted = false")
     Page<Item> getAllDepoItem(@Param("companyEmail") String companyEmail, Pageable pageable);
 }
