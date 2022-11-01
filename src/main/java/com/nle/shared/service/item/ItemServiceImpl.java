@@ -1,5 +1,6 @@
 package com.nle.shared.service.item;
 
+import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,6 +71,59 @@ public class ItemServiceImpl implements ItemService{
 
         Item savedItem = itemRepository.save(item);
         return this.convertToResponse(savedItem);
+    }
+
+    @Override
+    public ItemResponse updateItem (Long id, CreateItemRequest request) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty()) {
+            return new ItemResponse();
+        }
+
+        Optional<Item> optionalItem = itemRepository.findById(id);
+
+        if (optionalItem.isEmpty()) throw new CommonException("cannot find item id");
+        Item item = optionalItem.get();
+        if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(currentUserLogin.get()))
+            throw new BadRequestException("this item is not in this depo ");
+
+        BeanUtils.copyProperties(request, item);
+
+        if (request.getFleetCode() != null && !request.getFleetCode().trim().isEmpty()) {
+            Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
+            if (depoFleet.isEmpty())
+                throw new CommonException("cannot find this fleet in this depo");
+            item.setDepoFleet(depoFleet.get());
+        }
+        else if (request.getFleetCode() == null || request.getFleetCode().trim().isEmpty()) {
+            item.setDepoFleet(null);
+        }
+
+        Item savedItem = itemRepository.save(item);
+        return this.convertToResponse(savedItem);
+    }
+
+    @Override
+    public List<ItemResponse> multipleDeleteItem(List<Long> listID) {
+        List<ItemResponse> responseList = new ArrayList<>();
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            return responseList;
+
+        String email = currentUserLogin.get();
+        for (Long id : listID) {
+            Optional<Item> optionalItem = itemRepository.findById(id);
+            if (optionalItem.isEmpty()) continue;
+
+            Item item = optionalItem.get();
+            if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(email)) continue;
+            if (item.getDeleted() == true) continue;
+
+            item.setDeleted(true);
+            Item savedItem = itemRepository.save(item);
+            responseList.add(this.convertToResponse(savedItem));
+        }
+        return responseList;
     }
 
     private ItemResponse convertToResponse (Item item) {
