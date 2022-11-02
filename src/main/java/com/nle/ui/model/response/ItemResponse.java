@@ -10,6 +10,7 @@ import lombok.ToString;
 @ToString
 public class ItemResponse {
 
+    private Long id;
     private String item_name;
     private String sku;
     private String description;
