@@ -4,6 +4,7 @@ import com.nle.shared.service.fleet.DepoFleetService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoFleetRegisterRequest;
 import com.nle.ui.model.request.DepoFleetUpdateRequest;
+import com.nle.ui.model.request.search.DepoFleetSearchRequest;
 import com.nle.ui.model.response.DepoFleetResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,6 +63,24 @@ public class DepoFleetController {
     @DeleteMapping()
     public ResponseEntity<DepoFleetResponse> deleteDepoFleet (@RequestParam("fleet_code") String fleet_code) {
         return ResponseEntity.ok(depoFleetService.deleteDepoFleet(fleet_code));
+    }
+
+    @Operation(description = "Get List fleet of depo owner by filter and paging", operationId = "search", summary = "Get List fleet of depo owner by filter and paging")
+    @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
+    @PostMapping("search")
+    public ResponseEntity<PagingResponseModel<DepoFleetResponse>> searchDepoFleet(
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            })
+            @Parameter(hidden = true) Pageable pageable,
+            @RequestBody DepoFleetSearchRequest searchRequest
+            ) {
+        return ResponseEntity.ok(depoFleetService.searchDepoFleet(searchRequest,pageable));
     }
 
 
