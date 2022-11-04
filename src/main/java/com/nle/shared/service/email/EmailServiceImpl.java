@@ -6,6 +6,7 @@ import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.shared.dto.EmailDTO;
 import com.nle.shared.dto.EmailTemplateDto;
 import com.nle.shared.dto.ftp.FtpMoveDTOError;
+import com.nle.ui.model.request.ContactUsFormRequest;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -116,7 +117,18 @@ public class EmailServiceImpl implements EmailService {
         EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.RESET_PASSWORD);
         EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, depoOwnerAccount.getCompanyEmail());
         sendSimpleEmail(emailDTO);
-    };
+    }
+
+    @Override
+    public void sendMessageForContactUs(ContactUsFormRequest contactUsFormRequest) {
+        Map<String,String> params= new HashMap<>();
+        params.put("fullName",contactUsFormRequest.getFullName());
+        params.put("email",contactUsFormRequest.getEmail());
+        params.put("category",contactUsFormRequest.getCategory().name());
+        params.put("message",contactUsFormRequest.getMessage());
+        EmailTemplateDto activeEmailTemplate= emailTemplateService.findByType(EmailType.USER_FEEDBACK);
+        sendSimpleEmail(buildEmailDTO(activeEmailTemplate,params,appProperties.getContactUsDestinationEmail()));
+    }
 
     private EmailDTO buildEmailDTO(EmailTemplateDto activeEmailTemplate, Map<String, String> params, String email) {
 
