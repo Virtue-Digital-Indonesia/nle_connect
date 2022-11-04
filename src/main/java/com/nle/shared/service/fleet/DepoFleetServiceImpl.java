@@ -12,15 +12,21 @@ import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoFleetRegisterRequest;
 import com.nle.ui.model.request.DepoFleetUpdateRequest;
+import com.nle.ui.model.request.search.DepoFleetSearchRequest;
 import com.nle.ui.model.response.DepoFleetResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +36,15 @@ public class DepoFleetServiceImpl implements DepoFleetService{
     private final DepoFleetRepository depoFleetRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final FleetRepository fleetRepository;
+
+    private final static Map<String,String> mapOfSortField= Map.ofEntries(
+            Map.entry("code","fleet.code"),
+            Map.entry("fleet_manager_company","fleet.fleet_manager_company"),
+            Map.entry("city", "fleet.city"),
+            Map.entry("country","fleet.country"),
+            Map.entry("id","id"),
+            Map.entry("name","name")
+    );
 
     @Override
     public PagingResponseModel<DepoFleetResponse> getAllFleetsDepo (Pageable pageable){
@@ -127,11 +142,42 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         return this.convertFleetToResponse(depoFleet.get());
     }
 
+    @Override
+    public PagingResponseModel<DepoFleetResponse> searchDepoFleet(DepoFleetSearchRequest depoFleetSearchRequest, Pageable pageable) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (!currentUserLogin.isEmpty()) {
+            Pageable customPageable= PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(getDirection(pageable),
+                            mapOfSortField.get(getSortBy(pageable))));
+            Page<DepoFleet> listFleet = depoFleetRepository.searchDepoFleet(currentUserLogin.get(),
+                    depoFleetSearchRequest.getName(),
+                    depoFleetSearchRequest.getId(),
+                    depoFleetSearchRequest.getCode(),
+                    depoFleetSearchRequest.getFleetManagerCompany(),
+                    depoFleetSearchRequest.getCity(),
+                    depoFleetSearchRequest.getCountry(),
+                    depoFleetSearchRequest.getGlobalSearch(),
+                    customPageable);
+            return new PagingResponseModel<>(listFleet.map(this::convertFleetToResponse));
+        }
+
+        return new PagingResponseModel<>();
+    }
+
     private DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {
         DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
         BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
         depoFleetResponse.setId(depoFleet.getId());
         depoFleetResponse.setName(depoFleet.getName());
         return depoFleetResponse;
+    }
+
+    public Sort.Direction getDirection(Pageable pageable) {
+        return pageable.getSort().stream().map(Sort.Order::getDirection).collect(Collectors.toList()).get(0);
+    }
+
+    public String getSortBy(Pageable pageable) {
+        return pageable.getSort().stream().map(Sort.Order::getProperty).collect(Collectors.toList()).get(0);
     }
 }
