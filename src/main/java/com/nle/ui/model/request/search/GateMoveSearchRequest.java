@@ -1,9 +1,12 @@
 package com.nle.ui.model.request.search;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -32,5 +35,7 @@ public class GateMoveSearchRequest {
     private Double payload;
     private Double max_gross;
 
+    private String from;
+    private String to;
     private String globalSearch;
 }
