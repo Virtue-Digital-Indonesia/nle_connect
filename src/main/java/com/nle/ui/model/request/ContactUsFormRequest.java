@@ -11,7 +11,6 @@ import lombok.Setter;
 public class ContactUsFormRequest {
     private String fullName;
     private String email;
-    private String address;
     private UserFeedbackCategory category;
     private String message;
 }
