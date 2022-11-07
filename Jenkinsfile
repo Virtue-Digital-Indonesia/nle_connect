@@ -39,6 +39,7 @@ pipeline {
                     string(credentialsId: 'TRIGGER_URL', variable: 'TRIGGER_URL'),
                     string(credentialsId: 'TRIGGER_TOKEN', variable: 'TRIGGER_TOKEN'),
                     string(credentialsId: 'TAX_MINISTRY_API_KEY', variable: 'TAX_MINISTRY_API_KEY'),
+                    string(credentialsId: 'EMAIL_CONTACT_US', variable: 'EMAIL_CONTACT_US'),
                     usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME')
                     ]) {
                     sh """
@@ -49,6 +50,7 @@ pipeline {
                         export TAX_MINISTRY_API_KEY=$TAX_MINISTRY_API_KEY
                         export FTP_USERNAME=$FTP_USERNAME
                         export FTP_PASSWORD=$FTP_PASSWORD
+                        export EMAIL_CONTACT_US=$EMAIL_CONTACT_US
                         envsubst < application.yml > application_tmp.yml
                         mv application_tmp.yml application.yml
                     """

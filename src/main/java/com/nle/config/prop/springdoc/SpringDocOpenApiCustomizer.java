@@ -71,6 +71,7 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/fleets/**",
                 "/api/depo-fleet/**",
                 "/api/items/**",
+                "/api/contact-us",
 
                 //depo-owner-controller
                 "/api/register/**",

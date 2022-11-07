@@ -13,5 +13,6 @@ public class AppProperties {
     private Security security;
     private SpringDocProperties springdoc;
     private Url url;
+    private String contactUsDestinationEmail;
 }
 
