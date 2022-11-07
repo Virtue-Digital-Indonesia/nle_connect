@@ -78,6 +78,7 @@ public class SecurityConfiguration {
                         , "/api/reset-password"
                         , "/api/forgot-password"
                         , "/api/fleets/**"
+                        , "/api/contact-us"
                 ).permitAll()
             .antMatchers("/impersonate",
                     "/api/admins/profile",
