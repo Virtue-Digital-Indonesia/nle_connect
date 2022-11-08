@@ -151,6 +151,7 @@ public class ItemServiceImpl implements ItemService{
                     request.getPrice(),
                     request.getType(),
                     false,
+                    request.isStatus(),
                     request.getFleetCode(),
                     request.getGlobalSearch(),
                     customPageable);

@@ -23,6 +23,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "AND (:price is null OR (it.price= :price)) " +
             "AND (:deleted is null OR (it.deleted= :deleted)) " +
             "AND (:fleetCode is null OR (lower(it.depoFleet.fleet.code) like lower(concat('%',:fleetCode,'%')))) " +
+            "AND (:status is null OR (it.status = :status))" +
             "AND (:globalSearch is null " +
             "       OR (lower(it.item_name) like lower(concat('%',:globalSearch,'%')))" +
             "       OR (lower(it.sku) like lower(concat('%',:globalSearch,'%'))) " +
@@ -37,6 +38,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
                           Integer price,
                           String type,
                           Boolean deleted,
+                          Boolean status,
                           String fleetCode,
                           String globalSearch,
                           Pageable pageable);
