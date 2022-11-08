@@ -32,5 +32,7 @@ public class GateMoveSearchRequest {
     private Double payload;
     private Double max_gross;
 
+    private String from;
+    private String to;
     private String globalSearch;
 }
