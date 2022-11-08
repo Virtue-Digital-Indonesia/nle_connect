@@ -16,6 +16,6 @@ public class ItemSearchRequest {
     private Integer price;
     private String type;
     private String fleetCode;
-    private boolean status;
+    private Boolean status;
     private String globalSearch;
 }

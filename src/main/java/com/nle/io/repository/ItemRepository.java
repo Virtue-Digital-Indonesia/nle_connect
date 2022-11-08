@@ -15,6 +15,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Page<Item> getAllDepoItem(@Param("companyEmail") String companyEmail, Pageable pageable);
 
     @Query(value = "SELECT it FROM Item it " +
+            "LEFT JOIN it.depoFleet as dF " +
+            "LEFT JOIN dF.fleet as f " +
             "WHERE it.depoOwnerAccount.companyEmail = :companyEmail " +
             "AND (:itemName is null OR (lower(it.item_name) like lower(concat('%',:itemName,'%')))) " +
             "AND (:sku is null OR (lower(it.sku) like lower(concat('%',:sku,'%')))) " +
@@ -22,14 +24,14 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "AND (:type is null OR (lower(it.type) like(concat('%',:type,'%')))) " +
             "AND (:price is null OR (it.price= :price)) " +
             "AND (:deleted is null OR (it.deleted= :deleted)) " +
-            "AND (:fleetCode is null OR (lower(it.depoFleet.fleet.code) like lower(concat('%',:fleetCode,'%')))) " +
+            "AND (:fleetCode is null OR (lower(f.code) like lower(concat('%',:fleetCode,'%')))) " +
             "AND (:status is null OR (it.status = :status))" +
             "AND (:globalSearch is null " +
             "       OR (lower(it.item_name) like lower(concat('%',:globalSearch,'%')))" +
             "       OR (lower(it.sku) like lower(concat('%',:globalSearch,'%'))) " +
             "       OR (lower(it.description ) like(concat('%',:globalSearch,'%'))) " +
             "       OR (lower(it.type) like(concat('%',:globalSearch,'%'))) " +
-            "       OR (lower(it.depoFleet.fleet.code) like lower(concat('%',:globalSearch,'%'))) " +
+            "       OR (lower(f.code) like lower(concat('%',:globalSearch,'%'))) " +
             ") ")
     Page<Item> searchItem(String companyEmail,
                           String itemName,
