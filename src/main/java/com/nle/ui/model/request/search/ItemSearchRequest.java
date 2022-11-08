@@ -13,6 +13,8 @@ public class ItemSearchRequest {
     private String itemName;
     private String sku;
     private String description;
+    @JsonProperty("fleet_manager_company")
+    private String fleetManagerCompany;
     private Integer price;
     private String type;
     private String fleetCode;

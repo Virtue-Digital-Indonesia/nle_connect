@@ -41,7 +41,8 @@ public class ItemServiceImpl implements ItemService{
     private final DepoFleetRepository depoFleetRepository;
 
     private final static Map<String,String> mapOfSort= Map.ofEntries(
-            Map.entry("fleetCode","f.code")
+            Map.entry("fleetCode","f.code"),
+            Map.entry("fleet_manager_company","f.fleet_manager_company")
     );
 
     @Override
@@ -148,6 +149,7 @@ public class ItemServiceImpl implements ItemService{
                     request.getItemName(),
                     request.getSku(),
                     request.getDescription(),
+                    request.getFleetManagerCompany(),
                     request.getPrice(),
                     request.getType(),
                     false,
