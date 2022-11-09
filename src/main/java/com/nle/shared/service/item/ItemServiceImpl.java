@@ -12,19 +12,24 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
+import com.nle.ui.model.request.search.ItemSearchRequest;
 import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.FleetResponse;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +39,11 @@ public class ItemServiceImpl implements ItemService{
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final DepoFleetRepository depoFleetRepository;
+
+    private final static Map<String,String> mapOfSort= Map.ofEntries(
+            Map.entry("fleetCode","f.code"),
+            Map.entry("fleetName","dF.name")
+    );
 
     @Override
     public PagingResponseModel<ItemResponse> getListItem(Pageable pageable) {
@@ -126,6 +136,32 @@ public class ItemServiceImpl implements ItemService{
         return responseList;
     }
 
+    @Override
+    public PagingResponseModel<ItemResponse> search(ItemSearchRequest request,Pageable pageable) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        String sortField=mapOfSort.get(getSortBy(pageable))==null?getSortBy(pageable):mapOfSort.get(getSortBy(pageable));
+        Pageable customPageable= PageRequest.of(pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(getDirection(pageable),
+                        sortField));
+        if (!currentUserLogin.isEmpty()) {
+            Page<Item> listItem = itemRepository.searchItem(currentUserLogin.get(),
+                    request.getItemName(),
+                    request.getSku(),
+                    request.getDescription(),
+                    request.getFleetName(),
+                    request.getPrice(),
+                    request.getType(),
+                    false,
+                    request.getStatus(),
+                    request.getFleetCode(),
+                    request.getGlobalSearch(),
+                    customPageable);
+            return new PagingResponseModel<>(listItem.map(this::convertToResponse));
+        }
+        return null;
+    }
+
     private ItemResponse convertToResponse (Item item) {
         ItemResponse itemResponse = new ItemResponse();
         BeanUtils.copyProperties(item, itemResponse);
@@ -139,6 +175,14 @@ public class ItemServiceImpl implements ItemService{
             itemResponse.setFleet(depoFleetResponse);
         }
         return itemResponse;
+    }
+
+    public Sort.Direction getDirection(Pageable pageable) {
+        return pageable.getSort().stream().map(Sort.Order::getDirection).collect(Collectors.toList()).get(0);
+    }
+
+    public String getSortBy(Pageable pageable) {
+        return pageable.getSort().stream().map(Sort.Order::getProperty).collect(Collectors.toList()).get(0);
     }
 
 }

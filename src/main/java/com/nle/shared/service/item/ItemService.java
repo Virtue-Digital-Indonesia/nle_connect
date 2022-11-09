@@ -2,6 +2,7 @@ package com.nle.shared.service.item;
 
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
+import com.nle.ui.model.request.search.ItemSearchRequest;
 import com.nle.ui.model.response.ItemResponse;
 import org.springframework.data.domain.Pageable;
 
@@ -12,4 +13,5 @@ public interface ItemService {
     ItemResponse createItem (CreateItemRequest request);
     ItemResponse updateItem (Long id, CreateItemRequest request);
     List<ItemResponse> multipleDeleteItem(List<Long> listID);
+    PagingResponseModel<ItemResponse> search(ItemSearchRequest request,Pageable pageable);
 }
