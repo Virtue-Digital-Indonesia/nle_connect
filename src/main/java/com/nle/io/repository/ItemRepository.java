@@ -25,7 +25,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "AND (:price is null OR (it.price= :price)) " +
             "AND (:deleted is null OR (it.deleted= :deleted)) " +
             "AND (:fleetCode is null OR (lower(f.code) like lower(concat('%',:fleetCode,'%')))) " +
-            "AND (:fleetManagerCompany is null OR(lower(f.fleet_manager_company) like lower(concat('%',:fleetManagerCompany,'%')))) " +
+            "AND (:fleetName is null OR(lower(dF.name) like lower(concat('%',:fleetName,'%')))) " +
             "AND (:status is null OR (it.status = :status)) " +
             "AND (:globalSearch is null " +
             "       OR (lower(it.item_name) like lower(concat('%',:globalSearch,'%')))" +
@@ -33,13 +33,13 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "       OR (lower(it.description ) like(concat('%',:globalSearch,'%'))) " +
             "       OR (lower(it.type) like(concat('%',:globalSearch,'%'))) " +
             "       OR (lower(f.code) like lower(concat('%',:globalSearch,'%'))) " +
-            "       OR(lower(f.fleet_manager_company) like lower(concat('%',:globalSearch,'%')))" +
+            "       OR(lower(dF.name) like lower(concat('%',:globalSearch,'%')))" +
             ") ")
     Page<Item> searchItem(String companyEmail,
                           String itemName,
                           String sku,
                           String description,
-                          String fleetManagerCompany,
+                          String fleetName,
                           Integer price,
                           String type,
                           Boolean deleted,
