@@ -6,6 +6,7 @@ import com.nle.ui.model.response.order.OrderHeaderResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,8 @@ public class OrderController {
     @Operation(description = "get order with phone number", operationId = "s")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "/phone")
-    public ResponseEntity<PagingResponseModel<OrderHeaderResponse>> searchByPhone (@RequestParam("phone_number") String phoneNumber) {
-        return ResponseEntity.ok(orderService.SearchByPhone(phoneNumber));
+    public ResponseEntity<PagingResponseModel<OrderHeaderResponse>> searchByPhone (@RequestParam("phone_number") String phoneNumber,
+                                                                                   Pageable pageable) {
+        return ResponseEntity.ok(orderService.SearchByPhone(phoneNumber, pageable));
     }
 }
