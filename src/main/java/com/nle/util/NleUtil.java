@@ -87,7 +87,7 @@ public class NleUtil {
         return null;
     }
 
-    private static LocalDateTime formatTxDate(String txDate) {
+    public static LocalDateTime formatTxDate(String txDate) {
         String replace = txDate.replace(AppConstant.TIME_ZONE, "");
         try {
             return LocalDateTime.parse(replace);

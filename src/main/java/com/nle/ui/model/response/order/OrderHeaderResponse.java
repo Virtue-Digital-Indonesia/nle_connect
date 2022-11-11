@@ -1,5 +1,6 @@
 package com.nle.ui.model.response.order;
 
+import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +21,5 @@ public class OrderHeaderResponse {
     private String npwp_address;
     private String payment_method;
     private String order_status;
-    private List<OrderDetailResponse> items;
+    private List<ItemResponse> items;
 }

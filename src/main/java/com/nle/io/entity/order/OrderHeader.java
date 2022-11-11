@@ -11,7 +11,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "order_header")
@@ -68,6 +68,6 @@ public class OrderHeader extends AbstractAuditingEntity implements Serializable 
     @JoinColumn(name = "depo_owner_account_id", referencedColumnName = "id")
     private DepoOwnerAccount depoOwnerAccount;
 
-    @OneToMany
-    private List<OrderDetail> detailList;
+    @OneToMany(mappedBy = "orderHeader", fetch = FetchType.LAZY)
+    private Set<OrderDetail> orderDetails;
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderHeader, Long> {
 
-    @Query(value = "SELECT * FROM order_header WHERE order_header.phone_number = :phoneNumber AND order_status != DONE", nativeQuery = true)
+    @Query(value = "SELECT * FROM order_header WHERE order_header.phone_number = :phoneNumber AND order_status != 'DONE'", nativeQuery = true)
     Page<OrderHeader> getOrderByPhoneNumber(@Param("phoneNumber") String phoneNumber, Pageable pageable);
 
 }
