@@ -50,7 +50,7 @@ public class ItemServiceImpl implements ItemService{
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (!currentUserLogin.isEmpty()) {
             Page<Item> listItem = itemRepository.getAllDepoItem(currentUserLogin.get(), pageable);
-            return new PagingResponseModel<>(listItem.map(this::convertToResponse));
+            return new PagingResponseModel<>(listItem.map(ItemServiceImpl::convertToResponse));
         }
 
         return new PagingResponseModel<>();
@@ -157,12 +157,12 @@ public class ItemServiceImpl implements ItemService{
                     request.getFleetCode(),
                     request.getGlobalSearch(),
                     customPageable);
-            return new PagingResponseModel<>(listItem.map(this::convertToResponse));
+            return new PagingResponseModel<>(listItem.map(ItemServiceImpl::convertToResponse));
         }
         return null;
     }
 
-    private ItemResponse convertToResponse (Item item) {
+    public static ItemResponse convertToResponse (Item item) {
         ItemResponse itemResponse = new ItemResponse();
         BeanUtils.copyProperties(item, itemResponse);
 

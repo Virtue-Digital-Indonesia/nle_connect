@@ -79,6 +79,7 @@ public class SecurityConfiguration {
                         , "/api/forgot-password"
                         , "/api/fleets/**"
                         , "/api/contact-us"
+                        , "/api/booking/**"
                 ).permitAll()
             .antMatchers("/impersonate",
                     "/api/admins/profile",
