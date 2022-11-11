@@ -101,4 +101,14 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 .pathsToMatch(paths)
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi guest() {
+        String paths[] = {
+                "/api/booking/**"};
+        return GroupedOpenApi.builder()
+                .group("booking")
+                .pathsToMatch(paths)
+                .build();
+    }
 }
