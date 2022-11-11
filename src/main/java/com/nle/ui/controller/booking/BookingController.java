@@ -1,4 +1,4 @@
-package com.nle.ui.controller.order;
+package com.nle.ui.controller.booking;
 
 import com.nle.shared.service.order.OrderService;
 import com.nle.ui.model.pageable.PagingResponseModel;
@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "api/order")
+@RequestMapping(value = "api/booking")
 @RequiredArgsConstructor
-public class OrderController {
+public class BookingController {
 
     private final OrderService orderService;
 
@@ -32,5 +32,4 @@ public class OrderController {
     public ResponseEntity<OrderHeaderResponse> createOrder (@RequestBody CreateOrderHeaderRequest request) {
         return ResponseEntity.ok(orderService.CreateOrder(request));
     }
-
 }

@@ -1,4 +1,4 @@
-package com.nle.io.repository;
+package com.nle.io.repository.order;
 
 import com.nle.io.entity.order.OrderHeader;
 import org.springframework.data.domain.Page;

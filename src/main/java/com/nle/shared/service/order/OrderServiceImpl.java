@@ -9,7 +9,7 @@ import com.nle.io.entity.order.OrderHeader;
 import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
-import com.nle.io.repository.OrderRepository;
+import com.nle.io.repository.order.OrderRepository;
 import com.nle.io.repository.order.OrderDetailRepository;
 import com.nle.shared.service.item.ItemServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
