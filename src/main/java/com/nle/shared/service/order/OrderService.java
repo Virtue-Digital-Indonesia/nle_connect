@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
 
-    public PagingResponseModel<OrderHeaderResponse> SearchByPhone(String phoneNumber, Pageable pageable);
-    public OrderHeaderResponse CreateOrder(CreateOrderHeaderRequest request);
+    PagingResponseModel<OrderHeaderResponse> SearchByPhone(String phoneNumber, Pageable pageable);
+    OrderHeaderResponse CreateOrder(CreateOrderHeaderRequest request);
 }
