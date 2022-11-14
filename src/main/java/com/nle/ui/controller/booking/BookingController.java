@@ -1,9 +1,10 @@
 package com.nle.ui.controller.booking;
 
 import com.nle.shared.service.applicant.ApplicantService;
-import com.nle.shared.service.order.OrderService;
+import com.nle.shared.service.booking.BookingService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.order.CreateOrderHeaderRequest;
+import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.order.OrderHeaderResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
 
-    private final OrderService orderService;
+    private final BookingService bookingService;
     private final ApplicantService applicantService;
 
     @Operation(description = "get booking by phoneNumber with paging", operationId = "searchByPhone", summary = "get booking by phoneNumber with paging")
@@ -44,14 +45,14 @@ public class BookingController {
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             })
             @Parameter(hidden = true) Pageable pageable) {
-        return ResponseEntity.ok(orderService.SearchByPhone(phoneNumber, pageable));
+        return ResponseEntity.ok(bookingService.SearchByPhone(phoneNumber, pageable));
     }
 
     @Operation(description = "create Order", operationId = "createOrder", summary = "create order with details")
     @SecurityRequirement(name = "nleapi")
     @PostMapping
     public ResponseEntity<OrderHeaderResponse> createOrder (@RequestBody CreateOrderHeaderRequest request) {
-        return ResponseEntity.ok(orderService.CreateOrder(request));
+        return ResponseEntity.ok(bookingService.CreateOrder(request));
     }
 
     @Operation(description = "get list of depo", operationId = "listDepo", summary = "get list of depo for booking")
@@ -59,5 +60,22 @@ public class BookingController {
     @GetMapping(value = "depo/active")
     public ResponseEntity<List<ApplicantResponse>> listDepo(){
         return ResponseEntity.ok(applicantService.getAllApplicant());
+    }
+
+    @Operation(description = "get search booking with paging ", operationId = "searchBooking", summary = "get search booking with paging")
+    @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
+    @PostMapping(value = "/search")
+    public ResponseEntity<PagingResponseModel<OrderHeaderResponse>> searchBooking (
+            @RequestBody BookingSearchRequest request,
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            })
+            @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.ok(bookingService.searchBooking(request, pageable));
     }
 }

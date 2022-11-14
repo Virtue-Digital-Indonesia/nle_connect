@@ -1,4 +1,4 @@
-package com.nle.shared.service.order;
+package com.nle.shared.service.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.exception.BadRequestException;
@@ -14,6 +14,7 @@ import com.nle.shared.service.item.ItemServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.order.CreateOrderHeaderRequest;
 import com.nle.ui.model.request.order.OrderDetailRequest;
+import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.order.OrderHeaderResponse;
 import com.nle.util.NleUtil;
@@ -31,7 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Transactional
-public class OrderServiceImpl implements OrderService{
+public class BookingServiceImpl implements BookingService {
 
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -82,6 +83,16 @@ public class OrderServiceImpl implements OrderService{
         }
 
         return this.convertToResponse(savedHeader);
+    }
+
+    @Override
+    public PagingResponseModel<OrderHeaderResponse> searchBooking(BookingSearchRequest request, Pageable pageable) {
+
+        if (request.getPhone_number() == null || request.getPhone_number().trim().isEmpty())
+            throw new BadRequestException("phone number cannot be null");
+
+        Page<OrderHeader> headerPage = orderRepository.searchBooking(request, pageable);
+        return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
     }
 
     private OrderHeaderResponse convertToResponse(OrderHeader entity) {
