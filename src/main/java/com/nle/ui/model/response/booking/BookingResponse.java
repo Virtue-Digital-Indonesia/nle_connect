@@ -1,11 +1,13 @@
 package com.nle.ui.model.response.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
+import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -14,6 +16,7 @@ public class BookingResponse {
 
     private Long id;
     private String tx_date;
+    private ItemTypeEnum booking_type;
     private String full_name;
     private String phone_number;
     private String email;
@@ -23,5 +26,6 @@ public class BookingResponse {
     private String npwp_address;
     private PaymentMethodEnum payment_method;
     private BookingStatusEnum order_status;
+    private LocalDateTime txDateFormatted;
     private List<ItemResponse> items;
 }

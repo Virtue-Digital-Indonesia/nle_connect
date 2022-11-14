@@ -1,7 +1,5 @@
 package com.nle.ui.model.request.search;
 
-import com.nle.constant.enums.BookingStatusEnum;
-import com.nle.constant.enums.ItemTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +7,11 @@ import lombok.Setter;
 @Getter
 public class BookingSearchRequest {
 
-    private ItemTypeEnum booking_type;
-    private BookingStatusEnum booking_status;
+    private String bill_landing;
+    private String full_name;
+    private String consignee;
+    private String booking_type;
+    private String booking_status;
     private String tx_date;
     private String phone_number;
     private String globalSearch;
