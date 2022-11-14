@@ -1,5 +1,7 @@
 package com.nle.ui.model.response.booking;
 
+import com.nle.constant.enums.BookingStatusEnum;
+import com.nle.constant.enums.PaymentMethodEnum;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +21,7 @@ public class BookingResponse {
     private String consignee;
     private String npwp;
     private String npwp_address;
-    private String payment_method;
-    private String order_status;
+    private PaymentMethodEnum payment_method;
+    private BookingStatusEnum order_status;
     private List<ItemResponse> items;
 }
