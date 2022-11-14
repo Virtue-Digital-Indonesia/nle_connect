@@ -1,8 +1,10 @@
 package com.nle.ui.controller.booking;
 
+import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.order.OrderService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.order.CreateOrderHeaderRequest;
+import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.order.OrderHeaderResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,12 +20,15 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "api/booking")
 @RequiredArgsConstructor
 public class BookingController {
 
     private final OrderService orderService;
+    private final ApplicantService applicantService;
 
     @Operation(description = "get booking by phoneNumber with paging", operationId = "searchByPhone", summary = "get booking by phoneNumber with paging")
     @SecurityRequirement(name = "nleapi")
@@ -47,5 +52,12 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<OrderHeaderResponse> createOrder (@RequestBody CreateOrderHeaderRequest request) {
         return ResponseEntity.ok(orderService.CreateOrder(request));
+    }
+
+    @Operation(description = "get list of depo", operationId = "listDepo", summary = "get list of depo for booking")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "depo/active")
+    public ResponseEntity<List<ApplicantResponse>> listDepo(){
+        return ResponseEntity.ok(applicantService.getAllApplicant());
     }
 }

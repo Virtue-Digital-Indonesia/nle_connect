@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,6 +84,15 @@ public class ApplicantServiceImpl implements ApplicantService {
         }
 
         return new PagingResponseModel<>();
+    }
+
+    public List<ApplicantResponse> getAllApplicant() {
+        List<DepoOwnerAccount> accountList = depoOwnerAccountRepository.findAllByAccountStatus(AccountStatus.ACTIVE);
+        List<ApplicantResponse> responseList = new ArrayList<>();
+        for (DepoOwnerAccount entity : accountList) {
+            responseList.add(this.convertFromEntity(entity));
+        }
+        return responseList;
     }
 
     public ApplicantResponse convertFromEntity(DepoOwnerAccount depoOwnerAccount) {
