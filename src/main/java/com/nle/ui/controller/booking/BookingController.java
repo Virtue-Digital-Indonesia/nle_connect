@@ -3,10 +3,10 @@ package com.nle.ui.controller.booking;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.order.CreateOrderHeaderRequest;
+import com.nle.ui.model.request.booking.CreateBookingRequest;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
-import com.nle.ui.model.response.order.OrderHeaderResponse;
+import com.nle.ui.model.response.booking.BookingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -39,7 +39,7 @@ public class BookingController {
             @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
     })
     @GetMapping(value = "/phone")
-    public ResponseEntity<PagingResponseModel<OrderHeaderResponse>> searchByPhone (
+    public ResponseEntity<PagingResponseModel<BookingResponse>> searchByPhone (
             @RequestParam("phone_number") String phoneNumber,
             @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
@@ -51,7 +51,7 @@ public class BookingController {
     @Operation(description = "create Order", operationId = "createOrder", summary = "create order with details")
     @SecurityRequirement(name = "nleapi")
     @PostMapping
-    public ResponseEntity<OrderHeaderResponse> createOrder (@RequestBody CreateOrderHeaderRequest request) {
+    public ResponseEntity<BookingResponse> createOrder (@RequestBody CreateBookingRequest request) {
         return ResponseEntity.ok(bookingService.CreateOrder(request));
     }
 
@@ -70,7 +70,7 @@ public class BookingController {
             @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
     })
     @PostMapping(value = "/search")
-    public ResponseEntity<PagingResponseModel<OrderHeaderResponse>> searchBooking (
+    public ResponseEntity<PagingResponseModel<BookingResponse>> searchBooking (
             @RequestBody BookingSearchRequest request,
             @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)

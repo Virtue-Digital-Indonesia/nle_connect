@@ -4,19 +4,19 @@ import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
-import com.nle.io.entity.order.OrderDetail;
-import com.nle.io.entity.order.OrderHeader;
+import com.nle.io.entity.booking.BookingDetail;
+import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
-import com.nle.io.repository.order.OrderRepository;
-import com.nle.io.repository.order.OrderDetailRepository;
+import com.nle.io.repository.booking.BookingDetailRepository;
+import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.shared.service.item.ItemServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.order.CreateOrderHeaderRequest;
-import com.nle.ui.model.request.order.OrderDetailRequest;
+import com.nle.ui.model.request.booking.CreateBookingRequest;
+import com.nle.ui.model.request.booking.BookingDetailRequest;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ItemResponse;
-import com.nle.ui.model.response.order.OrderHeaderResponse;
+import com.nle.ui.model.response.booking.BookingResponse;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -34,22 +34,22 @@ import java.util.Optional;
 @Transactional
 public class BookingServiceImpl implements BookingService {
 
-    private final OrderRepository orderRepository;
-    private final OrderDetailRepository orderDetailRepository;
+    private final BookingHeaderRepository bookingHeaderRepository;
+    private final BookingDetailRepository bookingDetailRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
 
     @Override
-    public PagingResponseModel<OrderHeaderResponse> SearchByPhone(String phoneNumber, Pageable pageable) {
+    public PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable) {
 
-        Page<OrderHeader> headerPage = orderRepository.getOrderByPhoneNumber(phoneNumber, pageable);
+        Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber, pageable);
         System.out.println(headerPage);
         return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
     }
 
     @Override
-    public OrderHeaderResponse CreateOrder(CreateOrderHeaderRequest request) {
-        OrderHeader entity = new OrderHeader();
+    public BookingResponse CreateOrder(CreateBookingRequest request) {
+        BookingHeader entity = new BookingHeader();
         BeanUtils.copyProperties(request, entity);
         entity.setTxDateFormatted(NleUtil.formatTxDate(entity.getTx_date()));
 
@@ -60,10 +60,10 @@ public class BookingServiceImpl implements BookingService {
         Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(request.getDepo_id());
         if (depoOwnerAccount.isEmpty()) throw new BadRequestException("Depo Id cannot be find");
         entity.setDepoOwnerAccount(depoOwnerAccount.get());
-        OrderHeader savedHeader = orderRepository.save(entity);
+        BookingHeader savedHeader = bookingHeaderRepository.save(entity);
 
-        for (OrderDetailRequest detailRequest : request.getDetailRequests()) {
-            OrderDetail orderDetail = new OrderDetail();
+        for (BookingDetailRequest detailRequest : request.getDetailRequests()) {
+            BookingDetail bookingDetail = new BookingDetail();
 
             Optional<Item> item = itemRepository.findById(detailRequest.getItemId());
             if (item.isEmpty()) throw new BadRequestException("Cannot find item");
@@ -71,40 +71,40 @@ public class BookingServiceImpl implements BookingService {
             if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(depoOwnerAccount.get().getCompanyEmail()))
                 throw new BadRequestException("this item is not from depo " + depoOwnerAccount.get().getCompanyEmail());
 
-            orderDetail.setOrderHeader(savedHeader);
-            orderDetail.setItem(item.get());
+            bookingDetail.setBookingHeader(savedHeader);
+            bookingDetail.setItem(item.get());
 
             if (detailRequest.getPrice() != -1)
-                orderDetail.setPrice(detailRequest.getPrice());
+                bookingDetail.setPrice(detailRequest.getPrice());
             else
-                orderDetail.setPrice(item.get().getPrice());
+                bookingDetail.setPrice(item.get().getPrice());
 
-            orderDetailRepository.save(orderDetail);
+            bookingDetailRepository.save(bookingDetail);
         }
 
         return this.convertToResponse(savedHeader);
     }
 
     @Override
-    public PagingResponseModel<OrderHeaderResponse> searchBooking(BookingSearchRequest request, Pageable pageable) {
+    public PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable) {
 
         if (request.getPhone_number() == null || request.getPhone_number().trim().isEmpty())
             throw new BadRequestException("phone number cannot be null");
 
-        Page<OrderHeader> headerPage = orderRepository.searchBooking(request, pageable);
+        Page<BookingHeader> headerPage = bookingHeaderRepository.searchBooking(request, pageable);
         return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
     }
 
-    private OrderHeaderResponse convertToResponse(OrderHeader entity) {
-        OrderHeaderResponse response = new OrderHeaderResponse();
+    private BookingResponse convertToResponse(BookingHeader entity) {
+        BookingResponse response = new BookingResponse();
         List<ItemResponse> orderDetailResponseList = new ArrayList<>();
 
         BeanUtils.copyProperties(entity, response);
-//        List<OrderDetail> orderDetailList = orderDetailRepository.getAllByOrderHeaderId(entity.getId());
-        for (OrderDetail orderDetail : entity.getOrderDetails()){
-            Item item = orderDetail.getItem();
+        List<BookingDetail> orderDetailList = bookingDetailRepository.getAllByBookingHeaderId(entity.getId());
+        for (BookingDetail bookingDetail : orderDetailList){
+            Item item = bookingDetail.getItem();
             ItemResponse itemResponse = ItemServiceImpl.convertToResponse(item);
-            itemResponse.setPrice(orderDetail.getPrice());
+            itemResponse.setPrice(bookingDetail.getPrice());
             orderDetailResponseList.add(itemResponse);
         }
 

@@ -1,4 +1,4 @@
-package com.nle.ui.model.response.order;
+package com.nle.ui.model.response.booking;
 
 import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class OrderHeaderResponse {
+public class BookingResponse {
 
     private Long id;
     private String tx_date;

@@ -1,4 +1,4 @@
-package com.nle.ui.model.request.order;
+package com.nle.ui.model.request.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class CreateOrderHeaderRequest {
+public class CreateBookingRequest {
     private ItemTypeEnum booking_type;
     private Long depo_id;
     private String tx_date;
@@ -25,5 +25,5 @@ public class CreateOrderHeaderRequest {
     private String npwp_address;
     private PaymentMethodEnum payment_method;
     private BookingStatusEnum order_status;
-    private List<OrderDetailRequest> detailRequests;
+    private List<BookingDetailRequest> detailRequests;
 }

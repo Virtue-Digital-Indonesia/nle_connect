@@ -1,14 +1,14 @@
 package com.nle.shared.service.booking;
 
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.order.CreateOrderHeaderRequest;
+import com.nle.ui.model.request.booking.CreateBookingRequest;
 import com.nle.ui.model.request.search.BookingSearchRequest;
-import com.nle.ui.model.response.order.OrderHeaderResponse;
+import com.nle.ui.model.response.booking.BookingResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface BookingService {
 
-    PagingResponseModel<OrderHeaderResponse> SearchByPhone(String phoneNumber, Pageable pageable);
-    OrderHeaderResponse CreateOrder(CreateOrderHeaderRequest request);
-    PagingResponseModel<OrderHeaderResponse> searchBooking(BookingSearchRequest request, Pageable pageable);
+    PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable);
+    BookingResponse CreateOrder(CreateBookingRequest request);
+    PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable);
 }
