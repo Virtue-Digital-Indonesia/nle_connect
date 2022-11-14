@@ -95,7 +95,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         return responseList;
     }
 
-    public ApplicantResponse convertFromEntity(DepoOwnerAccount depoOwnerAccount) {
+    private ApplicantResponse convertFromEntity(DepoOwnerAccount depoOwnerAccount) {
         ApplicantResponse applicantResponse = new ApplicantResponse();
         BeanUtils.copyProperties(depoOwnerAccount, applicantResponse);
         return applicantResponse;

@@ -3,6 +3,7 @@ package com.nle.ui.model.response.booking;
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
+import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,5 +28,6 @@ public class BookingResponse {
     private PaymentMethodEnum payment_method;
     private BookingStatusEnum booking_status;
     private LocalDateTime txDateFormatted;
+    private ApplicantResponse depo;
     private List<ItemResponse> items;
 }

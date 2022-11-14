@@ -15,6 +15,7 @@ import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingRequest;
 import com.nle.ui.model.request.booking.BookingDetailRequest;
 import com.nle.ui.model.request.search.BookingSearchRequest;
+import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
 import com.nle.util.NleUtil;
@@ -103,6 +104,10 @@ public class BookingServiceImpl implements BookingService {
         List<ItemResponse> orderDetailResponseList = new ArrayList<>();
 
         BeanUtils.copyProperties(entity, response);
+        ApplicantResponse applicantResponse = new ApplicantResponse();
+        BeanUtils.copyProperties(entity.getDepoOwnerAccount(), applicantResponse);
+        response.setDepo(applicantResponse);
+
         List<BookingDetail> orderDetailList = bookingDetailRepository.getAllByBookingHeaderId(entity.getId());
         for (BookingDetail bookingDetail : orderDetailList){
             Item item = bookingDetail.getItem();
