@@ -24,6 +24,6 @@ public class CreateBookingRequest {
     private String npwp;
     private String npwp_address;
     private PaymentMethodEnum payment_method;
-    private BookingStatusEnum order_status;
+    private BookingStatusEnum booking_status;
     private List<BookingDetailRequest> detailRequests;
 }

@@ -18,14 +18,14 @@ public interface BookingHeaderRepository extends JpaRepository<BookingHeader, Lo
             "AND (:#{#request.full_name} IS NULL OR LOWER(oh.full_name) LIKE LOWER(CONCAT('%', :#{#request.full_name}, '%'))) " +
             "AND (:#{#request.consignee} IS NULL OR LOWER(oh.consignee) LIKE LOWER(CONCAT('%', :#{#request.consignee}, '%'))) " +
             "AND (:#{#request.booking_type} IS NULL OR UPPER(oh.booking_type) LIKE UPPER(:#{#request.booking_type})) " +
-            "AND (:#{#request.booking_status} IS NULL OR UPPER(oh.order_status) LIKE UPPER(CONCAT('%', :#{#request.booking_status}, '%'))) " +
+            "AND (:#{#request.booking_status} IS NULL OR UPPER(oh.booking_status) LIKE UPPER(CONCAT('%', :#{#request.booking_status}, '%'))) " +
             "AND (:#{#request.tx_date} IS NULL OR oh.tx_date LIKE CONCAT('%', :#{#request.tx_date}, '%')) " +
             "AND (:#{#request.globalSearch} IS NULL " +
             "OR LOWER(oh.bill_landing) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
             "OR LOWER(oh.full_name) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
             "OR LOWER(oh.consignee) LIKE LOWER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
             "OR UPPER(oh.booking_type) LIKE UPPER(:#{#request.globalSearch}) " +
-            "OR UPPER(oh.order_status) LIKE UPPER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
+            "OR UPPER(oh.booking_status) LIKE UPPER(CONCAT('%', :#{#request.globalSearch}, '%')) " +
             "OR oh.tx_date LIKE CONCAT('%', :#{#request.globalSearch}, '%')" +
             ")";
 

@@ -57,9 +57,9 @@ public class BookingHeader extends AbstractAuditingEntity implements Serializabl
     @Enumerated(EnumType.STRING)
     private PaymentMethodEnum payment_method;
 
-    @Column(name = "order_status")
+    @Column(name = "booking_status")
     @Enumerated(EnumType.STRING)
-    private BookingStatusEnum order_status;
+    private BookingStatusEnum booking_status;
 
     @Column(name = "tx_date_formatted")
     private LocalDateTime txDateFormatted;

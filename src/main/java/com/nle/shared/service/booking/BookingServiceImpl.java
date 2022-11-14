@@ -25,6 +25,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +40,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingDetailRepository bookingDetailRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
+    private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
     public PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable) {
@@ -51,10 +54,10 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponse CreateOrder(CreateBookingRequest request) {
         BookingHeader entity = new BookingHeader();
         BeanUtils.copyProperties(request, entity);
-        entity.setTxDateFormatted(NleUtil.formatTxDate(entity.getTx_date()));
+        entity.setTxDateFormatted(LocalDateTime.parse(request.getTx_date(), DATE_TIME_FORMATTER));
 
-        if (entity.getOrder_status() == null) {
-            entity.setOrder_status(BookingStatusEnum.WAITING);
+        if (entity.getBooking_status() == null) {
+            entity.setBooking_status(BookingStatusEnum.WAITING);
         }
 
         Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(request.getDepo_id());

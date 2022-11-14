@@ -25,7 +25,7 @@ public class BookingResponse {
     private String npwp;
     private String npwp_address;
     private PaymentMethodEnum payment_method;
-    private BookingStatusEnum order_status;
+    private BookingStatusEnum booking_status;
     private LocalDateTime txDateFormatted;
     private List<ItemResponse> items;
 }
