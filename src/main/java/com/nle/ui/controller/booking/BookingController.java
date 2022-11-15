@@ -2,10 +2,12 @@ package com.nle.ui.controller.booking;
 
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
+import com.nle.shared.service.item.ItemService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingRequest;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +32,7 @@ public class BookingController {
 
     private final BookingService bookingService;
     private final ApplicantService applicantService;
+    private final ItemService itemService;
 
     @Operation(description = "get booking by phoneNumber with paging", operationId = "searchByPhone", summary = "get booking by phoneNumber with paging")
     @SecurityRequirement(name = "nleapi")
@@ -60,6 +63,13 @@ public class BookingController {
     @GetMapping(value = "depo/active")
     public ResponseEntity<List<ApplicantResponse>> listDepo(){
         return ResponseEntity.ok(applicantService.getAllApplicant());
+    }
+
+    @Operation(description = "get list item of depo", operationId = "getItemDepo", summary = "get list item of depo")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "depo/item")
+    public ResponseEntity<List<ItemResponse>> getItemDepo (@RequestParam("depo_id") Long depo_id) {
+        return ResponseEntity.ok(itemService.getItemDepo(depo_id));
     }
 
     @Operation(description = "get search booking with paging ", operationId = "searchBooking", summary = "get search booking with paging")
