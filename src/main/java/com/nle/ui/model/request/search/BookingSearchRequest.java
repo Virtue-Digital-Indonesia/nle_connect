@@ -14,5 +14,7 @@ public class BookingSearchRequest {
     private String booking_status;
     private String tx_date;
     private String phone_number;
+    private String from;
+    private String to;
     private String globalSearch;
 }
