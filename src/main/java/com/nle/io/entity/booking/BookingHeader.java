@@ -1,4 +1,4 @@
-package com.nle.io.entity.order;
+package com.nle.io.entity.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name = "order_header")
+@Table(name = "booking_header")
 @Setter
 @Getter
-public class OrderHeader extends AbstractAuditingEntity implements Serializable {
+public class BookingHeader extends AbstractAuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -57,9 +57,9 @@ public class OrderHeader extends AbstractAuditingEntity implements Serializable 
     @Enumerated(EnumType.STRING)
     private PaymentMethodEnum payment_method;
 
-    @Column(name = "order_status")
+    @Column(name = "booking_status")
     @Enumerated(EnumType.STRING)
-    private BookingStatusEnum order_status;
+    private BookingStatusEnum booking_status;
 
     @Column(name = "tx_date_formatted")
     private LocalDateTime txDateFormatted;
@@ -68,6 +68,6 @@ public class OrderHeader extends AbstractAuditingEntity implements Serializable 
     @JoinColumn(name = "depo_owner_account_id", referencedColumnName = "id")
     private DepoOwnerAccount depoOwnerAccount;
 
-    @OneToMany(mappedBy = "orderHeader", fetch = FetchType.LAZY)
-    private Set<OrderDetail> orderDetails;
+    @OneToMany(mappedBy = "bookingHeader", fetch = FetchType.LAZY)
+    private Set<BookingDetail> bookingDetails;
 }
