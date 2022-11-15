@@ -14,4 +14,5 @@ public interface ItemService {
     ItemResponse updateItem (Long id, CreateItemRequest request);
     List<ItemResponse> multipleDeleteItem(List<Long> listID);
     PagingResponseModel<ItemResponse> search(ItemSearchRequest request,Pageable pageable);
+    List<ItemResponse> getItemDepo(Long depo_id);
 }

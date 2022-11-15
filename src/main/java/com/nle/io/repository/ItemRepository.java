@@ -8,11 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.companyEmail = :companyEmail AND it.deleted = false")
     Page<Item> getAllDepoItem(@Param("companyEmail") String companyEmail, Pageable pageable);
+
+    @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.deleted = false")
+    List<Item> getAllByDepoId(@Param("depo_id") Long depo_id);
 
     @Query(value = "SELECT it FROM Item it " +
             "LEFT JOIN it.depoFleet as dF " +

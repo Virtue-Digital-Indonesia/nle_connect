@@ -57,6 +57,16 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
+    public List<ItemResponse> getItemDepo(Long depo_id) {
+        List<Item> itemList = itemRepository.getAllByDepoId(depo_id);
+        List<ItemResponse> responseList = new ArrayList<>();
+        for (Item item : itemList) {
+            responseList.add(this.convertToResponse(item));
+        }
+        return responseList;
+    }
+
+    @Override
     public ItemResponse createItem (CreateItemRequest request) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty()) {
