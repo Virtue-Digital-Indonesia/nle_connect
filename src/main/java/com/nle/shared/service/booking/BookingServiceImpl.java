@@ -2,6 +2,7 @@ package com.nle.shared.service.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.exception.BadRequestException;
+import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
 import com.nle.io.entity.booking.BookingDetail;
@@ -42,6 +43,20 @@ public class BookingServiceImpl implements BookingService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+
+    @Override
+    public BookingResponse getBookingById(Long booking_id, String phone_number) {
+
+        if (booking_id == null) throw new BadRequestException("booking_id cannot be nulll");
+        if (phone_number == null || phone_number.trim().isEmpty()) throw new BadRequestException("phone number cannot be null");
+
+        Optional<BookingHeader> optional = bookingHeaderRepository.findById(booking_id);
+        if (optional.isEmpty()) throw new CommonException("Cannot find booking");
+
+        BookingHeader bookingHeader = optional.get();
+        if (!bookingHeader.getPhone_number().equals(phone_number)) throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
+        return this.convertToResponse(bookingHeader);
+    }
 
     @Override
     public PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable) {

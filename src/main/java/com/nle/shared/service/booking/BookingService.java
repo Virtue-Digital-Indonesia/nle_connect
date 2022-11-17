@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookingService {
 
+    BookingResponse getBookingById(Long booking_id, String phone_number);
     PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable);
     BookingResponse CreateOrder(CreateBookingRequest request);
     PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable);
