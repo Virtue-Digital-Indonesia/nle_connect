@@ -1,5 +1,6 @@
 package com.nle.io.repository;
 
+import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.io.entity.Item;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +17,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.companyEmail = :companyEmail AND it.deleted = false")
     Page<Item> getAllDepoItem(@Param("companyEmail") String companyEmail, Pageable pageable);
 
-    @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.deleted = false")
-    List<Item> getAllByDepoId(@Param("depo_id") Long depo_id);
+    @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.type = :type AND it.deleted = false")
+    List<Item> getAllByDepoId(@Param("depo_id") Long depo_id, ItemTypeEnum type);
 
     @Query(value = "SELECT it FROM Item it " +
             "LEFT JOIN it.depoFleet as dF " +

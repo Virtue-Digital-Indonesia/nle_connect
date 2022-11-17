@@ -1,5 +1,6 @@
 package com.nle.shared.service.item;
 
+import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
@@ -57,8 +58,8 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public List<ItemResponse> getItemDepo(Long depo_id) {
-        List<Item> itemList = itemRepository.getAllByDepoId(depo_id);
+    public List<ItemResponse> getItemDepo(Long depo_id, ItemTypeEnum type) {
+        List<Item> itemList = itemRepository.getAllByDepoId(depo_id,type);
         List<ItemResponse> responseList = new ArrayList<>();
         for (Item item : itemList) {
             responseList.add(this.convertToResponse(item));
