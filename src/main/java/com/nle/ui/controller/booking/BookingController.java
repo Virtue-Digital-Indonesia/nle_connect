@@ -1,5 +1,6 @@
 package com.nle.ui.controller.booking;
 
+import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
@@ -76,8 +77,8 @@ public class BookingController {
     @Operation(description = "get list item of depo", operationId = "getItemDepo", summary = "get list item of depo")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "depo/item")
-    public ResponseEntity<List<ItemResponse>> getItemDepo (@RequestParam("depo_id") Long depo_id) {
-        return ResponseEntity.ok(itemService.getItemDepo(depo_id));
+    public ResponseEntity<List<ItemResponse>> getItemDepo (@RequestParam("depo_id") Long depo_id,@RequestParam("type") ItemTypeEnum type) {
+        return ResponseEntity.ok(itemService.getItemDepo(depo_id,type));
     }
 
     @Operation(description = "get search booking with paging ", operationId = "searchBooking", summary = "get search booking with paging")
