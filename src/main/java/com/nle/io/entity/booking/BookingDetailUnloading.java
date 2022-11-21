@@ -7,10 +7,10 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "booking_detail")
+@Table(name = "booking_detail_unloading")
 @Setter
 @Getter
-public class BookingDetail {
+public class BookingDetailUnloading {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,4 +30,6 @@ public class BookingDetail {
     @Column(name = "price")
     private int price;
 
+    @Column(name = "container_number")
+    private String container_number;
 }

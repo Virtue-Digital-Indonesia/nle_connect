@@ -5,11 +5,11 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
-import com.nle.io.entity.booking.BookingDetail;
+import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
-import com.nle.io.repository.booking.BookingDetailRepository;
+import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.shared.service.item.ItemServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
@@ -19,7 +19,6 @@ import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
-import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -39,7 +38,7 @@ import java.util.Optional;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingHeaderRepository bookingHeaderRepository;
-    private final BookingDetailRepository bookingDetailRepository;
+    private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -82,7 +81,7 @@ public class BookingServiceImpl implements BookingService {
         BookingHeader savedHeader = bookingHeaderRepository.save(entity);
 
         for (BookingDetailRequest detailRequest : request.getDetailRequests()) {
-            BookingDetail bookingDetail = new BookingDetail();
+            BookingDetailUnloading bookingDetailUnloading = new BookingDetailUnloading();
 
             Optional<Item> item = itemRepository.findById(detailRequest.getItemId());
             if (item.isEmpty()) throw new BadRequestException("Cannot find item");
@@ -90,15 +89,15 @@ public class BookingServiceImpl implements BookingService {
             if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(depoOwnerAccount.get().getCompanyEmail()))
                 throw new BadRequestException("this item is not from depo " + depoOwnerAccount.get().getCompanyEmail());
 
-            bookingDetail.setBookingHeader(savedHeader);
-            bookingDetail.setItem(item.get());
+            bookingDetailUnloading.setBookingHeader(savedHeader);
+            bookingDetailUnloading.setItem(item.get());
 
             if (detailRequest.getPrice() != -1)
-                bookingDetail.setPrice(detailRequest.getPrice());
+                bookingDetailUnloading.setPrice(detailRequest.getPrice());
             else
-                bookingDetail.setPrice(item.get().getPrice());
+                bookingDetailUnloading.setPrice(item.get().getPrice());
 
-            bookingDetailRepository.save(bookingDetail);
+            bookingDetailUnloadingRepository.save(bookingDetailUnloading);
         }
 
         return this.convertToResponse(savedHeader);
@@ -123,11 +122,11 @@ public class BookingServiceImpl implements BookingService {
         BeanUtils.copyProperties(entity.getDepoOwnerAccount(), applicantResponse);
         response.setDepo(applicantResponse);
 
-        List<BookingDetail> orderDetailList = bookingDetailRepository.getAllByBookingHeaderId(entity.getId());
-        for (BookingDetail bookingDetail : orderDetailList){
-            Item item = bookingDetail.getItem();
+        List<BookingDetailUnloading> orderDetailList = bookingDetailUnloadingRepository.getAllByBookingHeaderId(entity.getId());
+        for (BookingDetailUnloading bookingDetailUnloading : orderDetailList){
+            Item item = bookingDetailUnloading.getItem();
             ItemResponse itemResponse = ItemServiceImpl.convertToResponse(item);
-            itemResponse.setPrice(bookingDetail.getPrice());
+            itemResponse.setPrice(bookingDetailUnloading.getPrice());
             orderDetailResponseList.add(itemResponse);
         }
 

@@ -69,5 +69,8 @@ public class BookingHeader extends AbstractAuditingEntity implements Serializabl
     private DepoOwnerAccount depoOwnerAccount;
 
     @OneToMany(mappedBy = "bookingHeader", fetch = FetchType.LAZY)
-    private Set<BookingDetail> bookingDetails;
+    private Set<BookingDetailUnloading> bookingDetailUnloadings;
+
+    @OneToMany(mappedBy = "bookingHeader", fetch = FetchType.LAZY)
+    private Set<BookingDetailLoading> bookingDetailLoadings;
 }
