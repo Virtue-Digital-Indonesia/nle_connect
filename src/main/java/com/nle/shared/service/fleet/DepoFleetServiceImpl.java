@@ -83,7 +83,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             else {
                 depoFleet.setName(request.getName());
             }
-
+            depoFleet.setDeleted(false);
             DepoFleet entity = depoFleetRepository.save(depoFleet);
             return this.convertFleetToResponse(entity);
         }
@@ -138,7 +138,9 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), fleet_code);
         if (depoFleet.isEmpty()) throw new CommonException("Cannot find depo-fleet in this depo");
 
-        depoFleetRepository.delete(depoFleet.get());
+        depoFleet.get().setDeleted(true);
+
+        depoFleetRepository.save(depoFleet.get());
         return this.convertFleetToResponse(depoFleet.get());
     }
 
