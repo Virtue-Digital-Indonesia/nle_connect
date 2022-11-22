@@ -5,7 +5,7 @@ import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.booking.CreateBookingRequest;
+import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
@@ -60,11 +60,11 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.SearchByPhone(phoneNumber, pageable));
     }
 
-    @Operation(description = "create Order", operationId = "createOrder", summary = "create order with details")
+    @Operation(description = "create Unloading Booking", operationId = "createBookingUnloading", summary = "create unloading booking with details")
     @SecurityRequirement(name = "nleapi")
     @PostMapping
-    public ResponseEntity<BookingResponse> createOrder (@RequestBody CreateBookingRequest request) {
-        return ResponseEntity.ok(bookingService.CreateOrder(request));
+    public ResponseEntity<BookingResponse> createBookingUnloading (@RequestBody CreateBookingUnloading request) {
+        return ResponseEntity.ok(bookingService.createBookingUnloading(request));
     }
 
     @Operation(description = "get list of depo", operationId = "listDepo", summary = "get list of depo for booking")

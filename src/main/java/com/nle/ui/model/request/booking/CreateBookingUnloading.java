@@ -12,8 +12,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class CreateBookingRequest {
-    private ItemTypeEnum booking_type;
+public class CreateBookingUnloading {
     private Long depo_id;
     private String tx_date;
     private String full_name;
@@ -23,7 +22,5 @@ public class CreateBookingRequest {
     private String consignee;
     private String npwp;
     private String npwp_address;
-    private PaymentMethodEnum payment_method;
-    private BookingStatusEnum booking_status;
-    private List<BookingDetailRequest> detailRequests;
+    private List<DetailUnloadingRequest> detailRequests;
 }
