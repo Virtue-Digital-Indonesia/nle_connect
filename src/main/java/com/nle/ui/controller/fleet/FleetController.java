@@ -44,7 +44,7 @@ public class FleetController {
 
     @Operation(description = "create fleet", operationId = "createFleet", summary = "create fleet")
     @SecurityRequirement(name = "nleapi")
-    @PostMapping
+    @PostMapping(value = "/addFleet")
     public ResponseEntity<FleetResponse> createFleet(@RequestBody FleetRequest request) {
         return ResponseEntity.ok(fleetService.createFleet(request));
     }
