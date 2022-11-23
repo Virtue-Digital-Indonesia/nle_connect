@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface DepoFleetRepository extends JpaRepository<DepoFleet, Long> {
 
-    @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail")
+    @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail and df.deleted = false")
     Page<DepoFleet> getAllDepoFleet(@Param("companyEmail") String companyEmail, Pageable pageable);
 
     @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail AND df.fleet.code = :fleetCode AND deleted= false ")
