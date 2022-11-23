@@ -31,7 +31,7 @@ public interface BookingHeaderRepository extends JpaRepository<BookingHeader, Lo
             "OR oh.tx_date LIKE CONCAT('%', :#{#request.globalSearch}, '%')" +
             ")";
 
-    @Query(value = "SELECT * FROM booking_header WHERE booking_header.phone_number = :phoneNumber AND booking_header.order_status != 'DONE'", nativeQuery = true)
+    @Query(value = "SELECT * FROM booking_header WHERE booking_header.phone_number = :phoneNumber AND booking_header.booking_status != 'DONE'", nativeQuery = true)
     Page<BookingHeader> getOrderByPhoneNumber(@Param("phoneNumber") String phoneNumber, Pageable pageable);
 
     @Query(value = SEARCH_BOOKING_QUERY)
