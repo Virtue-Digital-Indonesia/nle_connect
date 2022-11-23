@@ -68,7 +68,7 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/shipping-lines/**",
                 "/api/inventories/**",
                 "/api/ftp/**",
-                "/api/fleets/**",
+                "/api/fleets",
                 "/api/depo-fleet/**",
                 "/api/items/**",
                 "/api/contact-us",
@@ -82,7 +82,8 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/approve-join-request/**",
                 "/api/register/**",
                 "/api/profile",
-                "/api/activate/**"};
+                "/api/activate/**"
+        };
         return GroupedOpenApi
                 .builder()
                 .group("general-user")
@@ -95,7 +96,9 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
         String paths[] = {
                 "/api/admins/**",
                 "/api/switchUser/**",
-                "/api/applicants/**"};
+                "/api/applicants/**",
+                "/api/fleets/addFleet"
+        };
         return GroupedOpenApi.builder()
                 .group("secret-admin")
                 .pathsToMatch(paths)
