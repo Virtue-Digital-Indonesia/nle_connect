@@ -10,5 +10,5 @@ import lombok.ToString;
 public class DetailLoadingRequest {
     private Long itemId;
     private int price = -1;
-    private int quantity;
+    private int quantity = -1;
 }
