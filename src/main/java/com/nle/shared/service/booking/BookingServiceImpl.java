@@ -14,6 +14,8 @@ import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.shared.service.fleet.DepoFleetServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.booking.BookingHeaderRequest;
+import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.request.booking.DetailUnloadingRequest;
 import com.nle.ui.model.request.search.BookingSearchRequest;
@@ -99,6 +101,11 @@ public class BookingServiceImpl implements BookingService {
         return this.convertToResponse(savedHeader);
     }
 
+    public BookingResponse createBookingLoading(CreateBookingLoading request){
+        BookingHeader savedHeader = saveBookingHeader(request, ItemTypeEnum.LOADING);
+        return this.convertToResponse(savedHeader);
+    }
+
     @Override
     public PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable) {
 
@@ -109,7 +116,7 @@ public class BookingServiceImpl implements BookingService {
         return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
     }
 
-    private BookingHeader saveBookingHeader(CreateBookingUnloading request, ItemTypeEnum booking_type) {
+    private BookingHeader saveBookingHeader(BookingHeaderRequest request, ItemTypeEnum booking_type) {
         BookingHeader entity = new BookingHeader();
         BeanUtils.copyProperties(request, entity);
         entity.setTxDateFormatted(LocalDateTime.parse(request.getTx_date(), DATE_TIME_FORMATTER));
