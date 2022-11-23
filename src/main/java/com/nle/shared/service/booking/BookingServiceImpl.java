@@ -81,6 +81,8 @@ public class BookingServiceImpl implements BookingService {
 
             if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(companyEmail))
                 throw new BadRequestException("this item is not from depo " + companyEmail);
+            if (item.get().getType() != ItemTypeEnum.UNLOADING)
+                throw new BadRequestException("this type item is not unloading");
 
             bookingDetailUnloading.setBookingHeader(savedHeader);
             bookingDetailUnloading.setItem(item.get());

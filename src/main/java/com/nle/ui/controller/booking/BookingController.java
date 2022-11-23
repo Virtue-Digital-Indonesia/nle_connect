@@ -62,7 +62,7 @@ public class BookingController {
 
     @Operation(description = "create Unloading Booking", operationId = "createBookingUnloading", summary = "create unloading booking with details")
     @SecurityRequirement(name = "nleapi")
-    @PostMapping
+    @PostMapping(value = "unloading")
     public ResponseEntity<BookingResponse> createBookingUnloading (@RequestBody CreateBookingUnloading request) {
         return ResponseEntity.ok(bookingService.createBookingUnloading(request));
     }
