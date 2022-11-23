@@ -5,17 +5,15 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.entity.Fleet;
 import com.nle.io.entity.Item;
 import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
 import com.nle.security.SecurityUtils;
+import com.nle.shared.service.fleet.DepoFleetServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
 import com.nle.ui.model.request.search.ItemSearchRequest;
-import com.nle.ui.model.response.DepoFleetResponse;
-import com.nle.ui.model.response.FleetResponse;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -51,7 +49,7 @@ public class ItemServiceImpl implements ItemService{
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (!currentUserLogin.isEmpty()) {
             Page<Item> listItem = itemRepository.getAllDepoItem(currentUserLogin.get(), pageable);
-            return new PagingResponseModel<>(listItem.map(ItemServiceImpl::convertToResponse));
+            return new PagingResponseModel<>(listItem.map(this::convertToResponse));
         }
 
         return new PagingResponseModel<>();
@@ -168,22 +166,17 @@ public class ItemServiceImpl implements ItemService{
                     request.getFleetCode(),
                     request.getGlobalSearch(),
                     customPageable);
-            return new PagingResponseModel<>(listItem.map(ItemServiceImpl::convertToResponse));
+            return new PagingResponseModel<>(listItem.map(this::convertToResponse));
         }
         return null;
     }
 
-    public static ItemResponse convertToResponse (Item item) {
+    private ItemResponse convertToResponse (Item item) {
         ItemResponse itemResponse = new ItemResponse();
         BeanUtils.copyProperties(item, itemResponse);
 
         if (item.getDepoFleet() != null) {
-            DepoFleet depoFleet = item.getDepoFleet();
-            DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
-            BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
-            depoFleetResponse.setDepo_fleet_id(depoFleet.getId());
-            depoFleetResponse.setName(depoFleet.getName());
-            itemResponse.setFleet(depoFleetResponse);
+            itemResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
         }
         return itemResponse;
     }

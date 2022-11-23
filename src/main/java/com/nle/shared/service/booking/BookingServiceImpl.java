@@ -1,25 +1,26 @@
 package com.nle.shared.service.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
+import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
-import com.nle.io.entity.booking.BookingDetail;
+import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
-import com.nle.io.repository.booking.BookingDetailRepository;
+import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
-import com.nle.shared.service.item.ItemServiceImpl;
+import com.nle.shared.service.fleet.DepoFleetServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.booking.CreateBookingRequest;
-import com.nle.ui.model.request.booking.BookingDetailRequest;
+import com.nle.ui.model.request.booking.CreateBookingUnloading;
+import com.nle.ui.model.request.booking.DetailUnloadingRequest;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
-import com.nle.util.NleUtil;
+import com.nle.ui.model.response.booking.DetailUnloadingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,7 @@ import java.util.Optional;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingHeaderRepository bookingHeaderRepository;
-    private final BookingDetailRepository bookingDetailRepository;
+    private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -67,38 +68,32 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponse CreateOrder(CreateBookingRequest request) {
-        BookingHeader entity = new BookingHeader();
-        BeanUtils.copyProperties(request, entity);
-        entity.setTxDateFormatted(LocalDateTime.parse(request.getTx_date(), DATE_TIME_FORMATTER));
+    public BookingResponse createBookingUnloading(CreateBookingUnloading request) {
 
-        if (entity.getBooking_status() == null) {
-            entity.setBooking_status(BookingStatusEnum.WAITING);
-        }
+        BookingHeader savedHeader = saveBookingHeader(request, ItemTypeEnum.UNLOADING);
+        String companyEmail = savedHeader.getDepoOwnerAccount().getCompanyEmail();
 
-        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(request.getDepo_id());
-        if (depoOwnerAccount.isEmpty()) throw new BadRequestException("Depo Id cannot be find");
-        entity.setDepoOwnerAccount(depoOwnerAccount.get());
-        BookingHeader savedHeader = bookingHeaderRepository.save(entity);
-
-        for (BookingDetailRequest detailRequest : request.getDetailRequests()) {
-            BookingDetail bookingDetail = new BookingDetail();
+        for (DetailUnloadingRequest detailRequest : request.getDetailRequests()) {
+            BookingDetailUnloading bookingDetailUnloading = new BookingDetailUnloading();
 
             Optional<Item> item = itemRepository.findById(detailRequest.getItemId());
             if (item.isEmpty()) throw new BadRequestException("Cannot find item");
 
-            if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(depoOwnerAccount.get().getCompanyEmail()))
-                throw new BadRequestException("this item is not from depo " + depoOwnerAccount.get().getCompanyEmail());
+            if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(companyEmail))
+                throw new BadRequestException("this item is not from depo " + companyEmail);
+            if (item.get().getType() != ItemTypeEnum.UNLOADING)
+                throw new BadRequestException("this type item is not unloading");
 
-            bookingDetail.setBookingHeader(savedHeader);
-            bookingDetail.setItem(item.get());
+            bookingDetailUnloading.setBookingHeader(savedHeader);
+            bookingDetailUnloading.setItem(item.get());
+            bookingDetailUnloading.setContainer_number(detailRequest.getContainer_number());
 
             if (detailRequest.getPrice() != -1)
-                bookingDetail.setPrice(detailRequest.getPrice());
+                bookingDetailUnloading.setPrice(detailRequest.getPrice());
             else
-                bookingDetail.setPrice(item.get().getPrice());
+                bookingDetailUnloading.setPrice(item.get().getPrice());
 
-            bookingDetailRepository.save(bookingDetail);
+            bookingDetailUnloadingRepository.save(bookingDetailUnloading);
         }
 
         return this.convertToResponse(savedHeader);
@@ -114,24 +109,62 @@ public class BookingServiceImpl implements BookingService {
         return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
     }
 
-    private BookingResponse convertToResponse(BookingHeader entity) {
-        BookingResponse response = new BookingResponse();
-        List<ItemResponse> orderDetailResponseList = new ArrayList<>();
+    private BookingHeader saveBookingHeader(CreateBookingUnloading request, ItemTypeEnum booking_type) {
+        BookingHeader entity = new BookingHeader();
+        BeanUtils.copyProperties(request, entity);
+        entity.setTxDateFormatted(LocalDateTime.parse(request.getTx_date(), DATE_TIME_FORMATTER));
 
+        entity.setBooking_status(BookingStatusEnum.WAITING);
+        entity.setBooking_type(booking_type);
+
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(request.getDepo_id());
+        if (depoOwnerAccount.isEmpty()) throw new BadRequestException("Depo Id cannot be find");
+        entity.setDepoOwnerAccount(depoOwnerAccount.get());
+        BookingHeader savedHeader = bookingHeaderRepository.save(entity);
+
+        return savedHeader;
+    }
+
+    private BookingResponse convertToResponse(BookingHeader entity) {
+
+//      convert Booking Header
+        BookingResponse response = new BookingResponse();
         BeanUtils.copyProperties(entity, response);
+
+//      convert depo / applicant
         ApplicantResponse applicantResponse = new ApplicantResponse();
         BeanUtils.copyProperties(entity.getDepoOwnerAccount(), applicantResponse);
         response.setDepo(applicantResponse);
 
-        List<BookingDetail> orderDetailList = bookingDetailRepository.getAllByBookingHeaderId(entity.getId());
-        for (BookingDetail bookingDetail : orderDetailList){
-            Item item = bookingDetail.getItem();
-            ItemResponse itemResponse = ItemServiceImpl.convertToResponse(item);
-            itemResponse.setPrice(bookingDetail.getPrice());
-            orderDetailResponseList.add(itemResponse);
-        }
-
+//      convert item
+        List<ItemResponse> orderDetailResponseList = new ArrayList<>();
+        orderDetailResponseList = convertBookingUnloadingDetail(entity, orderDetailResponseList);
         response.setItems(orderDetailResponseList);
         return response;
+    }
+
+    private List<ItemResponse> convertBookingUnloadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
+
+        List<BookingDetailUnloading> unloadingList = bookingDetailUnloadingRepository.getAllByBookingHeaderId(entity.getId());
+        if (unloadingList == null || unloadingList.isEmpty()) {
+            return orderDetailResponseList;
+        }
+
+        for (BookingDetailUnloading unloading : unloadingList) {
+//              convert item to unloading response
+            Item item = unloading.getItem();
+            DetailUnloadingResponse unloadingResponse = new DetailUnloadingResponse();
+            BeanUtils.copyProperties(item, unloadingResponse);
+//              convert unloading to unloading response
+            unloadingResponse.setPrice(unloading.getPrice());
+            unloadingResponse.setContainer_number(unloading.getContainer_number());
+//              convert fleet
+            if (item.getDepoFleet() != null) {
+                unloadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
+            }
+            orderDetailResponseList.add(unloadingResponse);
+        }
+
+        return orderDetailResponseList;
     }
 }

@@ -7,7 +7,8 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class BookingDetailRequest {
+public class DetailUnloadingRequest {
     private Long itemId;
     private int price = -1;
+    private String container_number;
 }

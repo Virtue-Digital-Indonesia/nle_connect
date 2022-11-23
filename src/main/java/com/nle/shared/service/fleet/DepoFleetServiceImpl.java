@@ -23,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,7 +50,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (!currentUserLogin.isEmpty()) {
             Page<DepoFleet> listFleet = depoFleetRepository.getAllDepoFleet(currentUserLogin.get(), pageable);
-            return new PagingResponseModel<>(listFleet.map(this::convertFleetToResponse));
+            return new PagingResponseModel<>(listFleet.map(DepoFleetServiceImpl::convertFleetToResponse));
         }
 
         return new PagingResponseModel<>();
@@ -161,16 +160,16 @@ public class DepoFleetServiceImpl implements DepoFleetService{
                     depoFleetSearchRequest.getCountry(),
                     depoFleetSearchRequest.getGlobalSearch(),
                     customPageable);
-            return new PagingResponseModel<>(listFleet.map(this::convertFleetToResponse));
+            return new PagingResponseModel<>(listFleet.map(DepoFleetServiceImpl::convertFleetToResponse));
         }
 
         return new PagingResponseModel<>();
     }
 
-    private DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {
+    public static DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {
         DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
         BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
-        depoFleetResponse.setId(depoFleet.getId());
+        depoFleetResponse.setDepo_fleet_id(depoFleet.getId());
         depoFleetResponse.setName(depoFleet.getName());
         return depoFleetResponse;
     }
