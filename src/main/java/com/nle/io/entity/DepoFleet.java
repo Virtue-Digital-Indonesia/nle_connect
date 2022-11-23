@@ -30,4 +30,7 @@ public class DepoFleet implements Serializable {
 
     @Column(name = "custom_name")
     private String name;
+
+    @Column(name = "deleted",columnDefinition = "boolean default false")
+    private Boolean deleted;
 }
