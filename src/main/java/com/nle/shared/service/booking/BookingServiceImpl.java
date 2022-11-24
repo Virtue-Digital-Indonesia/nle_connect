@@ -6,20 +6,22 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
+import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
+import com.nle.io.repository.booking.BookingLoadingRepository;
 import com.nle.shared.service.fleet.DepoFleetServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.booking.CreateBookingUnloading;
-import com.nle.ui.model.request.booking.DetailUnloadingRequest;
+import com.nle.ui.model.request.booking.*;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
+import com.nle.ui.model.response.booking.DetailLoadingResponse;
 import com.nle.ui.model.response.booking.DetailUnloadingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -30,9 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -41,6 +41,7 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingHeaderRepository bookingHeaderRepository;
     private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
+    private final BookingLoadingRepository bookingLoadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -99,6 +100,37 @@ public class BookingServiceImpl implements BookingService {
         return this.convertToResponse(savedHeader);
     }
 
+    public BookingResponse createBookingLoading(CreateBookingLoading request){
+        BookingHeader savedHeader = saveBookingHeader(request, ItemTypeEnum.LOADING);
+        String companyEmail = savedHeader.getDepoOwnerAccount().getCompanyEmail();
+
+        for (DetailLoadingRequest detailLoadingRequest : request.getDetailRequests()) {
+            BookingDetailLoading loading = new BookingDetailLoading();
+
+            Optional<Item> item = itemRepository.findById(detailLoadingRequest.getItemId());
+            if (item.isEmpty()) throw new BadRequestException("Cannot find item");
+
+            if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(companyEmail))
+                throw new BadRequestException("this item is not from depo " + companyEmail);
+            if (item.get().getType() != ItemTypeEnum.LOADING)
+                throw new BadRequestException("this type item is not LOADING");
+
+            if (detailLoadingRequest.getPrice() != -1)
+                loading.setPrice(detailLoadingRequest.getPrice());
+            else
+                loading.setPrice(item.get().getPrice());
+
+            if (detailLoadingRequest.getQuantity() <= 0)
+                throw new BadRequestException("quantity cannot less than 1");
+
+            loading.setQuantity(detailLoadingRequest.getQuantity());
+            loading.setBookingHeader(savedHeader);
+            loading.setItem(item.get());
+            bookingLoadingRepository.save(loading);
+        }
+        return this.convertToResponse(savedHeader);
+    }
+
     @Override
     public PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable) {
 
@@ -109,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
         return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
     }
 
-    private BookingHeader saveBookingHeader(CreateBookingUnloading request, ItemTypeEnum booking_type) {
+    private BookingHeader saveBookingHeader(BookingHeaderRequest request, ItemTypeEnum booking_type) {
         BookingHeader entity = new BookingHeader();
         BeanUtils.copyProperties(request, entity);
         entity.setTxDateFormatted(LocalDateTime.parse(request.getTx_date(), DATE_TIME_FORMATTER));
@@ -139,6 +171,7 @@ public class BookingServiceImpl implements BookingService {
 //      convert item
         List<ItemResponse> orderDetailResponseList = new ArrayList<>();
         orderDetailResponseList = convertBookingUnloadingDetail(entity, orderDetailResponseList);
+        orderDetailResponseList = convertBookingLoadingDetail(entity, orderDetailResponseList);
         response.setItems(orderDetailResponseList);
         return response;
     }
@@ -163,6 +196,29 @@ public class BookingServiceImpl implements BookingService {
                 unloadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
             }
             orderDetailResponseList.add(unloadingResponse);
+        }
+
+        return orderDetailResponseList;
+    }
+
+    private List<ItemResponse> convertBookingLoadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
+
+        List<BookingDetailLoading> loadingList = bookingLoadingRepository.getAllByBookingHeaderId(entity.getId());
+        if(loadingList == null || loadingList.isEmpty())
+            return orderDetailResponseList;
+
+        for (BookingDetailLoading loading : loadingList) {
+            DetailLoadingResponse loadingResponse = new DetailLoadingResponse();
+            Item item = loading.getItem();
+            BeanUtils.copyProperties(item, loadingResponse);
+
+            loadingResponse.setPrice(loading.getPrice());
+            loadingResponse.setQuantity(loading.getQuantity());
+
+            if (item.getDepoFleet() != null) {
+                loadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
+            }
+            orderDetailResponseList.add(loadingResponse);
         }
 
         return orderDetailResponseList;
