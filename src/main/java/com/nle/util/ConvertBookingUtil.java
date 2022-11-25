@@ -3,13 +3,11 @@ package com.nle.util;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
-import com.nle.shared.service.fleet.DepoFleetServiceImpl;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
 import com.nle.ui.model.response.booking.DetailLoadingResponse;
 import com.nle.ui.model.response.booking.DetailUnloadingResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-@RequiredArgsConstructor
 public class ConvertBookingUtil {
 
     public static BookingResponse convertBookingHeaderToResponse(BookingHeader entity) {
@@ -64,7 +61,7 @@ public class ConvertBookingUtil {
         unloadingResponse.setContainer_number(detail.getContainer_number());
         //convert fleet
         if (detail.getItem().getDepoFleet() != null) {
-            unloadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(detail.getItem().getDepoFleet()));
+            unloadingResponse.setFleet(ConvertResponseUtil.convertDepoFleetToResponse(detail.getItem().getDepoFleet()));
         }
 
         return unloadingResponse;
@@ -92,7 +89,7 @@ public class ConvertBookingUtil {
         loadingResponse.setQuantity(detail.getQuantity());
 
         if (detail.getItem().getDepoFleet() != null)
-            loadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(detail.getItem().getDepoFleet()));
+            loadingResponse.setFleet(ConvertResponseUtil.convertDepoFleetToResponse(detail.getItem().getDepoFleet()));
 
         return loadingResponse;
     }

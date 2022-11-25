@@ -14,8 +14,8 @@ import com.nle.ui.model.request.DepoFleetRegisterRequest;
 import com.nle.ui.model.request.DepoFleetUpdateRequest;
 import com.nle.ui.model.request.search.DepoFleetSearchRequest;
 import com.nle.ui.model.response.DepoFleetResponse;
+import com.nle.util.ConvertResponseUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,7 +50,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (!currentUserLogin.isEmpty()) {
             Page<DepoFleet> listFleet = depoFleetRepository.getAllDepoFleet(currentUserLogin.get(), pageable);
-            return new PagingResponseModel<>(listFleet.map(DepoFleetServiceImpl::convertFleetToResponse));
+            return new PagingResponseModel<>(listFleet.map(ConvertResponseUtil::convertDepoFleetToResponse));
         }
 
         return new PagingResponseModel<>();
@@ -84,7 +84,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             }
             depoFleet.setDeleted(false);
             DepoFleet entity = depoFleetRepository.save(depoFleet);
-            return this.convertFleetToResponse(entity);
+            return ConvertResponseUtil.convertDepoFleetToResponse(entity);
         }
 
         return null;
@@ -122,7 +122,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         }
 
         DepoFleet saved = depoFleetRepository.save(depoFleet);
-        return this.convertFleetToResponse(saved);
+        return ConvertResponseUtil.convertDepoFleetToResponse(saved);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         depoFleet.get().setDeleted(true);
 
         depoFleetRepository.save(depoFleet.get());
-        return this.convertFleetToResponse(depoFleet.get());
+        return ConvertResponseUtil.convertDepoFleetToResponse(depoFleet.get());
     }
 
     @Override
@@ -160,18 +160,10 @@ public class DepoFleetServiceImpl implements DepoFleetService{
                     depoFleetSearchRequest.getCountry(),
                     depoFleetSearchRequest.getGlobalSearch(),
                     customPageable);
-            return new PagingResponseModel<>(listFleet.map(DepoFleetServiceImpl::convertFleetToResponse));
+            return new PagingResponseModel<>(listFleet.map(ConvertResponseUtil::convertDepoFleetToResponse));
         }
 
         return new PagingResponseModel<>();
-    }
-
-    public static DepoFleetResponse convertFleetToResponse (DepoFleet depoFleet) {
-        DepoFleetResponse depoFleetResponse = new DepoFleetResponse();
-        BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
-        depoFleetResponse.setDepo_fleet_id(depoFleet.getId());
-        depoFleetResponse.setName(depoFleet.getName());
-        return depoFleetResponse;
     }
 
     public Sort.Direction getDirection(Pageable pageable) {
