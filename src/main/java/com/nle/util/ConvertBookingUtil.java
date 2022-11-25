@@ -1,6 +1,5 @@
 package com.nle.util;
 
-import com.nle.io.entity.Item;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
@@ -20,7 +19,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-public class ConvertResponse {
+public class ConvertBookingUtil {
 
     public static BookingResponse convertBookingHeaderToResponse(BookingHeader entity) {
 
@@ -41,7 +40,7 @@ public class ConvertResponse {
         return response;
     }
 
-    private static List<ItemResponse> convertBookingUnloadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
+    public static List<ItemResponse> convertBookingUnloadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
 
         Set<BookingDetailUnloading> unloadingList = entity.getBookingDetailUnloadings();
         if (unloadingList == null || unloadingList.isEmpty()) {
@@ -49,44 +48,53 @@ public class ConvertResponse {
         }
 
         for (BookingDetailUnloading unloading : unloadingList) {
-//              convert item to unloading response
-            Item item = unloading.getItem();
-            DetailUnloadingResponse unloadingResponse = new DetailUnloadingResponse();
-            BeanUtils.copyProperties(item, unloadingResponse);
-//              convert unloading to unloading response
-            unloadingResponse.setPrice(unloading.getPrice());
-            unloadingResponse.setContainer_number(unloading.getContainer_number());
-//              convert fleet
-            if (item.getDepoFleet() != null) {
-                unloadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
-            }
+            DetailUnloadingResponse unloadingResponse = convertUnloading(unloading);
             orderDetailResponseList.add(unloadingResponse);
         }
 
         return orderDetailResponseList;
     }
 
-    private static List<ItemResponse> convertBookingLoadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
+    public static DetailUnloadingResponse convertUnloading(BookingDetailUnloading detail){
+        //convert item to unloading response
+        DetailUnloadingResponse unloadingResponse = new DetailUnloadingResponse();
+        BeanUtils.copyProperties(detail.getItem(), unloadingResponse);
+        //convert unloading to unloading response
+        unloadingResponse.setPrice(detail.getPrice());
+        unloadingResponse.setContainer_number(detail.getContainer_number());
+        //convert fleet
+        if (detail.getItem().getDepoFleet() != null) {
+            unloadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(detail.getItem().getDepoFleet()));
+        }
+
+        return unloadingResponse;
+    }
+
+    public static List<ItemResponse> convertBookingLoadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
 
         Set<BookingDetailLoading> loadingList = entity.getBookingDetailLoadings();
         if(loadingList == null || loadingList.isEmpty())
             return orderDetailResponseList;
 
         for (BookingDetailLoading loading : loadingList) {
-            DetailLoadingResponse loadingResponse = new DetailLoadingResponse();
-            Item item = loading.getItem();
-            BeanUtils.copyProperties(item, loadingResponse);
-
-            loadingResponse.setPrice(loading.getPrice());
-            loadingResponse.setQuantity(loading.getQuantity());
-
-            if (item.getDepoFleet() != null) {
-                loadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
-            }
+            DetailLoadingResponse loadingResponse = convertLoading(loading);
             orderDetailResponseList.add(loadingResponse);
         }
 
         return orderDetailResponseList;
+    }
+
+    public static DetailLoadingResponse convertLoading(BookingDetailLoading detail) {
+        DetailLoadingResponse loadingResponse = new DetailLoadingResponse();
+        BeanUtils.copyProperties(detail.getItem(), loadingResponse);
+
+        loadingResponse.setPrice(detail.getPrice());
+        loadingResponse.setQuantity(detail.getQuantity());
+
+        if (detail.getItem().getDepoFleet() != null)
+            loadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(detail.getItem().getDepoFleet()));
+
+        return loadingResponse;
     }
 
 }

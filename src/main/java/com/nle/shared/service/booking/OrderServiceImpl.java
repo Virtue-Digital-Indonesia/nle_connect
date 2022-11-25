@@ -5,7 +5,7 @@ import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.response.booking.BookingResponse;
-import com.nle.util.ConvertResponse;
+import com.nle.util.ConvertBookingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +29,6 @@ public class OrderServiceImpl implements OrderService{
         }
 
         Page<BookingHeader> listBooking = bookingHeaderRepository.getOrderDepo(currentUserLogin.get(), pageable);
-        return new PagingResponseModel<>(listBooking.map(ConvertResponse::convertBookingHeaderToResponse));
+        return new PagingResponseModel<>(listBooking.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }
 }

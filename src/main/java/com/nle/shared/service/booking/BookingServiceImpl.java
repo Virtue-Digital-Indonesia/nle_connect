@@ -14,15 +14,12 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
-import com.nle.shared.service.fleet.DepoFleetServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.*;
 import com.nle.ui.model.request.search.BookingSearchRequest;
-import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
-import com.nle.ui.model.response.booking.DetailLoadingResponse;
-import com.nle.ui.model.response.booking.DetailUnloadingResponse;
+import com.nle.util.ConvertBookingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -57,15 +54,14 @@ public class BookingServiceImpl implements BookingService {
 
         BookingHeader bookingHeader = optional.get();
         if (!bookingHeader.getPhone_number().equals(phone_number)) throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
-        return this.convertToResponse(bookingHeader);
+        return ConvertBookingUtil.convertBookingHeaderToResponse(bookingHeader);
     }
 
     @Override
     public PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable) {
 
         Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber, pageable);
-        System.out.println(headerPage);
-        return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
+        return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }
 
     @Override
@@ -73,6 +69,7 @@ public class BookingServiceImpl implements BookingService {
 
         BookingHeader savedHeader = saveBookingHeader(request, ItemTypeEnum.UNLOADING);
         String companyEmail = savedHeader.getDepoOwnerAccount().getCompanyEmail();
+        List<ItemResponse> detailList = new ArrayList<>();
 
         for (DetailUnloadingRequest detailRequest : request.getDetailRequests()) {
             BookingDetailUnloading bookingDetailUnloading = new BookingDetailUnloading();
@@ -94,15 +91,19 @@ public class BookingServiceImpl implements BookingService {
             else
                 bookingDetailUnloading.setPrice(item.get().getPrice());
 
-            bookingDetailUnloadingRepository.save(bookingDetailUnloading);
+            BookingDetailUnloading savedDetail = bookingDetailUnloadingRepository.save(bookingDetailUnloading);
+            detailList.add(ConvertBookingUtil.convertUnloading(savedDetail));
         }
 
-        return this.convertToResponse(savedHeader);
+        BookingResponse response = ConvertBookingUtil.convertBookingHeaderToResponse(savedHeader);
+        response.setItems(detailList);
+        return response;
     }
 
     public BookingResponse createBookingLoading(CreateBookingLoading request){
         BookingHeader savedHeader = saveBookingHeader(request, ItemTypeEnum.LOADING);
         String companyEmail = savedHeader.getDepoOwnerAccount().getCompanyEmail();
+        List<ItemResponse> detailList = new ArrayList<>();
 
         for (DetailLoadingRequest detailLoadingRequest : request.getDetailRequests()) {
             BookingDetailLoading loading = new BookingDetailLoading();
@@ -126,9 +127,12 @@ public class BookingServiceImpl implements BookingService {
             loading.setQuantity(detailLoadingRequest.getQuantity());
             loading.setBookingHeader(savedHeader);
             loading.setItem(item.get());
-            bookingLoadingRepository.save(loading);
+            BookingDetailLoading savedDetail = bookingLoadingRepository.save(loading);
+            detailList.add(ConvertBookingUtil.convertLoading(savedDetail));
         }
-        return this.convertToResponse(savedHeader);
+        BookingResponse response = ConvertBookingUtil.convertBookingHeaderToResponse(savedHeader);
+        response.setItems(detailList);
+        return response;
     }
 
     @Override
@@ -138,7 +142,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("phone number cannot be null");
 
         Page<BookingHeader> headerPage = bookingHeaderRepository.searchBooking(request, pageable);
-        return new PagingResponseModel<>(headerPage.map(this::convertToResponse));
+        return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }
 
     private BookingHeader saveBookingHeader(BookingHeaderRequest request, ItemTypeEnum booking_type) {
@@ -157,70 +161,4 @@ public class BookingServiceImpl implements BookingService {
         return savedHeader;
     }
 
-    private BookingResponse convertToResponse(BookingHeader entity) {
-
-//      convert Booking Header
-        BookingResponse response = new BookingResponse();
-        BeanUtils.copyProperties(entity, response);
-
-//      convert depo / applicant
-        ApplicantResponse applicantResponse = new ApplicantResponse();
-        BeanUtils.copyProperties(entity.getDepoOwnerAccount(), applicantResponse);
-        response.setDepo(applicantResponse);
-
-//      convert item
-        List<ItemResponse> orderDetailResponseList = new ArrayList<>();
-        orderDetailResponseList = convertBookingUnloadingDetail(entity, orderDetailResponseList);
-        orderDetailResponseList = convertBookingLoadingDetail(entity, orderDetailResponseList);
-        response.setItems(orderDetailResponseList);
-        return response;
-    }
-
-    private List<ItemResponse> convertBookingUnloadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
-
-        List<BookingDetailUnloading> unloadingList = bookingDetailUnloadingRepository.getAllByBookingHeaderId(entity.getId());
-        if (unloadingList == null || unloadingList.isEmpty()) {
-            return orderDetailResponseList;
-        }
-
-        for (BookingDetailUnloading unloading : unloadingList) {
-//              convert item to unloading response
-            Item item = unloading.getItem();
-            DetailUnloadingResponse unloadingResponse = new DetailUnloadingResponse();
-            BeanUtils.copyProperties(item, unloadingResponse);
-//              convert unloading to unloading response
-            unloadingResponse.setPrice(unloading.getPrice());
-            unloadingResponse.setContainer_number(unloading.getContainer_number());
-//              convert fleet
-            if (item.getDepoFleet() != null) {
-                unloadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
-            }
-            orderDetailResponseList.add(unloadingResponse);
-        }
-
-        return orderDetailResponseList;
-    }
-
-    private List<ItemResponse> convertBookingLoadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
-
-        List<BookingDetailLoading> loadingList = bookingLoadingRepository.getAllByBookingHeaderId(entity.getId());
-        if(loadingList == null || loadingList.isEmpty())
-            return orderDetailResponseList;
-
-        for (BookingDetailLoading loading : loadingList) {
-            DetailLoadingResponse loadingResponse = new DetailLoadingResponse();
-            Item item = loading.getItem();
-            BeanUtils.copyProperties(item, loadingResponse);
-
-            loadingResponse.setPrice(loading.getPrice());
-            loadingResponse.setQuantity(loading.getQuantity());
-
-            if (item.getDepoFleet() != null) {
-                loadingResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
-            }
-            orderDetailResponseList.add(loadingResponse);
-        }
-
-        return orderDetailResponseList;
-    }
 }
