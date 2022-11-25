@@ -42,6 +42,10 @@ app:
   contact-us-destination-email: ${EMAIL_CONTACT_US}
 
 spring:
+  data:
+    web:
+      pageable:
+        max-page-size: 4000
   devtools:
     restart:
       enabled: true
