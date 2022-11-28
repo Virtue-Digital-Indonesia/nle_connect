@@ -7,6 +7,7 @@ import com.nle.security.SecurityUtils;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.booking.OrderService;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.response.booking.BookingResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +52,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderDepo(pageable));
     }
 
-    @Operation(description = "create booking unloading from depo", operationId = "createOrder", summary = "create booking unloading from depo")
+    @Operation(description = "create booking unloading from depo", operationId = "createOrderUnloading", summary = "create booking unloading from depo")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/unloading")
     public ResponseEntity<BookingResponse> createOrderUnloading(@RequestBody CreateBookingUnloading request) {
@@ -67,4 +68,19 @@ public class OrderController {
         return ResponseEntity.ok(bookingService.createBookingUnloading(request));
     }
 
+    @Operation(description = "create booking loading from depo", operationId = "createOrderLoading", summary = "create booking loading from depo")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/loading")
+    public ResponseEntity<BookingResponse> createOrderLoading(@RequestBody CreateBookingLoading request) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("you need to log in");
+
+        Optional<DepoOwnerAccount> entity = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
+        if (entity.isEmpty())
+            throw new BadRequestException("this depo is not registered");
+
+        request.setDepo_id(entity.get().getId());
+        return ResponseEntity.ok(bookingService.createBookingLoading(request));
+    }
 }
