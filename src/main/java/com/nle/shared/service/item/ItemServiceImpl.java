@@ -10,11 +10,11 @@ import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
 import com.nle.security.SecurityUtils;
-import com.nle.shared.service.fleet.DepoFleetServiceImpl;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
 import com.nle.ui.model.request.search.ItemSearchRequest;
 import com.nle.ui.model.response.ItemResponse;
+import com.nle.util.ConvertResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -176,7 +176,7 @@ public class ItemServiceImpl implements ItemService{
         BeanUtils.copyProperties(item, itemResponse);
 
         if (item.getDepoFleet() != null) {
-            itemResponse.setFleet(DepoFleetServiceImpl.convertFleetToResponse(item.getDepoFleet()));
+            itemResponse.setFleet(ConvertResponseUtil.convertDepoFleetToResponse(item.getDepoFleet()));
         }
         return itemResponse;
     }

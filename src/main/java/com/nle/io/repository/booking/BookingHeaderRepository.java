@@ -37,4 +37,7 @@ public interface BookingHeaderRepository extends JpaRepository<BookingHeader, Lo
     @Query(value = SEARCH_BOOKING_QUERY)
     Page<BookingHeader> searchBooking(@Param("request")BookingSearchRequest request, Pageable pageable);
 
+    @Query(value = "SELECT bh FROM BookingHeader bh WHERE bh.depoOwnerAccount.companyEmail = :companyEmail")
+    Page<BookingHeader> getOrderDepo(@Param("companyEmail") String companyEmail, Pageable pageable);
+
 }
