@@ -6,8 +6,8 @@ app:
       secret: 5BQ0aAFGyyTC7HVEUHic
     aws:
       credentials:
-        access-key: "AKIAWJCGQ2JNB7LRYTOY"
-        secret-key: "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"
+        access-key: "AKIARFHXOTCTHXDXJIFB"
+        secret-key: "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"
       s3:
         region: "ap-southeast-3"
         bucket-name: "nle-backend-dev"
