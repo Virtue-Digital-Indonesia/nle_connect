@@ -5,6 +5,7 @@ import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.VerifOTPRequest;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.request.search.BookingSearchRequest;
@@ -59,6 +60,20 @@ public class BookingController {
             })
             @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.ok(bookingService.SearchByPhone(phoneNumber, pageable));
+    }
+
+    @Operation(description = "send OTP via mobile", operationId = "sendOtpMobile", summary = "send OTP via mobile")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/otp/send")
+    public void sendOtpMobile (@RequestParam String phoneNumber) {
+
+    }
+
+    @Operation(description = "verif OTP", operationId = "verifOTP", summary = "verif OTP")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/otp/verif")
+    public ResponseEntity<BookingResponse> verifOTP (@RequestBody VerifOTPRequest request) {
+        return null;
     }
 
     @Operation(description = "create Unloading Booking", operationId = "createBookingUnloading", summary = "create unloading booking with details")

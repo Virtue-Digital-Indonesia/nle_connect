@@ -15,6 +15,7 @@ import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
 import com.nle.ui.model.pageable.PagingResponseModel;
+import com.nle.ui.model.request.VerifOTPRequest;
 import com.nle.ui.model.request.booking.*;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ItemResponse;
@@ -62,6 +63,16 @@ public class BookingServiceImpl implements BookingService {
 
         Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber, pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
+    }
+
+    @Override
+    public String sendOtpMobile (String phoneNumber) {
+        return null;
+    }
+
+    @Override
+    public BookingResponse verifOTP(VerifOTPRequest request) {
+        return null;
     }
 
     @Override
