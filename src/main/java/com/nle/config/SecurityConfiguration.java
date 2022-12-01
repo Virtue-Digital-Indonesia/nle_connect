@@ -83,6 +83,8 @@ public class SecurityConfiguration {
                 ).permitAll()
             .antMatchers("/impersonate",
                     "/api/admins/profile",
+                    "/api/admins/update",
+                    "/api/admins/change-password",
                     "/api/applicants/**",
                     "/api/switchUser/impersonate/**",
                     "/api/fleets/addFleet"

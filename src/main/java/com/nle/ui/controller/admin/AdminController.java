@@ -32,12 +32,14 @@ public class AdminController {
     }
 
     @Operation(description = "Update admin profile", operationId = "authenticate", summary = "Update admin profile")
+    @SecurityRequirement(name = "nleapi")
     @PutMapping("/update")
     public ResponseEntity<AdminProfileDTO> updateAdminProfile(@Valid @RequestBody UpdateAdminRequest request) {
         return ResponseEntity.ok(adminService.updateAdminProfile(request));
     }
 
     @Operation(description = "Authenticate admin by email and password", operationId = "authenticate", summary = "Authenticate admin by email and password")
+    @SecurityRequirement(name = "nleapi")
     @PutMapping("/change-password")
     public ResponseEntity<String> changeAdminPassword(@Valid @RequestBody UpdateAdminRequest request) {
         adminService.updateAdminPassword(request);
