@@ -12,8 +12,10 @@ import com.nle.exception.ResourceNotFoundException;
 import com.nle.io.repository.AdminRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
+import com.nle.ui.model.request.UpdateAdminRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -65,9 +68,7 @@ public class AdminServiceImpl implements AdminService {
         }
         Optional<Admin> optionalAdmin = adminRepository.findByEmail(currentUserLogin.get());
         if (optionalAdmin.isPresent()) {
-            AdminProfileDTO adminProfileDTO = new AdminProfileDTO();
-            BeanUtils.copyProperties(optionalAdmin.get(), adminProfileDTO);
-            return adminProfileDTO;
+            return toDTO(optionalAdmin.get());
         }
         return null;
     }
@@ -85,5 +86,31 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return new JWTToken("null");
+    }
+    
+    @Override
+    public AdminProfileDTO updateAdminProfile(UpdateAdminRequest request) {
+        Admin admin= adminRepository.findById(request.getId()).orElseThrow(()-> new BadRequestException("Admin with id: "+request.getId()+" couldn't be found"));
+        if(request.getFullName()!=null)
+            admin.setFullName(request.getFullName());
+        if(request.getPhoneNumber()!=null)
+            admin.setPhoneNumber(request.getPhoneNumber());
+        if(request.getEmail()!=null)
+            admin.setEmail(request.getEmail());
+        return toDTO(adminRepository.save(admin));
+    }
+
+    @Override
+    public void updateAdminPassword(UpdateAdminRequest request) {
+        if (request.getPassword()==null||request.getPassword().isEmpty()||request.getPassword().isBlank())
+            throw new BadRequestException("Password must be filled");
+        Admin admin= adminRepository.findById(request.getId()).orElseThrow(()-> new BadRequestException("Admin with id: "+request.getId()+" couldn't be found"));
+        admin.setPassword(Base64.getEncoder().encodeToString(request.getPassword().getBytes()));
+    }
+
+    public AdminProfileDTO toDTO(Admin admin){
+        AdminProfileDTO adminProfileDTO= new AdminProfileDTO();
+        BeanUtils.copyProperties(admin, adminProfileDTO);
+        return adminProfileDTO;
     }
 }
