@@ -16,5 +16,9 @@ public class BookingSearchRequest {
     private String phone_number;
     private String from;
     private String to;
+    private String email;
+    private String npwp;
+    private String npwp_address;
+    private String payment_method;
     private String globalSearch;
 }

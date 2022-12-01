@@ -13,12 +13,16 @@ import org.springframework.stereotype.Repository;
 public interface BookingHeaderRepository extends JpaRepository<BookingHeader, Long> {
 
     static final String SEARCH_BOOKING_QUERY = "SELECT oh FROM BookingHeader oh " +
-            "WHERE oh.phone_number = :#{#request.phone_number} " +
+            "WHERE (:#{#request.phone_number} IS NULL OR (oh.phone_number = :#{#request.phone_number})) " +
             "AND (:#{#request.bill_landing} IS NULL OR LOWER(oh.bill_landing) LIKE LOWER(CONCAT('%', :#{#request.bill_landing} ,'%'))) " +
             "AND (:#{#request.full_name} IS NULL OR LOWER(oh.full_name) LIKE LOWER(CONCAT('%', :#{#request.full_name}, '%'))) " +
             "AND (:#{#request.consignee} IS NULL OR LOWER(oh.consignee) LIKE LOWER(CONCAT('%', :#{#request.consignee}, '%'))) " +
             "AND (:#{#request.booking_type} IS NULL OR UPPER(oh.booking_type) LIKE UPPER(:#{#request.booking_type})) " +
             "AND (:#{#request.booking_status} IS NULL OR UPPER(oh.booking_status) LIKE UPPER(CONCAT('%', :#{#request.booking_status}, '%'))) " +
+            "AND (:#{#request.email} IS NULL OR LOWER(oh.email) LIKE LOWER(CONCAT('%',:#{#request.email},'%'))) " +
+            "AND (:#{#request.npwp} IS NULL OR LOWER(oh.npwp) LIKE LOWER(CONCAT('%',:#{#request.npwp},'%'))) " +
+            "AND (:#{#request.npwp_address} IS NULL OR LOWER(oh.npwp_address) LIKE LOWER(CONCAT('%',:#{#request.npwp_address},'%'))) " +
+            "AND (:#{#request.payment_method} IS NULL OR LOWER(oh.payment_method) LIKE LOWER(CONCAT('%',:#{#request.payment_method},'%'))) " +
             "AND (:#{#request.tx_date} IS NULL OR oh.tx_date LIKE CONCAT('%', :#{#request.tx_date}, '%')) " +
             "AND (:#{#request.from} IS NULL OR oh.tx_date >= :#{#request.from}) " +
             "AND (:#{#request.to} IS NULL OR oh.tx_date <= CONCAT(:#{#request.to}, 'T24:00:01')) " +
@@ -36,6 +40,9 @@ public interface BookingHeaderRepository extends JpaRepository<BookingHeader, Lo
 
     @Query(value = SEARCH_BOOKING_QUERY)
     Page<BookingHeader> searchBooking(@Param("request")BookingSearchRequest request, Pageable pageable);
+
+    @Query(value = SEARCH_BOOKING_QUERY +" AND oh.depoOwnerAccount.companyEmail = :companyEmail ")
+    Page<BookingHeader> searchOrder(@Param("request")BookingSearchRequest request,@Param("companyEmail") String companyEmail, Pageable pageable);
 
     @Query(value = "SELECT bh FROM BookingHeader bh WHERE bh.depoOwnerAccount.companyEmail = :companyEmail")
     Page<BookingHeader> getOrderDepo(@Param("companyEmail") String companyEmail, Pageable pageable);
