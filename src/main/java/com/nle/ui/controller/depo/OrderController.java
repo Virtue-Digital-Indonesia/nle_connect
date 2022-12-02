@@ -9,6 +9,7 @@ import com.nle.shared.service.booking.OrderService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
+import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.booking.BookingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -82,5 +83,23 @@ public class OrderController {
 
         request.setDepo_id(entity.get().getId());
         return ResponseEntity.ok(bookingService.createBookingLoading(request));
+    }
+
+    @Operation(description = "search order booking for depo with paging", operationId = "search", summary = "search order booking for depo with paging")
+    @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
+    @PostMapping("/search")
+    public ResponseEntity<PagingResponseModel<BookingResponse>> search(
+            @RequestBody BookingSearchRequest request,
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            })
+            @Parameter(hidden = true) Pageable pageable
+    ){
+        return ResponseEntity.ok(orderService.searchOrderDepo(request,pageable));
     }
 }
