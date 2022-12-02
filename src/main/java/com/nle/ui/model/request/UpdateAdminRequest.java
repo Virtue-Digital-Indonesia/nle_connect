@@ -13,7 +13,6 @@ public class UpdateAdminRequest {
     @NotNull(message = "Id can not be null")
     private Long id;
 
-    private String password;
     private String fullName;
     @JsonProperty("phone_number")
     private String phoneNumber;

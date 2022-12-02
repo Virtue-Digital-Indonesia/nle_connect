@@ -5,6 +5,7 @@ import com.nle.ui.model.admin.AdminLoginDTO;
 import com.nle.ui.model.admin.AdminProfileDTO;
 import com.nle.shared.service.admin.AdminService;
 import com.nle.ui.model.request.UpdateAdminRequest;
+import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class AdminController {
     @Operation(description = "Authenticate admin by email and password", operationId = "authenticate", summary = "Authenticate admin by email and password")
     @SecurityRequirement(name = "nleapi")
     @PutMapping("/change-password")
-    public ResponseEntity<String> changeAdminPassword(@Valid @RequestBody UpdateAdminRequest request) {
+    public ResponseEntity<String> changeAdminPassword(@Valid @RequestBody ChangeAdminPasswordRequest request) {
         adminService.updateAdminPassword(request);
         return ResponseEntity.ok("Password has been updated successfully");
     }

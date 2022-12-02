@@ -12,6 +12,7 @@ import com.nle.exception.ResourceNotFoundException;
 import com.nle.io.repository.AdminRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
+import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import com.nle.ui.model.request.UpdateAdminRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -87,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
 
         return new JWTToken("null");
     }
-    
+
     @Override
     public AdminProfileDTO updateAdminProfile(UpdateAdminRequest request) {
         Admin admin= adminRepository.findById(request.getId()).orElseThrow(()-> new BadRequestException("Admin with id: "+request.getId()+" couldn't be found"));
@@ -101,11 +102,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void updateAdminPassword(UpdateAdminRequest request) {
-        if (request.getPassword()==null||request.getPassword().isEmpty()||request.getPassword().isBlank())
-            throw new BadRequestException("Password must be filled");
-        Admin admin= adminRepository.findById(request.getId()).orElseThrow(()-> new BadRequestException("Admin with id: "+request.getId()+" couldn't be found"));
-        admin.setPassword(Base64.getEncoder().encodeToString(request.getPassword().getBytes()));
+    public void updateAdminPassword(ChangeAdminPasswordRequest request) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+        Admin admin= adminRepository.findByEmail(currentUserLogin.get()).orElseThrow(()-> new BadRequestException("Invalid admin account"));
+        if(passwordEncoder.matches(request.getOldPassword(), admin.getPassword())){
+            if(request.getNewPassword().equals(request.getConfirmNewPassword())){
+                admin.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                adminRepository.save(admin);
+            }else
+                throw new BadRequestException("Invalid confirm_new_password");
+        }else
+            throw new BadRequestException("Invalid old_password");
     }
 
     public AdminProfileDTO toDTO(Admin admin){
