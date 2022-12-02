@@ -91,7 +91,10 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminProfileDTO updateAdminProfile(UpdateAdminRequest request) {
-        Admin admin= adminRepository.findById(request.getId()).orElseThrow(()-> new BadRequestException("Admin with id: "+request.getId()+" couldn't be found"));
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+        Admin admin= adminRepository.findByEmail(currentUserLogin.get()).orElseThrow(()-> new BadRequestException("Invalid admin account"));
         if(request.getFullName()!=null)
             admin.setFullName(request.getFullName());
         if(request.getPhoneNumber()!=null)

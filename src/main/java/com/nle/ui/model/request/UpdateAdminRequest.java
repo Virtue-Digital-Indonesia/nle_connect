@@ -10,9 +10,8 @@ import javax.validation.constraints.Pattern;
 @Setter
 @Getter
 public class UpdateAdminRequest {
-    @NotNull(message = "Id can not be null")
-    private Long id;
 
+    @JsonProperty("full_name")
     private String fullName;
     @JsonProperty("phone_number")
     private String phoneNumber;
