@@ -14,6 +14,8 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
+import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
+import com.nle.shared.service.OTPService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.VerifOTPRequest;
 import com.nle.ui.model.request.booking.*;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingLoadingRepository bookingLoadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
+    private final OTPService otpService;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
@@ -66,8 +70,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public String sendOtpMobile (String phoneNumber) {
-        return null;
+    public VerihubsResponseDTO sendOtpMobile (String phoneNumber) {
+        VerihubsResponseDTO response = otpService.sendOTP(phoneNumber);
+        return response;
     }
 
     @Override

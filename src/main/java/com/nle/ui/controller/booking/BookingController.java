@@ -1,6 +1,7 @@
 package com.nle.ui.controller.booking;
 
 import com.nle.constant.enums.ItemTypeEnum;
+import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
@@ -65,8 +66,8 @@ public class BookingController {
     @Operation(description = "send OTP via mobile", operationId = "sendOtpMobile", summary = "send OTP via mobile")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/otp/send")
-    public void sendOtpMobile (@RequestParam String phoneNumber) {
-
+    public ResponseEntity<VerihubsResponseDTO> sendOtpMobile (@RequestParam String phoneNumber) {
+        return ResponseEntity.ok(bookingService.sendOtpMobile(phoneNumber));
     }
 
     @Operation(description = "verif OTP", operationId = "verifOTP", summary = "verif OTP")

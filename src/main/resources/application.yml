@@ -40,6 +40,9 @@ app:
     ftp-sync-cron: 59 59 17 * * *
     tax-ministry-sync-cron: 59 59 23 * * *
   contact-us-destination-email: ${EMAIL_CONTACT_US}
+  verihubs:
+    App-ID: ${APP_ID}
+    API-Key: ${API_KEY}
 
 spring:
   data:
