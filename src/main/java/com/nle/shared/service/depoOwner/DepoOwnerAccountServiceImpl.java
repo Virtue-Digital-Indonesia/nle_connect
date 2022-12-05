@@ -22,6 +22,7 @@ import com.nle.shared.service.email.EmailService;
 import com.nle.shared.service.ftp.SSHService;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.request.ForgotPasswordRequest;
+import com.nle.ui.model.request.UpdateDepoOwnerRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -200,5 +201,25 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         entity.setFtpPassword(Base64.getEncoder().encodeToString(request.getPassword().getBytes()));
         depoOwnerAccountRepository.save(entity);
         return "Success to reset password with user email : " + email + "!";
-    };
+    }
+
+    @Override
+    public DepoOwnerAccountProfileDTO updateDepoOwnerProfile(UpdateDepoOwnerRequest request) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+        DepoOwnerAccount depoOwnerAccount= depoOwnerAccountRepository.findByCompanyEmail(
+                currentUserLogin.get()).orElseThrow(()-> new BadRequestException("Invalid account"));
+        if(request.getAddress()!=null)
+            depoOwnerAccount.setAddress(request.getAddress());
+        if (request.getOrganizationName()!=null)
+            depoOwnerAccount.setOrganizationName(request.getOrganizationName());
+        if (request.getFullName()!=null)
+            depoOwnerAccount.setFullName(request.getFullName());
+        if (request.getPhoneNumber()!=null)
+            depoOwnerAccount.setPhoneNumber(request.getPhoneNumber());
+        DepoOwnerAccountProfileDTO depoOwnerAccountProfileDTO = new DepoOwnerAccountProfileDTO();
+        BeanUtils.copyProperties(depoOwnerAccountRepository.save(depoOwnerAccount), depoOwnerAccountProfileDTO);
+        return depoOwnerAccountProfileDTO;
+    }
 }

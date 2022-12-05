@@ -83,7 +83,8 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/approve-join-request/**",
                 "/api/register/**",
                 "/api/profile",
-                "/api/activate/**"
+                "/api/activate/**",
+                "/api/update"
         };
         return GroupedOpenApi
                 .builder()

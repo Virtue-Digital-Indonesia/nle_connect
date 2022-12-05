@@ -7,6 +7,7 @@ import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.request.ForgotPasswordRequest;
+import com.nle.ui.model.request.UpdateDepoOwnerRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -33,4 +34,6 @@ public interface DepoOwnerAccountService {
     JWTToken resetPasswordToken(String email);
 
     String changeForgotPassword(ForgotPasswordRequest request, Map<String, String> token);
+
+    DepoOwnerAccountProfileDTO updateDepoOwnerProfile(UpdateDepoOwnerRequest request);
 }
