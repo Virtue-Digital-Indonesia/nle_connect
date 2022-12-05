@@ -181,12 +181,14 @@ public class DepoOwnerController {
     }
 
     @Operation(description = "forgot password, send token to email", operationId = "forgotPassword", summary = "forgot password, send token to email")
+    @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/forgot-password")
     public ResponseEntity<JWTToken> generateResetToken (@RequestParam String email) {
         return ResponseEntity.ok(depoOwnerAccountService.resetPasswordToken(email));
     }
 
     @Operation(description = "reset password for forgot password", operationId = "resetPassword", summary = "reset password for forgot password")
+    @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/reset-password")
     public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest request) {
         Map<String, String> authBody = DecodeUtil.decodeToken(request.getToken());
@@ -194,6 +196,7 @@ public class DepoOwnerController {
     }
 
     @Operation(description = "Update depo owner profile", operationId = "updateDepoOwnerProfile", summary = "Update depo owner profile")
+    @SecurityRequirement(name = "nleapi")
     @PutMapping(value = "/update")
     public ResponseEntity<DepoOwnerAccountProfileDTO> updateDepoOwnerProfile (@RequestBody UpdateDepoOwnerRequest request) {
         return ResponseEntity.ok(depoOwnerAccountService.updateDepoOwnerProfile(request));
