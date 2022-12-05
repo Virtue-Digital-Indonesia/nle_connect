@@ -14,8 +14,11 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
+import com.nle.security.AuthoritiesConstants;
+import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
+import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.*;
 import com.nle.ui.model.request.search.BookingSearchRequest;
@@ -45,6 +48,7 @@ public class BookingServiceImpl implements BookingService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
     private final OTPService otpService;
+    private final TokenProvider tokenProvider;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
@@ -75,12 +79,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<String> verifOTP(String otp, String phone_number) {
+    public JWTToken verifOTP(String otp, String phone_number) {
         ResponseEntity<String> verify = otpService.verifOTP(otp, phone_number);
-        System.out.println(verify.getBody());
-        System.out.println(verify.getStatusCodeValue());
-        System.out.println(verify.getHeaders());
-        return verify;
+
+        if (verify.getStatusCodeValue() != 200) return null;
+
+        String token = tokenProvider.generateManualToken(phone_number, AuthoritiesConstants.BOOKING_CUSTOMER);
+        return new JWTToken(token);
     }
 
     @Override

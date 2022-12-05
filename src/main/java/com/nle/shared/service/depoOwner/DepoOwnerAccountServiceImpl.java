@@ -5,6 +5,7 @@ import com.nle.constant.enums.ApprovalStatus;
 import com.nle.constant.enums.VerificationType;
 import com.nle.constant.enums.TaxMinistryStatusEnum;
 import com.nle.exception.BadRequestException;
+import com.nle.security.AuthoritiesConstants;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.ui.model.ActiveDto;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -167,7 +168,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         Optional<DepoOwnerAccount> optionalDepoOwnerAccount = findByCompanyEmail(email);
         String token = null;
         if (!optionalDepoOwnerAccount.isEmpty()) {
-            token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get(), "RESET_PASSWORD");
+            token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get().getCompanyEmail(), AuthoritiesConstants.RESET_PASSWORD);
             emailService.sendResetPassword(optionalDepoOwnerAccount.get(), token);
         }
         else

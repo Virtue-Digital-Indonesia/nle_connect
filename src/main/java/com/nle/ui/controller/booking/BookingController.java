@@ -5,6 +5,7 @@ import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
+import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
@@ -72,9 +73,9 @@ public class BookingController {
     @Operation(description = "verif OTP", operationId = "verifOTP", summary = "verif OTP")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/otp/verif")
-    public ResponseEntity<String> verifOTP (@RequestParam("otp") String otp,
-                                                     @RequestParam("phone_number") String phone_number) {
-        return bookingService.verifOTP(otp, phone_number);
+    public ResponseEntity<JWTToken> verifOTP (@RequestParam("otp") String otp,
+                                              @RequestParam("phone_number") String phone_number) {
+        return ResponseEntity.ok(bookingService.verifOTP(otp, phone_number));
     }
 
     @Operation(description = "create Unloading Booking", operationId = "createBookingUnloading", summary = "create unloading booking with details")
