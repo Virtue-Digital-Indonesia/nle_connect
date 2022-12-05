@@ -6,7 +6,6 @@ import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.VerifOTPRequest;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.request.search.BookingSearchRequest;
@@ -73,8 +72,9 @@ public class BookingController {
     @Operation(description = "verif OTP", operationId = "verifOTP", summary = "verif OTP")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/otp/verif")
-    public ResponseEntity<BookingResponse> verifOTP (@RequestBody VerifOTPRequest request) {
-        return null;
+    public ResponseEntity<String> verifOTP (@RequestParam("otp") String otp,
+                                                     @RequestParam("phone_number") String phone_number) {
+        return bookingService.verifOTP(otp, phone_number);
     }
 
     @Operation(description = "create Unloading Booking", operationId = "createBookingUnloading", summary = "create unloading booking with details")

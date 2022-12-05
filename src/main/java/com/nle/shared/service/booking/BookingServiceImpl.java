@@ -17,7 +17,6 @@ import com.nle.io.repository.booking.BookingLoadingRepository;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
 import com.nle.ui.model.pageable.PagingResponseModel;
-import com.nle.ui.model.request.VerifOTPRequest;
 import com.nle.ui.model.request.booking.*;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.ItemResponse;
@@ -27,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,8 +75,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponse verifOTP(VerifOTPRequest request) {
-        return null;
+    public ResponseEntity<String> verifOTP(String otp, String phone_number) {
+        ResponseEntity<String> verify = otpService.verifOTP(otp, phone_number);
+        System.out.println(verify.getBody());
+        System.out.println(verify.getStatusCodeValue());
+        System.out.println(verify.getHeaders());
+        return verify;
     }
 
     @Override

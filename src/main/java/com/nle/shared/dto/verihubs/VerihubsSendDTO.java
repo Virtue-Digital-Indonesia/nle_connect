@@ -8,4 +8,5 @@ import lombok.Setter;
 public class VerihubsSendDTO{
     private String msisdn;
     private String time_limit;
+    private String otp;
 }
