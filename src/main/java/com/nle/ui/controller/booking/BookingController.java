@@ -1,6 +1,8 @@
 package com.nle.ui.controller.booking;
 
 import com.nle.constant.enums.ItemTypeEnum;
+import com.nle.exception.BadRequestException;
+import com.nle.security.SecurityUtils;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
@@ -28,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "api/booking")
@@ -82,6 +85,12 @@ public class BookingController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "unloading")
     public ResponseEntity<BookingResponse> createBookingUnloading (@RequestBody CreateBookingUnloading request) {
+        Optional<String> currentPhone = SecurityUtils.getCurrentUserLogin();
+        if (currentPhone.isEmpty())
+            throw new BadRequestException("you need to verify otp");
+        if (!currentPhone.get().equalsIgnoreCase(request.getPhone_number()))
+            throw new BadRequestException("this token(" + currentPhone.get() + ") is not used " + request.getPhone_number() + " phone");
+
         return ResponseEntity.ok(bookingService.createBookingUnloading(request));
     }
 
@@ -89,6 +98,12 @@ public class BookingController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/loading")
     public ResponseEntity<BookingResponse> createBookingLoading(@RequestBody CreateBookingLoading request) {
+        Optional<String> currentPhone = SecurityUtils.getCurrentUserLogin();
+        if (currentPhone.isEmpty())
+            throw new BadRequestException("you need to verify otp");
+        if (!currentPhone.get().equalsIgnoreCase(request.getPhone_number()))
+            throw new BadRequestException("this token(" + currentPhone.get() + ") is not used " + request.getPhone_number() + "phone");
+
         return ResponseEntity.ok(bookingService.createBookingLoading(request));
     }
 
