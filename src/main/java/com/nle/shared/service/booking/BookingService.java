@@ -8,7 +8,6 @@ import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.booking.BookingResponse;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 
 public interface BookingService {
 
