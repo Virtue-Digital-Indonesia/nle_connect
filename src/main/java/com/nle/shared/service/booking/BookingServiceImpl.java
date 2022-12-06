@@ -14,6 +14,11 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
+import com.nle.security.AuthoritiesConstants;
+import com.nle.security.jwt.TokenProvider;
+import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
+import com.nle.shared.service.OTPService;
+import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.*;
 import com.nle.ui.model.request.search.BookingSearchRequest;
@@ -24,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +47,8 @@ public class BookingServiceImpl implements BookingService {
     private final BookingLoadingRepository bookingLoadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
+    private final OTPService otpService;
+    private final TokenProvider tokenProvider;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
@@ -62,6 +70,22 @@ public class BookingServiceImpl implements BookingService {
 
         Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber, pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
+    }
+
+    @Override
+    public VerihubsResponseDTO sendOtpMobile (String phoneNumber) {
+        VerihubsResponseDTO response = otpService.sendOTP(phoneNumber);
+        return response;
+    }
+
+    @Override
+    public JWTToken verifOTP(String otp, String phone_number) {
+        ResponseEntity<String> verify = otpService.verifOTP(otp, phone_number);
+
+        if (verify.getStatusCodeValue() != 200) return null;
+
+        String token = tokenProvider.generateManualToken(phone_number, AuthoritiesConstants.BOOKING_CUSTOMER);
+        return new JWTToken(token);
     }
 
     @Override

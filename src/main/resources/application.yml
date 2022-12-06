@@ -2,7 +2,7 @@ app:
   security:
     jwt:
       base64-secret: OTdiYTU1OTE1Y2E0ZjRjN2U0NTI2MTI2YjY4NDc4NjEwMWIyY2NmZGY4YTVjOTc0YzBmNDZlZDA5OGVlYmVlMzYzNGU3MTkyMjUzNGIzZGJlZjBhNmIzNGYzZWM1YmY5NjNhMzg4MTQyOTFhYTA0NGExNTNhNDBiZmRhNWNjZjA=
-      token-validity-in-seconds: 8640000
+      token-validity-in-seconds: 36000
       secret: 5BQ0aAFGyyTC7HVEUHic
     aws:
       credentials:
@@ -40,6 +40,9 @@ app:
     ftp-sync-cron: 59 59 17 * * *
     tax-ministry-sync-cron: 59 59 23 * * *
   contact-us-destination-email: ${EMAIL_CONTACT_US}
+  verihubs:
+    App-ID: ${APP_ID}
+    API-Key: ${API_KEY}
 
 spring:
   data:
