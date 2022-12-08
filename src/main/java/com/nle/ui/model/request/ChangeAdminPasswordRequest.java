@@ -10,8 +10,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class ChangeAdminPasswordRequest {
-    @NotNull(message = "old_password shouldn't be null")
-    @NotBlank(message = "old_password shouldn't be blank")
     @JsonProperty("old_password")
     private String oldPassword;
     @NotNull(message = "new_password shouldn't be null")

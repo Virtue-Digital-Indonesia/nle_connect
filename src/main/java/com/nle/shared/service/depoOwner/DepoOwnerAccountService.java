@@ -6,7 +6,7 @@ import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.ui.model.JWTToken;
-import com.nle.ui.model.request.DepoOwnerChangePasswordRequest;
+import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import com.nle.ui.model.request.ForgotPasswordRequest;
 import com.nle.ui.model.request.UpdateDepoOwnerRequest;
 
@@ -38,5 +38,5 @@ public interface DepoOwnerAccountService {
 
     DepoOwnerAccountProfileDTO updateDepoOwnerProfile(UpdateDepoOwnerRequest request);
 
-    String changePassword(DepoOwnerChangePasswordRequest request);
+    String changePassword(ChangeAdminPasswordRequest request);
 }

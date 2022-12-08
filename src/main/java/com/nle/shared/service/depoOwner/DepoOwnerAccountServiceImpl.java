@@ -22,7 +22,7 @@ import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
 import com.nle.shared.service.ftp.SSHService;
 import com.nle.ui.model.JWTToken;
-import com.nle.ui.model.request.DepoOwnerChangePasswordRequest;
+import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import com.nle.ui.model.request.ForgotPasswordRequest;
 import com.nle.ui.model.request.UpdateDepoOwnerRequest;
 import lombok.RequiredArgsConstructor;
@@ -231,7 +231,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     }
 
     @Override
-    public String changePassword(DepoOwnerChangePasswordRequest request) {
+    public String changePassword(ChangeAdminPasswordRequest request) {
 
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())

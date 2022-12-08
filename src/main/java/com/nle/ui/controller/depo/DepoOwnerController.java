@@ -7,8 +7,8 @@ import com.nle.ui.model.ActiveDto;
 import com.nle.ui.model.CheckExistDto;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.LoginDto;
+import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import com.nle.ui.model.request.DepoOwnerAccountCreateDTO;
-import com.nle.ui.model.request.DepoOwnerChangePasswordRequest;
 import com.nle.ui.model.request.DepoWorkerApproveReqDto;
 import com.nle.ui.model.request.DepoWorkerInvitationReqDto;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -213,7 +213,7 @@ public class DepoOwnerController {
     @Operation(description = "Change password depo owner", operationId = "changePassword", summary = "Change password depo owner")
     @SecurityRequirement(name = "nleapi")
     @PutMapping(value = "/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody DepoOwnerChangePasswordRequest request) {
+    public ResponseEntity<String> changePassword(@RequestBody ChangeAdminPasswordRequest request) {
         return ResponseEntity.ok(depoOwnerAccountService.changePassword(request));
     }
 
