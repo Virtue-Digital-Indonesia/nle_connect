@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookingService {
 
-    BookingResponse getBookingById(Long booking_id, String phone_number);
+    BookingResponse getBookingById(Long booking_id);
     PagingResponseModel<BookingResponse> SearchByPhone(Pageable pageable);
     VerihubsResponseDTO sendOtpMobile (String phoneNumber);
     JWTToken verifOTP(String otp, String phone_number);

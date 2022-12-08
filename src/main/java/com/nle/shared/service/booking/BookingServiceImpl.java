@@ -53,8 +53,12 @@ public class BookingServiceImpl implements BookingService {
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
-    public BookingResponse getBookingById(Long booking_id, String phone_number) {
+    public BookingResponse getBookingById(Long booking_id) {
+        Optional<String> phone = SecurityUtils.getCurrentUserLogin();
+        if (phone.isEmpty())
+            throw new BadRequestException("need to log in");
 
+        String phone_number = phone.get();
         if (booking_id == null) throw new BadRequestException("booking_id cannot be nulll");
         if (phone_number == null || phone_number.trim().isEmpty()) throw new BadRequestException("phone number cannot be null");
 

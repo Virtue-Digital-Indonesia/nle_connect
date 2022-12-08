@@ -44,9 +44,8 @@ public class BookingController {
     @Operation(description = "get booking by id", operationId = "getBookingById", summary = "get booking by Id")
     @SecurityRequirement(name = "nleapi")
     @GetMapping
-    public ResponseEntity<BookingResponse> getBookingById(@RequestParam("booking_id") Long booking_id,
-                                                          @RequestParam("phone_number") String phone_number){
-        return ResponseEntity.ok(bookingService.getBookingById(booking_id, phone_number));
+    public ResponseEntity<BookingResponse> getBookingById(@RequestParam("booking_id") Long booking_id) {
+        return ResponseEntity.ok(bookingService.getBookingById(booking_id));
     }
 
     @Operation(description = "get booking by phoneNumber with paging", operationId = "searchByPhone", summary = "get booking by phoneNumber with paging")
