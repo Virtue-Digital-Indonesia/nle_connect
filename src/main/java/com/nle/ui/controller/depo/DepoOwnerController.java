@@ -8,6 +8,7 @@ import com.nle.ui.model.CheckExistDto;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.LoginDto;
 import com.nle.ui.model.request.DepoOwnerAccountCreateDTO;
+import com.nle.ui.model.request.DepoOwnerChangePasswordRequest;
 import com.nle.ui.model.request.DepoWorkerApproveReqDto;
 import com.nle.ui.model.request.DepoWorkerInvitationReqDto;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -73,15 +74,16 @@ public class DepoOwnerController {
 
     @Operation(description = "Register new Depo owner account", operationId = "createDepoOwnerAccount", summary = "Register new Depo owner account")
     @PostMapping("/register/depo-owner-accounts")
-    public ResponseEntity<DepoOwnerAccountDTO> createDepoOwnerAccount(@Valid @RequestBody DepoOwnerAccountCreateDTO depoOwnerAccountDTO)
-        throws URISyntaxException {
+    public ResponseEntity<DepoOwnerAccountDTO> createDepoOwnerAccount(
+            @Valid @RequestBody DepoOwnerAccountCreateDTO depoOwnerAccountDTO)
+            throws URISyntaxException {
         log.debug("REST request to save DepoOwnerAccount : {}", depoOwnerAccountDTO);
         DepoOwnerAccountDTO ownerAccountDTO = new DepoOwnerAccountDTO();
         BeanUtils.copyProperties(depoOwnerAccountDTO, ownerAccountDTO);
         DepoOwnerAccountDTO result = depoOwnerAccountService.createDepoOwnerAccount(ownerAccountDTO);
         return ResponseEntity
-            .created(new URI("/api/depo-owner-accounts/" + result.getId()))
-            .body(result);
+                .created(new URI("/api/depo-owner-accounts/" + result.getId()))
+                .body(result);
     }
 
     @Operation(description = "Check depo owner email exist or not", operationId = "checkEmailExist", summary = "Check depo owner email exist or not")
@@ -114,16 +116,16 @@ public class DepoOwnerController {
             return ResponseEntity.ok(activeDto);
         }
         // redirect to login page
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.getUrl().getSuccessRedirectUrl())).build();
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(appProperties.getUrl().getSuccessRedirectUrl())).build();
     }
 
     @Operation(description = "Authenticate Depo owner user by company email and password", operationId = "authorize", summary = "Authenticate Depo owner user by company email and password")
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-            loginDto.getCompanyEmail(),
-            loginDto.getPassword()
-        );
+                loginDto.getCompanyEmail(),
+                loginDto.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication);
@@ -140,10 +142,12 @@ public class DepoOwnerController {
             throw new ResourceNotFoundException("Depo owner account with email: '" + email + "' doesn't exist");
         }
         // find all old active token then remove them
-        Optional<VerificationToken> oldToken = verificationTokenService.findByEmailAndType(email, VerificationType.ACTIVE_ACCOUNT);
+        Optional<VerificationToken> oldToken = verificationTokenService.findByEmailAndType(email,
+                VerificationType.ACTIVE_ACCOUNT);
         oldToken.ifPresent(verificationToken -> verificationTokenService.delete(verificationToken.getId()));
         // create new token then send email
-        VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount.get(), VerificationType.ACTIVE_ACCOUNT);
+        VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount.get(),
+                VerificationType.ACTIVE_ACCOUNT);
         // send email
         emailService.sendDepoOwnerActiveEmail(depoOwnerAccount.get(), verificationToken.getToken());
         return new ApiResponse(HttpStatus.CREATED, "Resend activation code successfully", "");
@@ -152,7 +156,8 @@ public class DepoOwnerController {
     @Operation(description = "Send invitation email to worker", operationId = "sendInvitation", summary = "Send invitation email to worker")
     @PostMapping(value = "/send-invitation")
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<Void> sendInvitation(@RequestBody @Valid DepoWorkerInvitationReqDto depoWorkerInvitationReqDto) {
+    public ResponseEntity<Void> sendInvitation(
+            @RequestBody @Valid DepoWorkerInvitationReqDto depoWorkerInvitationReqDto) {
         depoWorkerAccountService.sendInvitationEmail(depoWorkerInvitationReqDto.getEmail());
         return ResponseEntity.ok().build();
     }
@@ -160,9 +165,11 @@ public class DepoOwnerController {
     @Operation(description = "Approve depo worker join request", operationId = "approveDepoWorkerJoinRequest", summary = "Approve depo worker join request")
     @PostMapping(value = "/approve-join-request")
     @SecurityRequirement(name = "nleapi")
-    public ResponseEntity<ActiveDto> approveDepoWorkerJoinRequest(@RequestBody @Valid DepoWorkerApproveReqDto depoWorkerApproveReqDto) {
+    public ResponseEntity<ActiveDto> approveDepoWorkerJoinRequest(
+            @RequestBody @Valid DepoWorkerApproveReqDto depoWorkerApproveReqDto) {
         depoWorkerAccountService.approveJoinRequest(depoWorkerApproveReqDto);
-        return ResponseEntity.ok(new ActiveDto(AppConstant.VerificationStatus.ACTIVE, "Depo Worker account is active."));
+        return ResponseEntity
+                .ok(new ActiveDto(AppConstant.VerificationStatus.ACTIVE, "Depo Worker account is active."));
     }
 
     @Operation(description = "Delete depo worker join request", operationId = "deleteDepoWorkerJoinRequest", summary = "Delete depo worker join request")
@@ -183,14 +190,14 @@ public class DepoOwnerController {
     @Operation(description = "forgot password, send token to email", operationId = "forgotPassword", summary = "forgot password, send token to email")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/forgot-password")
-    public ResponseEntity<JWTToken> generateResetToken (@RequestParam String email) {
+    public ResponseEntity<JWTToken> generateResetToken(@RequestParam String email) {
         return ResponseEntity.ok(depoOwnerAccountService.resetPasswordToken(email));
     }
 
     @Operation(description = "reset password for forgot password", operationId = "resetPassword", summary = "reset password for forgot password")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/reset-password")
-    public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         Map<String, String> authBody = DecodeUtil.decodeToken(request.getToken());
         return ResponseEntity.ok(depoOwnerAccountService.changeForgotPassword(request, authBody));
     }
@@ -198,8 +205,16 @@ public class DepoOwnerController {
     @Operation(description = "Update depo owner profile", operationId = "updateDepoOwnerProfile", summary = "Update depo owner profile")
     @SecurityRequirement(name = "nleapi")
     @PutMapping(value = "/update")
-    public ResponseEntity<DepoOwnerAccountProfileDTO> updateDepoOwnerProfile (@RequestBody UpdateDepoOwnerRequest request) {
+    public ResponseEntity<DepoOwnerAccountProfileDTO> updateDepoOwnerProfile(
+            @RequestBody UpdateDepoOwnerRequest request) {
         return ResponseEntity.ok(depoOwnerAccountService.updateDepoOwnerProfile(request));
+    }
+
+    @Operation(description = "Change password depo owner", operationId = "changePassword", summary = "Change password depo owner")
+    @SecurityRequirement(name = "nleapi")
+    @PutMapping(value = "/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody DepoOwnerChangePasswordRequest request) {
+        return ResponseEntity.ok(depoOwnerAccountService.changePassword(request));
     }
 
 }
