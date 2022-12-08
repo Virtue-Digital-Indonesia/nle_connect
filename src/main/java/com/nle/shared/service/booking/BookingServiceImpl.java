@@ -167,9 +167,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable) {
 
-        if (request.getPhone_number() == null || request.getPhone_number().trim().isEmpty())
-            throw new BadRequestException("phone number cannot be null");
-
+        Optional<String> phone = SecurityUtils.getCurrentUserLogin();
+        request.setPhone_number(phone.get());
         Page<BookingHeader> headerPage = bookingHeaderRepository.searchBooking(request, pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }
