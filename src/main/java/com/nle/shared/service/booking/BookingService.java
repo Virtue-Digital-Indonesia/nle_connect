@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 public interface BookingService {
 
     BookingResponse getBookingById(Long booking_id, String phone_number);
-    PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable);
+    PagingResponseModel<BookingResponse> SearchByPhone(Pageable pageable);
     VerihubsResponseDTO sendOtpMobile (String phoneNumber);
     JWTToken verifOTP(String otp, String phone_number);
     BookingResponse createBookingUnloading(CreateBookingUnloading request);

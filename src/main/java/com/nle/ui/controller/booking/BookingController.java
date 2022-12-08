@@ -58,12 +58,12 @@ public class BookingController {
     })
     @GetMapping(value = "/phone")
     public ResponseEntity<PagingResponseModel<BookingResponse>> searchByPhone (
-            @RequestParam("phone_number") String phoneNumber,
-            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+            @PageableDefault(page = 0, size = 10)
+            @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             })
             @Parameter(hidden = true) Pageable pageable) {
-        return ResponseEntity.ok(bookingService.SearchByPhone(phoneNumber, pageable));
+        return ResponseEntity.ok(bookingService.SearchByPhone(pageable));
     }
 
     @Operation(description = "send OTP via mobile", operationId = "sendOtpMobile", summary = "send OTP via mobile")

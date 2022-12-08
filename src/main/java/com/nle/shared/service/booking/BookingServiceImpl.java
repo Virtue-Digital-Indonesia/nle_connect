@@ -15,6 +15,7 @@ import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
 import com.nle.security.AuthoritiesConstants;
+import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
@@ -66,9 +67,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable) {
-
-        Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber, pageable);
+    public PagingResponseModel<BookingResponse> SearchByPhone(Pageable pageable) {
+        Optional<String> phoneNumber = SecurityUtils.getCurrentUserLogin();
+        Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber.get(), pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }
 
