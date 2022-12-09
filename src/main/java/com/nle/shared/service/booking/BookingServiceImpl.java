@@ -15,6 +15,7 @@ import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
 import com.nle.security.AuthoritiesConstants;
+import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
@@ -52,8 +53,12 @@ public class BookingServiceImpl implements BookingService {
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
-    public BookingResponse getBookingById(Long booking_id, String phone_number) {
+    public BookingResponse getBookingById(Long booking_id) {
+        Optional<String> phone = SecurityUtils.getCurrentUserLogin();
+        if (phone.isEmpty())
+            throw new BadRequestException("need to log in");
 
+        String phone_number = phone.get();
         if (booking_id == null) throw new BadRequestException("booking_id cannot be nulll");
         if (phone_number == null || phone_number.trim().isEmpty()) throw new BadRequestException("phone number cannot be null");
 
@@ -66,9 +71,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public PagingResponseModel<BookingResponse> SearchByPhone(String phoneNumber, Pageable pageable) {
-
-        Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber, pageable);
+    public PagingResponseModel<BookingResponse> SearchByPhone(Pageable pageable) {
+        Optional<String> phoneNumber = SecurityUtils.getCurrentUserLogin();
+        Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber.get(), pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }
 
@@ -162,9 +167,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable) {
 
-        if (request.getPhone_number() == null || request.getPhone_number().trim().isEmpty())
-            throw new BadRequestException("phone number cannot be null");
-
+        Optional<String> phone = SecurityUtils.getCurrentUserLogin();
+        request.setPhone_number(phone.get());
         Page<BookingHeader> headerPage = bookingHeaderRepository.searchBooking(request, pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }

@@ -44,9 +44,8 @@ public class BookingController {
     @Operation(description = "get booking by id", operationId = "getBookingById", summary = "get booking by Id")
     @SecurityRequirement(name = "nleapi")
     @GetMapping
-    public ResponseEntity<BookingResponse> getBookingById(@RequestParam("booking_id") Long booking_id,
-                                                          @RequestParam("phone_number") String phone_number){
-        return ResponseEntity.ok(bookingService.getBookingById(booking_id, phone_number));
+    public ResponseEntity<BookingResponse> getBookingById(@RequestParam("booking_id") Long booking_id) {
+        return ResponseEntity.ok(bookingService.getBookingById(booking_id));
     }
 
     @Operation(description = "get booking by phoneNumber with paging", operationId = "searchByPhone", summary = "get booking by phoneNumber with paging")
@@ -58,12 +57,12 @@ public class BookingController {
     })
     @GetMapping(value = "/phone")
     public ResponseEntity<PagingResponseModel<BookingResponse>> searchByPhone (
-            @RequestParam("phone_number") String phoneNumber,
-            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+            @PageableDefault(page = 0, size = 10)
+            @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             })
             @Parameter(hidden = true) Pageable pageable) {
-        return ResponseEntity.ok(bookingService.SearchByPhone(phoneNumber, pageable));
+        return ResponseEntity.ok(bookingService.SearchByPhone(pageable));
     }
 
     @Operation(description = "send OTP via mobile", operationId = "sendOtpMobile", summary = "send OTP via mobile")
