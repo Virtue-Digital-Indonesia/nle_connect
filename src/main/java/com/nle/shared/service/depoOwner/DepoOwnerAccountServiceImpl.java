@@ -233,16 +233,19 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
+
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(
                 currentUserLogin.get()).orElseThrow(() -> new BadRequestException("Invalid account"));
-        if (passwordEncoder.matches(request.getOldPassword(), depoOwnerAccount.getPassword())) {
-            if (request.getNewPassword().equals(request.getConfirmNewPassword())) {
-                depoOwnerAccountRepository.save(setPasswordAndFtpPassword(depoOwnerAccount, request.getNewPassword()));
-                return "success password changed";
-            } else
-                throw new BadRequestException("Invalid confirm_new_password");
-        } else
+
+        if (!passwordEncoder.matches(request.getOldPassword(), depoOwnerAccount.getPassword()))
             throw new BadRequestException("Invalid old_password");
+
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword()))
+            throw new BadRequestException("Invalid confirm_new_password");
+
+        depoOwnerAccountRepository.save(setPasswordAndFtpPassword(depoOwnerAccount, request.getNewPassword()));
+        return "success password changed";
+
     }
 
     private DepoOwnerAccount setPasswordAndFtpPassword(DepoOwnerAccount depoOwnerAccount, String newPassword) {
