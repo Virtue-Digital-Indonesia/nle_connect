@@ -238,13 +238,15 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
             throw new BadRequestException("Invalid token");
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(
                 currentUserLogin.get()).orElseThrow(() -> new BadRequestException("Invalid account"));
-
-        if (request.getNewPassword().equals(request.getConfirmNewPassword())) {
-            depoOwnerAccount.setPassword(passwordEncoder.encode(request.getNewPassword()));
-            depoOwnerAccountRepository.save(depoOwnerAccount);
-            return "success password changed";
+        if (passwordEncoder.matches(request.getOldPassword(), depoOwnerAccount.getPassword())) {
+            if (request.getNewPassword().equals(request.getConfirmNewPassword())) {
+                depoOwnerAccount.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                depoOwnerAccountRepository.save(depoOwnerAccount);
+                return "success password changed";
+            } else
+                throw new BadRequestException("Invalid confirm_new_password");
         } else
-            throw new BadRequestException("Invalid confirm_new_password");
+            throw new BadRequestException("Invalid old_password");
     }
 
 }
