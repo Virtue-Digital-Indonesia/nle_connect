@@ -22,6 +22,7 @@ import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
 import com.nle.shared.service.ftp.SSHService;
 import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import com.nle.ui.model.request.ForgotPasswordRequest;
 import com.nle.ui.model.request.UpdateDepoOwnerRequest;
 import lombok.RequiredArgsConstructor;
@@ -73,10 +74,11 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
             throw new CommonException("Phone number is already in use!");
         }
         // encoded tmp password
-        depoOwnerAccountDTO.setPassword(Base64.getEncoder().encodeToString(depoOwnerAccountDTO.getPassword().getBytes()));
+        depoOwnerAccountDTO
+                .setPassword(Base64.getEncoder().encodeToString(depoOwnerAccountDTO.getPassword().getBytes()));
         // generate organization code
         String organizationCode = RandomStringUtils.randomAlphabetic(3).toUpperCase() +
-            RandomStringUtils.randomNumeric(2).toUpperCase();
+                RandomStringUtils.randomNumeric(2).toUpperCase();
         depoOwnerAccountDTO.setOrganizationCode(organizationCode);
         // map to entity
         DepoOwnerAccount depoOwnerAccount = depoOwnerAccountMapper.toEntity(depoOwnerAccountDTO);
@@ -86,7 +88,8 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccount.setTaxMinistryStatusEnum(TaxMinistryStatusEnum.DISABLE);
         // save to db
         depoOwnerAccount = depoOwnerAccountRepository.save(depoOwnerAccount);
-        VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount, VerificationType.ACTIVE_ACCOUNT);
+        VerificationToken verificationToken = verificationTokenService.createVerificationToken(depoOwnerAccount,
+                VerificationType.ACTIVE_ACCOUNT);
         // send activation email
         emailService.sendDepoOwnerActiveEmail(depoOwnerAccount, verificationToken.getToken());
         DepoOwnerAccountDTO response = depoOwnerAccountMapper.toDto(depoOwnerAccount);
@@ -155,9 +158,11 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         if (currentUserLogin.isEmpty()) {
             throw new ResourceNotFoundException("No user login information");
         }
-        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository
+                .findByCompanyEmail(currentUserLogin.get());
         if (!depoOwnerAccount.isPresent()) {
-            throw new ResourceNotFoundException("Depo worker account with email: '" + currentUserLogin.get() + "' doesn't exist");
+            throw new ResourceNotFoundException(
+                    "Depo worker account with email: '" + currentUserLogin.get() + "' doesn't exist");
         }
         DepoOwnerAccountProfileDTO depoOwnerAccountProfileDTO = new DepoOwnerAccountProfileDTO();
         BeanUtils.copyProperties(depoOwnerAccount.get(), depoOwnerAccountProfileDTO);
@@ -165,14 +170,14 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
     }
 
     @Override
-    public JWTToken resetPasswordToken (String email) {
+    public JWTToken resetPasswordToken(String email) {
         Optional<DepoOwnerAccount> optionalDepoOwnerAccount = findByCompanyEmail(email);
         String token = null;
         if (!optionalDepoOwnerAccount.isEmpty()) {
-            token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get().getCompanyEmail(), AuthoritiesConstants.RESET_PASSWORD);
+            token = tokenProvider.generateManualToken(optionalDepoOwnerAccount.get().getCompanyEmail(),
+                    AuthoritiesConstants.RESET_PASSWORD);
             emailService.sendResetPassword(optionalDepoOwnerAccount.get(), token);
-        }
-        else
+        } else
             throw new BadRequestException("Email is not register!");
         return new JWTToken(token);
     };
@@ -183,7 +188,8 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         if (!token.get("auth").equals("RESET_PASSWORD"))
             throw new BadRequestException("This is not token for reset password!");
 
-        if (request.getPassword() == null) throw new BadRequestException("Password cannot be null!");
+        if (request.getPassword() == null)
+            throw new BadRequestException("Password cannot be null!");
 
         if (request.getPassword().isEmpty() || request.getConfirm_password().isEmpty())
             throw new BadRequestException("Password cannot be empty!");
@@ -197,10 +203,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
             throw new BadRequestException("No depo owner with this email!");
 
         DepoOwnerAccount entity = foundEntity.get();
-        sshService.changePasswordFtpUser(email, request.getPassword());
-        entity.setPassword(passwordEncoder.encode(request.getPassword()));
-        entity.setFtpPassword(Base64.getEncoder().encodeToString(request.getPassword().getBytes()));
-        depoOwnerAccountRepository.save(entity);
+        depoOwnerAccountRepository.save(setPasswordAndFtpPassword(entity, request.getPassword()));
         return "Success to reset password with user email : " + email + "!";
     }
 
@@ -209,18 +212,48 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
-        DepoOwnerAccount depoOwnerAccount= depoOwnerAccountRepository.findByCompanyEmail(
-                currentUserLogin.get()).orElseThrow(()-> new BadRequestException("Invalid account"));
-        if(request.getAddress()!=null)
+        DepoOwnerAccount depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(
+                currentUserLogin.get()).orElseThrow(() -> new BadRequestException("Invalid account"));
+        if (request.getAddress() != null)
             depoOwnerAccount.setAddress(request.getAddress());
-        if (request.getOrganizationName()!=null)
+        if (request.getOrganizationName() != null)
             depoOwnerAccount.setOrganizationName(request.getOrganizationName());
-        if (request.getFullName()!=null)
+        if (request.getFullName() != null)
             depoOwnerAccount.setFullName(request.getFullName());
-        if (request.getPhoneNumber()!=null)
+        if (request.getPhoneNumber() != null)
             depoOwnerAccount.setPhoneNumber(request.getPhoneNumber());
         DepoOwnerAccountProfileDTO depoOwnerAccountProfileDTO = new DepoOwnerAccountProfileDTO();
         BeanUtils.copyProperties(depoOwnerAccountRepository.save(depoOwnerAccount), depoOwnerAccountProfileDTO);
         return depoOwnerAccountProfileDTO;
     }
+
+    @Override
+    public String changePassword(ChangeAdminPasswordRequest request) {
+
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        DepoOwnerAccount depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(
+                currentUserLogin.get()).orElseThrow(() -> new BadRequestException("Invalid account"));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), depoOwnerAccount.getPassword()))
+            throw new BadRequestException("Invalid old_password");
+
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword()))
+            throw new BadRequestException("Invalid confirm_new_password");
+
+        depoOwnerAccountRepository.save(setPasswordAndFtpPassword(depoOwnerAccount, request.getNewPassword()));
+        return "success password changed";
+
+    }
+
+    private DepoOwnerAccount setPasswordAndFtpPassword(DepoOwnerAccount depoOwnerAccount, String newPassword) {
+        sshService.changePasswordFtpUser(depoOwnerAccount.getCompanyEmail(), newPassword);
+        depoOwnerAccount.setPassword(passwordEncoder.encode(newPassword));
+        depoOwnerAccount
+                .setFtpPassword(Base64.getEncoder().encodeToString(newPassword.getBytes()));
+        return depoOwnerAccount;
+    }
+
 }

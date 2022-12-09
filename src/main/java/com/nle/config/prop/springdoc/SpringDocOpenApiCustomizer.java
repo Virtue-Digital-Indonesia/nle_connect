@@ -24,19 +24,18 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
 
     @Override
     public void customise(OpenAPI openApi) {
-        //old
+        // old
         Contact contact = new Contact()
-            .name(appProperties.getSpringdoc().getName())
-            .url(appProperties.getSpringdoc().getUrl())
-            .email(appProperties.getSpringdoc().getEmail());
+                .name(appProperties.getSpringdoc().getName())
+                .url(appProperties.getSpringdoc().getUrl())
+                .email(appProperties.getSpringdoc().getEmail());
 
         openApi.info(new Info()
-            .contact(contact)
-            .title(appProperties.getSpringdoc().getTitle())
-            .description(appProperties.getSpringdoc().getDescription())
-            .version(appProperties.getSpringdoc().getVersion())
-            .license(new License().name("Apache").url("https://www.apache.org/licenses/LICENSE-2.0"))
-        );
+                .contact(contact)
+                .title(appProperties.getSpringdoc().getTitle())
+                .description(appProperties.getSpringdoc().getDescription())
+                .version(appProperties.getSpringdoc().getVersion())
+                .license(new License().name("Apache").url("https://www.apache.org/licenses/LICENSE-2.0")));
     }
 
     @Override
@@ -46,13 +45,13 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
 
     @Bean
     public OpenAPI titleSpringDoc() {
-        //new
+        // new
         Contact contact = new Contact()
                 .name(appProperties.getSpringdoc().getName())
                 .url(appProperties.getSpringdoc().getUrl())
                 .email(appProperties.getSpringdoc().getEmail());
         return new OpenAPI()
-                        .info(new Info()
+                .info(new Info()
                         .contact(contact)
                         .title(appProperties.getSpringdoc().getTitle())
                         .description(appProperties.getSpringdoc().getDescription())
@@ -74,7 +73,7 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/contact-us",
                 "/api/depo/order/**",
 
-                //depo-owner-controller
+                // depo-owner-controller
                 "/api/register/**",
                 "/api/send-invitation",
                 "/api/reset-password",
@@ -84,7 +83,8 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/register/**",
                 "/api/profile",
                 "/api/activate/**",
-                "/api/update"
+                "/api/update",
+                "/api/change-password"
         };
         return GroupedOpenApi
                 .builder()
@@ -110,7 +110,7 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
     @Bean
     public GroupedOpenApi guest() {
         String paths[] = {
-                "/api/booking/**"};
+                "/api/booking/**" };
         return GroupedOpenApi.builder()
                 .group("booking")
                 .pathsToMatch(paths)
