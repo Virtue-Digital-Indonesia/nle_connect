@@ -3,6 +3,7 @@ package com.nle.ui.controller.admin;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.admin.AdminLoginDTO;
 import com.nle.ui.model.admin.AdminProfileDTO;
+import com.nle.io.repository.dto.LocationStatistic;
 import com.nle.shared.service.admin.AdminService;
 import com.nle.ui.model.request.UpdateAdminRequest;
 import com.nle.ui.model.request.ChangeAdminPasswordRequest;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -52,5 +55,12 @@ public class AdminController {
     @SecurityRequirement(name = "nleapi")
     public ResponseEntity<AdminProfileDTO> getAdminProfile() {
         return ResponseEntity.ok(adminService.getAdminProfile());
+    }
+
+    @Operation(description = "Count total location", operationId = "countLocation", summary = "Count total location")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/count-location")
+    public ResponseEntity<List<LocationStatistic>> countLocation() {
+        return ResponseEntity.ok(adminService.countLocation());
     }
 }

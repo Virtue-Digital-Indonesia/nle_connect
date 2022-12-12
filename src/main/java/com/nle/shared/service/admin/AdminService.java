@@ -1,5 +1,8 @@
 package com.nle.shared.service.admin;
 
+import java.util.List;
+
+import com.nle.io.repository.dto.LocationStatistic;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.admin.AdminLoginDTO;
 import com.nle.ui.model.admin.AdminProfileDTO;
@@ -14,5 +17,8 @@ public interface AdminService {
     JWTToken forcedImpersonate(String email);
 
     AdminProfileDTO updateAdminProfile(UpdateAdminRequest request);
+
     void updateAdminPassword(ChangeAdminPasswordRequest request);
+
+    List<LocationStatistic> countLocation();
 }

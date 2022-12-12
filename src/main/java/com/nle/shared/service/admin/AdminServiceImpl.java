@@ -3,6 +3,7 @@ package com.nle.shared.service.admin;
 import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.dto.LocationStatistic;
 import com.nle.security.AuthoritiesConstants;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.admin.AdminLoginDTO;
@@ -25,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -56,8 +58,10 @@ public class AdminServiceImpl implements AdminService {
             throw new CommonException("Invalid Admin Credentials");
         }
         // generate token
-        List<GrantedAuthority> grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(admin.getRoles()));
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(admin.getEmail(), admin.getPassword(), grantedAuthorities);
+        List<GrantedAuthority> grantedAuthorities = Collections
+                .singletonList(new SimpleGrantedAuthority(admin.getRoles()));
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(admin.getEmail(),
+                admin.getPassword(), grantedAuthorities);
         String jwt = tokenProvider.createToken(authentication);
         return new JWTToken(jwt);
     }
@@ -81,10 +85,11 @@ public class AdminServiceImpl implements AdminService {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(email);
 
             if (depoOwnerAccount.isEmpty())
-                throw new BadRequestException("Cannot find depo with email "+ email +"!");
+                throw new BadRequestException("Cannot find depo with email " + email + "!");
 
-            String token = tokenProvider.generateManualToken(depoOwnerAccount.get().getCompanyEmail(), AuthoritiesConstants.IMPERSONATE_DEPO);
-            return  new JWTToken(token);
+            String token = tokenProvider.generateManualToken(depoOwnerAccount.get().getCompanyEmail(),
+                    AuthoritiesConstants.IMPERSONATE_DEPO);
+            return new JWTToken(token);
         }
 
         return new JWTToken("null");
@@ -95,12 +100,13 @@ public class AdminServiceImpl implements AdminService {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
-        Admin admin= adminRepository.findByEmail(currentUserLogin.get()).orElseThrow(()-> new BadRequestException("Invalid admin account"));
-        if(request.getFullName()!=null)
+        Admin admin = adminRepository.findByEmail(currentUserLogin.get())
+                .orElseThrow(() -> new BadRequestException("Invalid admin account"));
+        if (request.getFullName() != null)
             admin.setFullName(request.getFullName());
-        if(request.getPhoneNumber()!=null)
+        if (request.getPhoneNumber() != null)
             admin.setPhoneNumber(request.getPhoneNumber());
-        if(request.getEmail()!=null)
+        if (request.getEmail() != null)
             admin.setEmail(request.getEmail());
         return toDTO(adminRepository.save(admin));
     }
@@ -110,20 +116,32 @@ public class AdminServiceImpl implements AdminService {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
-        Admin admin= adminRepository.findByEmail(currentUserLogin.get()).orElseThrow(()-> new BadRequestException("Invalid admin account"));
-        if(passwordEncoder.matches(request.getOldPassword(), admin.getPassword())){
-            if(request.getNewPassword().equals(request.getConfirmNewPassword())){
+        Admin admin = adminRepository.findByEmail(currentUserLogin.get())
+                .orElseThrow(() -> new BadRequestException("Invalid admin account"));
+        if (passwordEncoder.matches(request.getOldPassword(), admin.getPassword())) {
+            if (request.getNewPassword().equals(request.getConfirmNewPassword())) {
                 admin.setPassword(passwordEncoder.encode(request.getNewPassword()));
                 adminRepository.save(admin);
-            }else
+            } else
                 throw new BadRequestException("Invalid confirm_new_password");
-        }else
+        } else
             throw new BadRequestException("Invalid old_password");
     }
 
-    public AdminProfileDTO toDTO(Admin admin){
-        AdminProfileDTO adminProfileDTO= new AdminProfileDTO();
+    public AdminProfileDTO toDTO(Admin admin) {
+        AdminProfileDTO adminProfileDTO = new AdminProfileDTO();
         BeanUtils.copyProperties(admin, adminProfileDTO);
         return adminProfileDTO;
+    }
+
+    @Override
+    public List<LocationStatistic> countLocation() {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+        adminRepository.findByEmail(currentUserLogin.get())
+                .orElseThrow(() -> new BadRequestException("Invalid admin account"));
+
+        return adminRepository.countLocation();
     }
 }
