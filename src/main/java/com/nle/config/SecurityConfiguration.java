@@ -82,6 +82,7 @@ public class SecurityConfiguration {
                         , "/api/booking/depo/**"
                         , "/api/booking/otp/**"
                         , "/api/item-type"
+                        , "/api/item-type/addItemType"
                 ).permitAll()
             .antMatchers("/impersonate",
                     "/api/admins/profile",
