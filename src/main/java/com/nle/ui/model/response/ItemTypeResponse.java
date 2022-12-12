@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 public class ItemTypeResponse {
     private Long id;
-    private String item_code;
-    private String item_type;
-    private String item_size;
+    private String itemCode;
+    private String itemType;
+    private int itemSize;
 }

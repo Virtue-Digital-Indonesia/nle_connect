@@ -46,7 +46,7 @@ public class ItemTypeController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/addItemType")
     public ResponseEntity<ItemTypeResponse> createItemType(@RequestBody ItemTypeRequest request) {
-        return null;
+        return ResponseEntity.ok(itemTypeService.createItemType(request));
     }
 
 }
