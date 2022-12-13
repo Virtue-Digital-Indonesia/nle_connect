@@ -27,7 +27,6 @@ public class OTPService {
 
     private final AppProperties appProperties;
     private final String HEADER_JSON ="application/json";
-    private final ObjectMapper mapper;
 
     public VerihubsResponseDTO sendOTP(String phoneNumber) {
 
