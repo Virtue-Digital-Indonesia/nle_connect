@@ -1,8 +1,5 @@
 package com.nle.shared.service.admin;
 
-import java.util.List;
-
-import com.nle.io.repository.dto.ShippingLineStatistic;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.admin.AdminLoginDTO;
 import com.nle.ui.model.admin.AdminProfileDTO;
@@ -20,5 +17,4 @@ public interface AdminService {
 
     void updateAdminPassword(ChangeAdminPasswordRequest request);
 
-    List<ShippingLineStatistic> countFleetManager();
 }

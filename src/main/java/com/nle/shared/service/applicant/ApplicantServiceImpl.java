@@ -8,8 +8,12 @@ import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.exception.BadRequestException;
 import com.nle.exception.ResourceNotFoundException;
 import com.nle.io.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.GateMoveRepository;
+import com.nle.io.repository.dto.ShippingLineStatistic;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -28,6 +32,8 @@ import java.util.Optional;
 @Transactional
 public class ApplicantServiceImpl implements ApplicantService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+    private final GateMoveRepository gateMoveRepository;
+
     private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
     @Override
@@ -47,8 +53,8 @@ public class ApplicantServiceImpl implements ApplicantService {
         }
 
         Page<DepoOwnerAccount> depoOwnerAccounts = depoOwnerAccountRepository.filter(applicantListReqDTO.getFrom(),
-            applicantListReqDTO.getTo(),
-            approvalStatuses, pageable);
+                applicantListReqDTO.getTo(),
+                approvalStatuses, pageable);
         return new PagingResponseModel<>(depoOwnerAccounts.map(this::convertFromEntity));
     }
 
@@ -76,7 +82,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         return convertFromEntity(updatedDepoOwnerAccount);
     }
 
-    public PagingResponseModel<ApplicantResponse> searchByCondition(ApplicantSearchRequest request, Pageable pageable){
+    public PagingResponseModel<ApplicantResponse> searchByCondition(ApplicantSearchRequest request, Pageable pageable) {
         Optional<String> currentadmin = SecurityUtils.getCurrentUserLogin();
         if (!currentadmin.isEmpty()) {
             Page<DepoOwnerAccount> list = depoOwnerAccountRepository.searchByCondition(request, pageable);
@@ -99,5 +105,14 @@ public class ApplicantServiceImpl implements ApplicantService {
         ApplicantResponse applicantResponse = new ApplicantResponse();
         BeanUtils.copyProperties(depoOwnerAccount, applicantResponse);
         return applicantResponse;
+    }
+
+    @Override
+    public List<ShippingLineStatistic> countFleetManager() {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        return gateMoveRepository.countFleetManager();
     }
 }

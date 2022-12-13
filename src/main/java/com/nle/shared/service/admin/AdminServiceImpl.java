@@ -133,15 +133,4 @@ public class AdminServiceImpl implements AdminService {
         BeanUtils.copyProperties(admin, adminProfileDTO);
         return adminProfileDTO;
     }
-
-    @Override
-    public List<ShippingLineStatistic> countFleetManager() {
-        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isEmpty())
-            throw new BadRequestException("Invalid token");
-        adminRepository.findByEmail(currentUserLogin.get())
-                .orElseThrow(() -> new BadRequestException("Invalid admin account"));
-
-        return adminRepository.countFleetManager();
-    }
 }

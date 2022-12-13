@@ -57,10 +57,4 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAdminProfile());
     }
 
-    @Operation(description = "Count all fleet manager", operationId = "countFleetManager", summary = "Count all fleet manager")
-    @SecurityRequirement(name = "nleapi")
-    @GetMapping(value = "/count-fleet-manager")
-    public ResponseEntity<List<ShippingLineStatistic>> countFleetManager() {
-        return ResponseEntity.ok(adminService.countFleetManager());
-    }
 }
