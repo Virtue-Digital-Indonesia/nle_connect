@@ -57,10 +57,4 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAdminProfile());
     }
 
-    @Operation(description = "Count total location", operationId = "countLocation", summary = "Count total location")
-    @SecurityRequirement(name = "nleapi")
-    @GetMapping(value = "/count-location")
-    public ResponseEntity<List<LocationStatistic>> countLocation() {
-        return ResponseEntity.ok(adminService.countLocation());
-    }
 }

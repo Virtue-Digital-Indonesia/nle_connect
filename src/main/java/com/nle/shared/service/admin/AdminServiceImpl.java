@@ -134,14 +134,4 @@ public class AdminServiceImpl implements AdminService {
         return adminProfileDTO;
     }
 
-    @Override
-    public List<LocationStatistic> countLocation() {
-        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isEmpty())
-            throw new BadRequestException("Invalid token");
-        adminRepository.findByEmail(currentUserLogin.get())
-                .orElseThrow(() -> new BadRequestException("Invalid admin account"));
-
-        return adminRepository.countLocation();
-    }
 }

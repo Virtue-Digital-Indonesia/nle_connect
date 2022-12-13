@@ -20,5 +20,4 @@ public interface AdminService {
 
     void updateAdminPassword(ChangeAdminPasswordRequest request);
 
-    List<LocationStatistic> countLocation();
 }
