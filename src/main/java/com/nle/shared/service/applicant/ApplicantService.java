@@ -3,6 +3,7 @@ package com.nle.shared.service.applicant;
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.io.repository.dto.LocationStatistic;
+import com.nle.io.repository.dto.ShippingLineStatistic;
 import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
@@ -23,4 +24,6 @@ public interface ApplicantService {
     List<ApplicantResponse> getAllApplicant();
 
     List<LocationStatistic> countLocation();
+
+    List<ShippingLineStatistic> countFleetManager();
 }

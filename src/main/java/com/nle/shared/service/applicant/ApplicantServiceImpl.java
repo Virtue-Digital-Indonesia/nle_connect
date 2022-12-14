@@ -13,6 +13,7 @@ import com.nle.exception.ResourceNotFoundException;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.GateMoveRepository;
 import com.nle.io.repository.dto.LocationStatistic;
+import com.nle.io.repository.dto.ShippingLineStatistic;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -113,5 +114,14 @@ public class ApplicantServiceImpl implements ApplicantService {
             throw new BadRequestException("Invalid token");
 
         return gateMoveRepository.countLocation();
+    }
+
+    @Override
+    public List<ShippingLineStatistic> countFleetManager() {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        return gateMoveRepository.countFleetManager();
     }
 }
