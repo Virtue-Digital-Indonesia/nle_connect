@@ -4,12 +4,14 @@ import java.util.List;
 
 import com.nle.io.repository.dto.ShippingLineStatistic;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CountMoves {
+@AllArgsConstructor
+public class TotalMoves {
     private String tx_date;
     private Long total;
     private List<ShippingLineStatistic> fleet_count;
