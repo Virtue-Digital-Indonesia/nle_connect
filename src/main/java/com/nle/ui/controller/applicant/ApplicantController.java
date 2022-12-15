@@ -9,6 +9,7 @@ import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.count.TotalMoves;
+import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 import com.nle.shared.service.applicant.ApplicantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -110,4 +111,10 @@ public class ApplicantController {
         return ResponseEntity.ok(applicantService.totalMovesPerDay(duration));
     }
 
+    @Operation(description = "Count gate moves by depot", operationId = "countGateMovesByDepotPerDay", summary = "Count gate moves by depot")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/applicants/count-gate-moves-by-depot")
+    public ResponseEntity<List<CountMovesByDepotResponse>> countGateMovesByDepotPerDay(@RequestParam int duration) {
+        return ResponseEntity.ok(applicantService.countGateMovesByDepotPerDay(duration));
+    }
 }
