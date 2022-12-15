@@ -3,6 +3,7 @@ package com.nle.ui.controller.applicant;
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.io.repository.dto.LocationStatistic;
+import com.nle.io.repository.dto.ShippingLineStatistic;
 import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
@@ -91,5 +92,12 @@ public class ApplicantController {
     @GetMapping(value = "/applicants/count-location")
     public ResponseEntity<List<LocationStatistic>> countLocation() {
         return ResponseEntity.ok(applicantService.countLocation());
+    }
+
+    @Operation(description = "Count all fleet manager", operationId = "countFleetManager", summary = "Count all fleet manager")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/applicants/count-fleet-manager")
+    public ResponseEntity<List<ShippingLineStatistic>> countFleetManager() {
+        return ResponseEntity.ok(applicantService.countFleetManager());
     }
 }
