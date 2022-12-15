@@ -126,14 +126,12 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
         List<LocationStatistic> countLocation();
 
         @Query("select new com.nle.io.repository.dto.GateMovesStatistic(gm.depot, " +
-                        "sum(case when gm.gateMoveType='gate_in' then 1 when gm.gateMoveType='gate_in' then 0 end), " +
-                        "sum(case when gm.gateMoveType='gate_in' then 0 when gm.gateMoveType='gate_in' then 1 end), " +
-                        "count (gm.gateMoveType)) "
+                        "sum(case when gm.gateMoveType='gate_in' then 1 when gm.gateMoveType='gate_out' then 0 end), " +
+                        "sum(case when gm.gateMoveType='gate_in' then 0 when gm.gateMoveType='gate_out' then 1 end), " +
+                        "count (gm.id)) "
                         +
                         "from GateMove gm " +
                         "where (gm.tx_date >= :from and gm.tx_date < :to) " +
                         "group by gm.depot")
         List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to);
 }
-// , sum(if(gm.gateMoveType='gate_in', 1, 0)),
-// sum(if(gm.gateMoveType='gate_out', 1, 0))
