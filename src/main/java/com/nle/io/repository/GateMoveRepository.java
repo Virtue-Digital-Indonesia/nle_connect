@@ -124,6 +124,21 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                         "order by count(gm.depot) desc")
         List<LocationStatistic> countLocation();
 
+        @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.id)) "
+                        +
+                        "from GateMove gm " +
+                        "where (gm.tx_date >= :from and gm.tx_date < :to) " +
+                        "group by gm.fleet_manager " +
+                        "order by count(gm.id) desc")
+        List<ShippingLineStatistic> countFleetManagerByDate(@Param("from") String from, @Param("to") String to);
+
+        @Query("select count(gm.id) "
+                        +
+                        "from GateMove gm " +
+                        "where (gm.tx_date >= :from and gm.tx_date < :to)")
+        Long countTotalFleetManagerByDate(@Param("from") String from,
+                        @Param("to") String to);
+
         @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.id)) " +
                         "from GateMove gm " +
                         "group by gm.fleet_manager " +

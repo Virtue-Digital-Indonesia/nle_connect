@@ -8,6 +8,7 @@ import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.count.TotalMoves;
 import com.nle.shared.service.applicant.ApplicantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -100,4 +102,12 @@ public class ApplicantController {
     public ResponseEntity<List<ShippingLineStatistic>> countFleetManager() {
         return ResponseEntity.ok(applicantService.countFleetManager());
     }
+
+    @Operation(description = "Count total moves per day", operationId = "totalMovesPerDay", summary = "Count total moves per day")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/applicants/count-total-moves")
+    public ResponseEntity<List<TotalMoves>> totalMovesPerDay(@RequestParam int duration) {
+        return ResponseEntity.ok(applicantService.totalMovesPerDay(duration));
+    }
+
 }
