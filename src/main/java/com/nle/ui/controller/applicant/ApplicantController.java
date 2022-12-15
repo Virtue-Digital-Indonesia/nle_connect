@@ -7,6 +7,7 @@ import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 import com.nle.shared.service.applicant.ApplicantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -91,5 +93,12 @@ public class ApplicantController {
     @GetMapping(value = "/applicants/count-location")
     public ResponseEntity<List<LocationStatistic>> countLocation() {
         return ResponseEntity.ok(applicantService.countLocation());
+    }
+
+    @Operation(description = "Count gate moves by depot", operationId = "countGateMovesByDepotPerDay", summary = "Count gate moves by depot")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/applicants/count-gate-moves-by-depot")
+    public ResponseEntity<List<CountMovesByDepotResponse>> countGateMovesByDepotPerDay(@RequestParam int duration) {
+        return ResponseEntity.ok(applicantService.countGateMovesByDepotPerDay(duration));
     }
 }
