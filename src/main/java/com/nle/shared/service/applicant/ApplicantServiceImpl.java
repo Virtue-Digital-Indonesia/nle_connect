@@ -7,6 +7,7 @@ import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.count.TotalMoves;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.ResourceNotFoundException;
@@ -23,7 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +38,7 @@ import java.util.Optional;
 public class ApplicantServiceImpl implements ApplicantService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final GateMoveRepository gateMoveRepository;
+
     private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
     @Override
@@ -117,11 +122,62 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
+    public List<TotalMoves> totalMovesPerDay(int duration) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        List<TotalMoves> totalMoves = new ArrayList<>();
+
+        DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatterWithoutTime = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (int i = 0; i < duration; i++) {
+            LocalDateTime fromDate = LocalDateTime.now().minus(i, ChronoUnit.DAYS).with(LocalTime.of(0, 0, 0));
+            LocalDateTime toDate = LocalDateTime.now().minus(i - 1, ChronoUnit.DAYS).with(LocalTime.of(0, 0, 0));
+
+            List<ShippingLineStatistic> lineStatisticsByDate = countFleetManagerByDate(
+                    fromDate.format(formatterWithTime),
+                    toDate.format(formatterWithTime));
+
+            Long total = (long) 0;
+
+            if (!lineStatisticsByDate.isEmpty())
+                total = countTotalFleetManagerByDate(fromDate.format(formatterWithTime),
+                        toDate.format(formatterWithTime));
+
+            TotalMoves tMoves = new TotalMoves(fromDate.format(formatterWithoutTime),
+                    total,
+                    lineStatisticsByDate);
+            totalMoves.add(tMoves);
+        }
+        return totalMoves;
+    }
+
+    @Override
     public List<ShippingLineStatistic> countFleetManager() {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
 
         return gateMoveRepository.countFleetManager();
+    }
+
+    @Override
+    public List<ShippingLineStatistic> countFleetManagerByDate(String from, String to) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        return gateMoveRepository.countFleetManagerByDate(from, to);
+    }
+
+    @Override
+    public Long countTotalFleetManagerByDate(String from, String to) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        return gateMoveRepository.countTotalFleetManagerByDate(from, to);
     }
 }
