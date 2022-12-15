@@ -8,11 +8,13 @@ import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.count.TotalMoves;
+import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.ResourceNotFoundException;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.GateMoveRepository;
+import com.nle.io.repository.dto.GateMovesStatistic;
 import com.nle.io.repository.dto.LocationStatistic;
 import com.nle.io.repository.dto.ShippingLineStatistic;
 
@@ -128,7 +130,6 @@ public class ApplicantServiceImpl implements ApplicantService {
             throw new BadRequestException("Invalid token");
 
         List<TotalMoves> totalMoves = new ArrayList<>();
-
         DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter formatterWithoutTime = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -155,12 +156,46 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
+    public List<CountMovesByDepotResponse> countGateMovesByDepotPerDay(int duration) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+        List<CountMovesByDepotResponse> totalGateMoves = new ArrayList<>();
+
+        DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatterWithoutTime = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (int i = 0; i < duration; i++) {
+            LocalDateTime fromDate = LocalDateTime.now().minus(i, ChronoUnit.DAYS).with(LocalTime.of(0, 0, 0));
+            LocalDateTime toDate = LocalDateTime.now().minus(i - 1, ChronoUnit.DAYS).with(LocalTime.of(0, 0, 0));
+
+            List<GateMovesStatistic> gateMovesStatistics = countGateMovesByDepot(fromDate.format(formatterWithTime),
+                    toDate.format(formatterWithTime));
+
+            CountMovesByDepotResponse countMovesByDepotResponse = new CountMovesByDepotResponse(
+                    fromDate.format(formatterWithoutTime), gateMovesStatistics);
+            totalGateMoves.add(countMovesByDepotResponse);
+        }
+
+        return totalGateMoves;
+    }
+
+    @Override
     public List<ShippingLineStatistic> countFleetManager() {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
 
         return gateMoveRepository.countFleetManager();
+    }
+
+    @Override
+    public List<GateMovesStatistic> countGateMovesByDepot(String from, String to) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        return gateMoveRepository.countGateMovesByDepot(from, to);
     }
 
     @Override

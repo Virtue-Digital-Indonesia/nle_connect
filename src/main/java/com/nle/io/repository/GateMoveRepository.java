@@ -2,6 +2,7 @@ package com.nle.io.repository;
 
 import com.nle.ui.model.request.search.GateMoveSearchRequest;
 import com.nle.io.entity.GateMove;
+import com.nle.io.repository.dto.GateMovesStatistic;
 import com.nle.io.repository.dto.LocationStatistic;
 import com.nle.io.repository.dto.MoveStatistic;
 import com.nle.io.repository.dto.ShippingLineStatistic;
@@ -144,4 +145,14 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                         "group by gm.fleet_manager " +
                         "order by count(gm.id) desc")
         List<ShippingLineStatistic> countFleetManager();
+
+        @Query("select new com.nle.io.repository.dto.GateMovesStatistic(gm.depot, " +
+                        "sum(case when gm.gateMoveType='gate_in' then 1 when gm.gateMoveType='gate_out' then 0 end), " +
+                        "sum(case when gm.gateMoveType='gate_in' then 0 when gm.gateMoveType='gate_out' then 1 end), " +
+                        "count (gm.id)) "
+                        +
+                        "from GateMove gm " +
+                        "where (gm.tx_date >= :from and gm.tx_date < :to) " +
+                        "group by gm.depot")
+        List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to);
 }
