@@ -106,6 +106,26 @@ public class XenditServiceImpl implements XenditService{
 
     @Override
     public void VirtualAccountPayment(XenditCallbackPayload payload) {
+        Optional<XenditVA> optionalXenditVA = xenditRepository.findByXendit_id(payload.getId());
+        if (optionalXenditVA.isEmpty())
+            System.out.println("id not saved");
 
+        XenditVA xenditVA = optionalXenditVA.get();
+        xenditVA.setPayment_status("DONE");
+
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+        Map<String, Object> params = new HashMap<>();
+        params.put("is_single_use", false);
+        params.put("expiration_date", DateUtil.getYesterdayString(DATE_PATTERN));
+
+        try {
+            FixedVirtualAccount va = FixedVirtualAccount.update(payload.getId(), params);
+//            xenditVA.setPayment_status(va.getStatus());
+            System.out.println(va.getStatus());
+            xenditVA.setExpired_date(String.valueOf(va.getExpirationDate()));
+            xenditRepository.save(xenditVA);
+        } catch (XenditException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
