@@ -142,6 +142,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.xendit</groupId>
+            <artifactId>xendit-java-lib</artifactId>
+            <version>1.21.0</version>
+        </dependency>
 
     </dependencies>
 

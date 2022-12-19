@@ -7,13 +7,16 @@ import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
+import com.nle.shared.service.xendit.XenditService;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.request.search.BookingSearchRequest;
+import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
+import com.nle.ui.model.response.XenditResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,6 +43,7 @@ public class BookingController {
     private final BookingService bookingService;
     private final ApplicantService applicantService;
     private final ItemService itemService;
+    private final XenditService xenditService;
 
     @Operation(description = "get booking by id", operationId = "getBookingById", summary = "get booking by Id")
     @SecurityRequirement(name = "nleapi")
@@ -135,5 +139,18 @@ public class BookingController {
             })
             @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.ok(bookingService.searchBooking(request, pageable));
+    }
+
+    @Operation(description = "create virtual account for payment", operationId = "paymentBooking", summary = "create virtual account for payment")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/payment")
+    public ResponseEntity<XenditResponse> paymentBooking(@RequestBody XenditRequest request) {
+        return ResponseEntity.ok(xenditService.CreateVirtualAccount(request));
+    }
+
+    @Operation(hidden = true)
+    @PutMapping(value = "/callback")
+    public ResponseEntity<String> callbackBooking () {
+        return null;
     }
 }

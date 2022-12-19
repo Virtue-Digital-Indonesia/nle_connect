@@ -43,6 +43,8 @@ app:
   verihubs:
     App-ID: ${APP_ID}
     API-Key: ${API_KEY}
+  xendit:
+    API-Key: ${XENDIT_API_KEY}
 
 spring:
   data:
