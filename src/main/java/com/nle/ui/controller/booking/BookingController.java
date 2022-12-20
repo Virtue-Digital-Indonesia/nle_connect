@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "api/booking")
+@RequestMapping(value = "/api/booking")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -150,7 +150,7 @@ public class BookingController {
     }
 
     @Operation(hidden = true)
-    @PutMapping(value = "/booking/callback")
+    @PutMapping(value = "/payment/callback")
     public ResponseEntity<String> callbackBooking (@RequestBody XenditCallbackPayload payload) {
         xenditService.VirtualAccountPayment(payload);
         return ResponseEntity.ok("Success paid");

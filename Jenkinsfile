@@ -42,7 +42,8 @@ pipeline {
                     string(credentialsId: 'EMAIL_CONTACT_US', variable: 'EMAIL_CONTACT_US'),
                     usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME'),
                     string(credentialsId: 'APP_ID', variable: 'APP_ID'),
-                    string(credentialsId: 'API_KEY', variable: 'API_KEY')
+                    string(credentialsId: 'API_KEY', variable: 'API_KEY'),
+                    string(credentialsId: 'XENDIT_API_KEY', variable: 'XENDIT_API_KEY')
                     ]) {
                     sh """
                         cd src/main/resources
@@ -55,6 +56,7 @@ pipeline {
                         export EMAIL_CONTACT_US=$EMAIL_CONTACT_US
                         export APP_ID=$APP_ID
                         export API_KEY=$API_KEY
+                        export XENDIT_API_KEY=$XENDIT_API_KEY
                         envsubst < application.yml > application_tmp.yml
                         mv application_tmp.yml application.yml
                     """
