@@ -6,11 +6,13 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
+import com.nle.io.entity.OtpLog;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
+import com.nle.io.repository.OtpLogRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.io.repository.booking.BookingLoadingRepository;
@@ -48,6 +50,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingLoadingRepository bookingLoadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
+    private final OtpLogRepository otpLogRepository;
     private final OTPService otpService;
     private final TokenProvider tokenProvider;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -59,14 +62,18 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("need to log in");
 
         String phone_number = phone.get();
-        if (booking_id == null) throw new BadRequestException("booking_id cannot be nulll");
-        if (phone_number == null || phone_number.trim().isEmpty()) throw new BadRequestException("phone number cannot be null");
+        if (booking_id == null)
+            throw new BadRequestException("booking_id cannot be nulll");
+        if (phone_number == null || phone_number.trim().isEmpty())
+            throw new BadRequestException("phone number cannot be null");
 
         Optional<BookingHeader> optional = bookingHeaderRepository.findById(booking_id);
-        if (optional.isEmpty()) throw new CommonException("Cannot find booking");
+        if (optional.isEmpty())
+            throw new CommonException("Cannot find booking");
 
         BookingHeader bookingHeader = optional.get();
-        if (!bookingHeader.getPhone_number().equals(phone_number)) throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
+        if (!bookingHeader.getPhone_number().equals(phone_number))
+            throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
         return ConvertBookingUtil.convertBookingHeaderToResponse(bookingHeader);
     }
 
@@ -78,7 +85,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public VerihubsResponseDTO sendOtpMobile (String phoneNumber) {
+    public VerihubsResponseDTO sendOtpMobile(String phoneNumber) {
         VerihubsResponseDTO response = otpService.sendOTP(phoneNumber);
         return response;
     }
@@ -87,9 +94,12 @@ public class BookingServiceImpl implements BookingService {
     public JWTToken verifOTP(String otp, String phone_number) {
         ResponseEntity<String> verify = otpService.verifOTP(otp, phone_number);
 
-        if (verify.getStatusCodeValue() != 200) return null;
+        if (verify.getStatusCodeValue() != 200)
+            return null;
 
         String token = tokenProvider.generateManualToken(phone_number, AuthoritiesConstants.BOOKING_CUSTOMER);
+
+        saveOtpLog(otp, phone_number);
         return new JWTToken(token);
     }
 
@@ -104,7 +114,8 @@ public class BookingServiceImpl implements BookingService {
             BookingDetailUnloading bookingDetailUnloading = new BookingDetailUnloading();
 
             Optional<Item> item = itemRepository.findById(detailRequest.getItemId());
-            if (item.isEmpty()) throw new BadRequestException("Cannot find item");
+            if (item.isEmpty())
+                throw new BadRequestException("Cannot find item");
 
             if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(companyEmail))
                 throw new BadRequestException("this item is not from depo " + companyEmail);
@@ -129,7 +140,7 @@ public class BookingServiceImpl implements BookingService {
         return response;
     }
 
-    public BookingResponse createBookingLoading(CreateBookingLoading request){
+    public BookingResponse createBookingLoading(CreateBookingLoading request) {
         BookingHeader savedHeader = saveBookingHeader(request, ItemTypeEnum.LOADING);
         String companyEmail = savedHeader.getDepoOwnerAccount().getCompanyEmail();
         List<ItemResponse> detailList = new ArrayList<>();
@@ -138,7 +149,8 @@ public class BookingServiceImpl implements BookingService {
             BookingDetailLoading loading = new BookingDetailLoading();
 
             Optional<Item> item = itemRepository.findById(detailLoadingRequest.getItemId());
-            if (item.isEmpty()) throw new BadRequestException("Cannot find item");
+            if (item.isEmpty())
+                throw new BadRequestException("Cannot find item");
 
             if (!item.get().getDepoOwnerAccount().getCompanyEmail().equals(companyEmail))
                 throw new BadRequestException("this item is not from depo " + companyEmail);
@@ -182,11 +194,19 @@ public class BookingServiceImpl implements BookingService {
         entity.setBooking_type(booking_type);
 
         Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(request.getDepo_id());
-        if (depoOwnerAccount.isEmpty()) throw new BadRequestException("Depo Id cannot be find");
+        if (depoOwnerAccount.isEmpty())
+            throw new BadRequestException("Depo Id cannot be find");
         entity.setDepoOwnerAccount(depoOwnerAccount.get());
         BookingHeader savedHeader = bookingHeaderRepository.save(entity);
 
         return savedHeader;
+    }
+
+    private void saveOtpLog(String otp, String phone_number) {
+        OtpLog otpLog = new OtpLog();
+        otpLog.setOtp(otp);
+        otpLog.setPhoneNumber(phone_number);
+        otpLogRepository.save(otpLog);
     }
 
 }
