@@ -20,8 +20,9 @@ public class Item extends AbstractAuditingEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "item_name")
-    private String item_name;
+    @ManyToOne
+    @JoinColumn(name = "item_name_id", referencedColumnName = "id")
+    private ItemType item_name;
 
     @Column(name = "item_sku")
     private String sku;

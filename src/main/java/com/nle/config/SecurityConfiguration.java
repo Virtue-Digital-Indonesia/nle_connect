@@ -82,14 +82,16 @@ public class SecurityConfiguration {
                         , "/api/booking/depo/**"
                         , "/api/booking/otp/**"
                         , "/api/booking/payment/callback"
+                        , "/api/item-type"
                 ).permitAll()
-            .antMatchers("/impersonate",
-                    "/api/admins/profile",
-                    "/api/admins/update",
-                    "/api/admins/change-password",
-                    "/api/applicants/**",
-                    "/api/switchUser/impersonate/**",
-                    "/api/fleets/addFleet"
+            .antMatchers("/impersonate"
+                    , "/api/admins/profile"
+                    , "/api/admins/update"
+                    , "/api/admins/change-password"
+                    , "/api/applicants/**"
+                    , "/api/switchUser/impersonate/**"
+                    , "/api/fleets/addFleet"
+                    , "/api/item-type/addItemType"
                     ).access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
