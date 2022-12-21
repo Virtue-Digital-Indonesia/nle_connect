@@ -127,7 +127,7 @@ public class ItemServiceImpl implements ItemService {
         if (request.getSku() != null)
             item.setSku(request.getSku());
         if (request.getDescription() != null)
-            item.setSku(request.getDescription());
+            item.setDescription(request.getDescription());
         if (Integer.valueOf(request.getPrice()) != null)
             item.setPrice(request.getPrice());
         if (request.getType() != null)
