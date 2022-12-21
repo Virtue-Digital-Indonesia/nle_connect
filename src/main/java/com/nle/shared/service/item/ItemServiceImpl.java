@@ -36,17 +36,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final DepoFleetRepository depoFleetRepository;
     private final ItemTypeRepository itemTypeRepository;
 
-    private final static Map<String,String> mapOfSort= Map.ofEntries(
-            Map.entry("fleetCode","f.code"),
-            Map.entry("fleetName","dF.name")
-    );
+    private final static Map<String, String> mapOfSort = Map.ofEntries(
+            Map.entry("fleetCode", "f.code"),
+            Map.entry("fleetName", "dF.name"));
 
     @Override
     public PagingResponseModel<ItemResponse> getListItem(Pageable pageable) {
@@ -61,7 +60,7 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public List<ItemResponse> getItemDepo(Long depo_id, ItemTypeEnum type) {
-        List<Item> itemList = itemRepository.getAllByDepoId(depo_id,type);
+        List<Item> itemList = itemRepository.getAllByDepoId(depo_id, type);
         List<ItemResponse> responseList = new ArrayList<>();
         for (Item item : itemList) {
             responseList.add(this.convertToResponse(item));
@@ -70,13 +69,14 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public ItemResponse createItem (CreateItemRequest request) {
+    public ItemResponse createItem(CreateItemRequest request) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty()) {
             return new ItemResponse();
         }
 
-        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository
+                .findByCompanyEmail(currentUserLogin.get());
         if (depoOwnerAccount.isEmpty())
             throw new CommonException("Cannot find this depo owner ");
 
@@ -90,7 +90,8 @@ public class ItemServiceImpl implements ItemService{
         item.setItem_name(itemType.get());
 
         if (request.getFleetCode() != null && !request.getFleetCode().trim().isEmpty()) {
-            Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
+            Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(),
+                    request.getFleetCode());
             if (fleet.isEmpty())
                 throw new CommonException("this fleet code is not register in depo");
 
@@ -102,7 +103,7 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public ItemResponse updateItem (Long id, CreateItemRequest request) {
+    public ItemResponse updateItem(Long id, CreateItemRequest request) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty()) {
             return new ItemResponse();
@@ -110,12 +111,11 @@ public class ItemServiceImpl implements ItemService{
 
         Optional<Item> optionalItem = itemRepository.findById(id);
 
-        if (optionalItem.isEmpty()) throw new CommonException("cannot find item id");
+        if (optionalItem.isEmpty())
+            throw new CommonException("cannot find item id");
         Item item = optionalItem.get();
         if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(currentUserLogin.get()))
             throw new BadRequestException("this item is not in this depo ");
-
-        BeanUtils.copyProperties(request, item);
 
         if (request.getItem_code() != null) {
             Optional<ItemType> itemType = itemTypeRepository.findByCode(request.getItem_code());
@@ -124,14 +124,23 @@ public class ItemServiceImpl implements ItemService{
             item.setItem_name(itemType.get());
         }
 
+        if (request.getSku() != null)
+            item.setSku(request.getSku());
+        if (request.getDescription() != null)
+            item.setSku(request.getDescription());
+        if (Integer.valueOf(request.getPrice()) != null)
+            item.setPrice(request.getPrice());
+        if (request.getType() != null)
+            item.setType(request.getType());
+        if (request.getStatus() != null)
+            item.setStatus(request.getStatus());
+
         if (request.getFleetCode() != null && !request.getFleetCode().trim().isEmpty()) {
-            Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
+            Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(),
+                    request.getFleetCode());
             if (depoFleet.isEmpty())
                 throw new CommonException("cannot find this fleet in this depo");
             item.setDepoFleet(depoFleet.get());
-        }
-        else if (request.getFleetCode() == null || request.getFleetCode().trim().isEmpty()) {
-            item.setDepoFleet(null);
         }
 
         Item savedItem = itemRepository.save(item);
@@ -148,11 +157,14 @@ public class ItemServiceImpl implements ItemService{
         String email = currentUserLogin.get();
         for (Long id : listID) {
             Optional<Item> optionalItem = itemRepository.findById(id);
-            if (optionalItem.isEmpty()) continue;
+            if (optionalItem.isEmpty())
+                continue;
 
             Item item = optionalItem.get();
-            if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(email)) continue;
-            if (item.getDeleted() == true) continue;
+            if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(email))
+                continue;
+            if (item.getDeleted() == true)
+                continue;
 
             item.setDeleted(true);
             Item savedItem = itemRepository.save(item);
@@ -162,10 +174,11 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public PagingResponseModel<ItemResponse> search(ItemSearchRequest request,Pageable pageable) {
+    public PagingResponseModel<ItemResponse> search(ItemSearchRequest request, Pageable pageable) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        String sortField=mapOfSort.get(getSortBy(pageable))==null?getSortBy(pageable):mapOfSort.get(getSortBy(pageable));
-        Pageable customPageable= PageRequest.of(pageable.getPageNumber(),
+        String sortField = mapOfSort.get(getSortBy(pageable)) == null ? getSortBy(pageable)
+                : mapOfSort.get(getSortBy(pageable));
+        Pageable customPageable = PageRequest.of(pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by(getDirection(pageable),
                         sortField));
@@ -187,7 +200,7 @@ public class ItemServiceImpl implements ItemService{
         return null;
     }
 
-    private ItemResponse convertToResponse (Item item) {
+    private ItemResponse convertToResponse(Item item) {
         ItemResponse itemResponse = new ItemResponse();
         BeanUtils.copyProperties(item, itemResponse);
 
