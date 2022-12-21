@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class CreateItemRequest {
 
-    private String item_name;
+    private String item_code;
     private String sku;
     private String description;
     private int price;

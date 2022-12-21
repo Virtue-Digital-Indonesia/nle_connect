@@ -11,7 +11,7 @@ import lombok.ToString;
 public class ItemResponse {
 
     private Long id;
-    private String item_name;
+    private ItemTypeResponse item_name;
     private String sku;
     private String description;
     private int price;

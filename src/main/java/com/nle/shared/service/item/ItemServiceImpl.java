@@ -6,14 +6,17 @@ import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
+import com.nle.io.entity.ItemType;
 import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
+import com.nle.io.repository.ItemTypeRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
 import com.nle.ui.model.request.search.ItemSearchRequest;
 import com.nle.ui.model.response.ItemResponse;
+import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.util.ConvertResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +41,7 @@ public class ItemServiceImpl implements ItemService{
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final DepoFleetRepository depoFleetRepository;
+    private final ItemTypeRepository itemTypeRepository;
 
     private final static Map<String,String> mapOfSort= Map.ofEntries(
             Map.entry("fleetCode","f.code"),
@@ -80,6 +84,11 @@ public class ItemServiceImpl implements ItemService{
         BeanUtils.copyProperties(request, item);
         item.setDepoOwnerAccount(depoOwnerAccount.get());
 
+        Optional<ItemType> itemType = itemTypeRepository.findByCode(request.getItem_code());
+        if (itemType.isEmpty())
+            throw new CommonException("Cannot find this item code");
+        item.setItem_name(itemType.get());
+
         if (request.getFleetCode() != null && !request.getFleetCode().trim().isEmpty()) {
             Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
             if (fleet.isEmpty())
@@ -107,6 +116,13 @@ public class ItemServiceImpl implements ItemService{
             throw new BadRequestException("this item is not in this depo ");
 
         BeanUtils.copyProperties(request, item);
+
+        if (request.getItem_code() != null) {
+            Optional<ItemType> itemType = itemTypeRepository.findByCode(request.getItem_code());
+            if (itemType.isEmpty())
+                throw new CommonException("Cannot find this item code");
+            item.setItem_name(itemType.get());
+        }
 
         if (request.getFleetCode() != null && !request.getFleetCode().trim().isEmpty()) {
             Optional<DepoFleet> depoFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleetCode());
@@ -174,6 +190,10 @@ public class ItemServiceImpl implements ItemService{
     private ItemResponse convertToResponse (Item item) {
         ItemResponse itemResponse = new ItemResponse();
         BeanUtils.copyProperties(item, itemResponse);
+
+        ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
+        BeanUtils.copyProperties(item.getItem_name(), itemTypeResponse);
+        itemResponse.setItem_name(itemTypeResponse);
 
         if (item.getDepoFleet() != null) {
             itemResponse.setFleet(ConvertResponseUtil.convertDepoFleetToResponse(item.getDepoFleet()));

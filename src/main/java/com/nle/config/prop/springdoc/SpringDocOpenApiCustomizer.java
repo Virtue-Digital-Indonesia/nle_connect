@@ -72,6 +72,7 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/items/**",
                 "/api/contact-us",
                 "/api/depo/order/**",
+                "/api/item-type",
 
                 // depo-owner-controller
                 "/api/register/**",
@@ -99,7 +100,8 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 "/api/admins/**",
                 "/api/switchUser/**",
                 "/api/applicants/**",
-                "/api/fleets/addFleet"
+                "/api/fleets/addFleet",
+                "/api/item-type/addItemType",
         };
         return GroupedOpenApi.builder()
                 .group("secret-admin")
