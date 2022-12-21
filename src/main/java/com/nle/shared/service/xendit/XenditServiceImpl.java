@@ -28,6 +28,8 @@ public class XenditServiceImpl implements XenditService{
     private final String DATE_PATTERN = "yyyy-MM-dd";
     private final XenditRepository xenditRepository;
 
+    private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
+
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
 
@@ -49,16 +51,22 @@ public class XenditServiceImpl implements XenditService{
         params.put("external_id", "va-" + request.getPhone_number());
         params.put("bank_code", request.getBack_code());
         params.put("name", request.getName());
-        params.put("virtual_account_number", request.getPhone_number());
+//        params.put("virtual_account_number", request.getPhone_number());
         params.put("expected_amount", request.getExpected_amount());
         params.put("description", request.getDescription()); //BRI || BSI
         params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN));
+        params.put("is_closed", true);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("for-user-id", "63a15cccb566b1a4513dd533");
+        headers.put("with-fee-rule", feeRule);
 
 
         XenditResponse response = new XenditResponse();
         try {
-            FixedVirtualAccount closedVA = FixedVirtualAccount.createClosed(params);
+            FixedVirtualAccount closedVA = FixedVirtualAccount.createClosed(headers, params);
             BeanUtils.copyProperties(closedVA, response);
+            response.setExpirationDate(String.valueOf(closedVA.getExpirationDate()));
 
             XenditVA xenditVA = new XenditVA();
             xenditVA.setXendit_id(closedVA.getId());
@@ -93,6 +101,8 @@ public class XenditServiceImpl implements XenditService{
         try {
             FixedVirtualAccount va = FixedVirtualAccount.update(xenditVA.getXendit_id(), params);
             BeanUtils.copyProperties(va, response);
+            response.setExpirationDate(String.valueOf(va.getExpirationDate()));
+
             xenditVA.setAmount(price);
             xenditVA.setPayment_status(va.getStatus());
             xenditVA.setExpired_date(String.valueOf(va.getExpirationDate()));
