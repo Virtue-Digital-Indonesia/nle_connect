@@ -1,9 +1,5 @@
 package com.nle.shared.service.depoOwner;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.constant.enums.VerificationType;
@@ -25,24 +21,21 @@ import com.nle.shared.dto.DepoOwnerAccountDTO;
 import com.nle.shared.dto.DepoOwnerAccountProfileDTO;
 import com.nle.shared.service.email.EmailService;
 import com.nle.shared.service.ftp.SSHService;
+import com.nle.shared.service.xendit.XenditService;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import com.nle.ui.model.request.ForgotPasswordRequest;
 import com.nle.ui.model.request.UpdateDepoOwnerRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -69,7 +62,8 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
 
     private final SSHService sshService;
     private final TokenProvider tokenProvider;
-    private final AppProperties appProperties;
+
+    private final XenditService xenditService;
 
     @Override
     public DepoOwnerAccountDTO createDepoOwnerAccount(DepoOwnerAccountDTO depoOwnerAccountDTO) {
@@ -132,7 +126,7 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
             log.error("Error while creating FTP account", e);
         }
         depoOwnerAccount.setFtpFolder("/home/" + depoOwnerAccount.getCompanyEmail() + "/ftp/files");
-        depoOwnerAccount.setXenditVaId(createXenditAccount(depoOwnerAccount));
+        depoOwnerAccount.setXenditVaId(xenditService.createXenditAccount(depoOwnerAccount));
         depoOwnerAccountRepository.save(depoOwnerAccount);
         log.info("FTP account for depo owner " + depoOwnerAccount.getFullName() + " has been created.");
         // remove verification token
@@ -266,49 +260,6 @@ public class DepoOwnerAccountServiceImpl implements DepoOwnerAccountService {
         depoOwnerAccount
                 .setFtpPassword(Base64.getEncoder().encodeToString(newPassword.getBytes()));
         return depoOwnerAccount;
-    }
-
-    private String createXenditAccount(DepoOwnerAccount depoOwnerAccount) {
-
-        String createAccountUrl = "https://api.xendit.co/v2/accounts";
-
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        String username = appProperties.getXendit().getApiKey();
-        String auth = username + ":";
-        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-
-        httpHeaders.add("Authorization", "Basic " + encodedAuth);
-        httpHeaders.add("Content-Type", "application/json");
-
-        JSONObject publicProfile = new JSONObject();
-        try {
-            publicProfile.put("business_name", depoOwnerAccount.getOrganizationName());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject accountProfile = new JSONObject();
-        try {
-            accountProfile.put("email", depoOwnerAccount.getCompanyEmail());
-            accountProfile.put("type", "OWNED");
-            accountProfile.put("public_profile", publicProfile);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        final ObjectMapper objectMapper = new ObjectMapper();
-
-        HttpEntity<String> request = new HttpEntity<String>(accountProfile.toString(), httpHeaders);
-        String result = restTemplate.postForObject(createAccountUrl, request,
-                String.class);
-        try {
-            JsonNode root = objectMapper.readTree(result);
-            return root.path("id").asText();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return "failed";
     }
 
 }

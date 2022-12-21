@@ -1,6 +1,10 @@
 package com.nle.shared.service.xendit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.repository.XenditRepository;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
@@ -14,15 +18,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Base64;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class XenditServiceImpl implements XenditService{
+public class XenditServiceImpl implements XenditService {
 
     private final AppProperties appProperties;
     private final String DATE_PATTERN = "yyyy-MM-dd";
@@ -33,7 +43,8 @@ public class XenditServiceImpl implements XenditService{
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
 
-        Optional<XenditVA> optionalXendit = xenditRepository.findByPhoneAndBank(request.getPhone_number(), request.getBack_code());
+        Optional<XenditVA> optionalXendit = xenditRepository.findByPhoneAndBank(request.getPhone_number(),
+                request.getBack_code());
 
         XenditResponse response = null;
         if (optionalXendit.isEmpty())
@@ -51,16 +62,15 @@ public class XenditServiceImpl implements XenditService{
         params.put("external_id", "va-" + request.getPhone_number());
         params.put("bank_code", request.getBack_code());
         params.put("name", request.getName());
-//        params.put("virtual_account_number", request.getPhone_number());
+        // params.put("virtual_account_number", request.getPhone_number());
         params.put("expected_amount", request.getExpected_amount());
-        params.put("description", request.getDescription()); //BRI || BSI
+        params.put("description", request.getDescription()); // BRI || BSI
         params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN));
         params.put("is_closed", true);
 
         Map<String, String> headers = new HashMap<>();
         headers.put("for-user-id", "63a15cccb566b1a4513dd533");
         headers.put("with-fee-rule", feeRule);
-
 
         XenditResponse response = new XenditResponse();
         try {
@@ -95,7 +105,7 @@ public class XenditServiceImpl implements XenditService{
         params.put("expected_amount", price);
         params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN));
         params.put("external_id", "va-" + request.getPhone_number());
-        params.put("description", request.getDescription()); //BRI || BSI
+        params.put("description", request.getDescription()); // BRI || BSI
 
         XenditResponse response = new XenditResponse();
         try {
@@ -130,12 +140,55 @@ public class XenditServiceImpl implements XenditService{
 
         try {
             FixedVirtualAccount va = FixedVirtualAccount.update(payload.getId(), params);
-//            xenditVA.setPayment_status(va.getStatus());
+            // xenditVA.setPayment_status(va.getStatus());
             System.out.println(va.getStatus());
             xenditVA.setExpired_date(String.valueOf(va.getExpirationDate()));
             xenditRepository.save(xenditVA);
         } catch (XenditException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String createXenditAccount(DepoOwnerAccount depoOwnerAccount) {
+        String createAccountUrl = "https://api.xendit.co/v2/accounts";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String username = appProperties.getXendit().getApiKey();
+        String auth = username + ":";
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+        httpHeaders.add("Authorization", "Basic " + encodedAuth);
+        httpHeaders.add("Content-Type", "application/json");
+
+        JSONObject publicProfile = new JSONObject();
+        try {
+            publicProfile.put("business_name", depoOwnerAccount.getOrganizationName());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject accountProfile = new JSONObject();
+        try {
+            accountProfile.put("email", depoOwnerAccount.getCompanyEmail());
+            accountProfile.put("type", "OWNED");
+            accountProfile.put("public_profile", publicProfile);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+        HttpEntity<String> request = new HttpEntity<String>(accountProfile.toString(), httpHeaders);
+        String result = restTemplate.postForObject(createAccountUrl, request,
+                String.class);
+        try {
+            JsonNode root = objectMapper.readTree(result);
+            return root.path("id").asText();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "failed";
     }
 }
