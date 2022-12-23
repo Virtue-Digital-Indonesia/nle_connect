@@ -1,5 +1,6 @@
 package com.nle.io.entity;
 
+import com.nle.constant.enums.XenditEnum;
 import com.nle.io.entity.common.AbstractAuditingEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,18 +23,22 @@ public class XenditVA extends AbstractAuditingEntity implements Serializable {
     @Column(name = "xendit_id")
     private String xendit_id;
 
+    @Column(name = "invoice_id")
+    private String invoice_id;
+
+    @Column(name = "payment_id")
+    private String payment_id;
+
     @Column(name = "phone_number")
     private String phone_number;
 
     @Column(name = "amount")
-    private int amount;
+    private Long amount;
 
     @Column(name = "bank_code")
     private String bank_code;
 
     @Column(name = "payment_status")
-    private String payment_status;
-
-    @Column(name = "expired_date")
-    private String expired_date;
+    @Enumerated(EnumType.STRING)
+    private XenditEnum payment_status;
 }

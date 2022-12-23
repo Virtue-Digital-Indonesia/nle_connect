@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
+import com.nle.constant.enums.XenditEnum;
+import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.repository.XenditRepository;
@@ -14,6 +16,7 @@ import com.nle.util.DateUtil;
 import com.xendit.Xendit;
 import com.xendit.exception.XenditException;
 import com.xendit.model.FixedVirtualAccount;
+import com.xendit.model.Invoice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -36,6 +39,7 @@ public class XenditServiceImpl implements XenditService {
 
     private final AppProperties appProperties;
     private final String DATE_PATTERN = "yyyy-MM-dd";
+    private final String VA_CODE = "9999"; //kalo live 90566
     private final XenditRepository xenditRepository;
 
     private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
@@ -49,27 +53,35 @@ public class XenditServiceImpl implements XenditService {
         XenditResponse response = null;
         if (optionalXendit.isEmpty())
             response = CreateNewVirtualAccount(request);
-        else
+        else {
+            if (optionalXendit.get().getPayment_status() == XenditEnum.PENDING)
+                throw new BadRequestException("Haven't paid previous invoices");
+
             response = UpdateVirtualAccount(optionalXendit.get(), request);
+        }
 
         return response;
     }
 
     @Override
     public XenditResponse CreateNewVirtualAccount(XenditRequest request) {
+
+        int va_index = request.getPhone_number().length();
+        String va_number = VA_CODE + request.getPhone_number().substring(va_index - 8, va_index);
+
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         Map<String, Object> params = new HashMap<>();
-        params.put("external_id", "va-" + request.getPhone_number());
+        params.put("external_id", "va-" + request.getBack_code() + "-" + request.getPhone_number());
         params.put("bank_code", request.getBack_code());
         params.put("name", request.getName());
-        // params.put("virtual_account_number", request.getPhone_number());
+         params.put("virtual_account_number", va_number);
         params.put("expected_amount", request.getExpected_amount());
-        params.put("description", request.getDescription()); // BRI || BSI
-        params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN));
+        params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN) + "T23:59:00");
         params.put("is_closed", true);
+        params.put("is_single_use", true);
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("for-user-id", "63a15cccb566b1a4513dd533");
+        headers.put("for-user-id", request.getUser_xendit_id());
         headers.put("with-fee-rule", feeRule);
 
         XenditResponse response = new XenditResponse();
@@ -77,14 +89,15 @@ public class XenditServiceImpl implements XenditService {
             FixedVirtualAccount closedVA = FixedVirtualAccount.createClosed(headers, params);
             BeanUtils.copyProperties(closedVA, response);
             response.setExpirationDate(String.valueOf(closedVA.getExpirationDate()));
+            response.setAmount(closedVA.getExpectedAmount());
 
             XenditVA xenditVA = new XenditVA();
             xenditVA.setXendit_id(closedVA.getId());
             xenditVA.setPhone_number(request.getPhone_number());
-            xenditVA.setAmount((Integer) request.getExpected_amount());
+            xenditVA.setAmount(closedVA.getExpectedAmount());
             xenditVA.setBank_code(closedVA.getBankCode());
-            xenditVA.setPayment_status(closedVA.getStatus());
-            xenditVA.setExpired_date(String.valueOf(closedVA.getExpirationDate()));
+            xenditVA.setPayment_status(XenditEnum.PENDING);
+            BindWithInvoice(response, request.getUser_xendit_id(), xenditVA);
             xenditRepository.save(xenditVA);
         } catch (XenditException e) {
             throw new RuntimeException(e);
@@ -95,17 +108,12 @@ public class XenditServiceImpl implements XenditService {
     @Override
     public XenditResponse UpdateVirtualAccount(XenditVA xenditVA, XenditRequest request) {
 
-        int price = (int) request.getExpected_amount();
-        if (xenditVA.getPayment_status().equalsIgnoreCase("PENDING"))
-            price += xenditVA.getAmount();
-
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         Map<String, Object> params = new HashMap<>();
         params.put("is_single_use", false);
-        params.put("expected_amount", price);
+        params.put("expected_amount", request.getExpected_amount());
         params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN));
-        params.put("external_id", "va-" + request.getPhone_number());
-        params.put("description", request.getDescription()); // BRI || BSI
+        params.put("external_id", "va-" + request.getBack_code() + "-" + request.getPhone_number());
 
         XenditResponse response = new XenditResponse();
         try {
@@ -113,15 +121,39 @@ public class XenditServiceImpl implements XenditService {
             BeanUtils.copyProperties(va, response);
             response.setExpirationDate(String.valueOf(va.getExpirationDate()));
 
-            xenditVA.setAmount(price);
-            xenditVA.setPayment_status(va.getStatus());
-            xenditVA.setExpired_date(String.valueOf(va.getExpirationDate()));
+            xenditVA.setAmount(va.getExpectedAmount());
+            xenditVA.setPayment_status(XenditEnum.PENDING);
             xenditRepository.save(xenditVA);
         } catch (XenditException e) {
             throw new RuntimeException(e);
         }
 
         return response;
+    }
+
+    private void BindWithInvoice(XenditResponse xenditResponse, String depo_Xendit_id, XenditVA xenditVA) {
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+
+        String [] paymentMethod = {xenditResponse.getBankCode()};
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("external_id", xenditResponse.getExternalId());
+        params.put("amount", xenditResponse.getAmount());
+        params.put("description", "Invoice-{{$timestamp}}");
+        params.put("callback_virtual_account_id", xenditResponse.getId());
+        params.put("payment_methods", paymentMethod);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("for-user-id", depo_Xendit_id);
+        headers.put("with-fee-rule", feeRule);
+
+        try {
+            Invoice invoice = Invoice.create(headers, params);
+            xenditVA.setInvoice_id(invoice.getId());
+            xenditResponse.setInvoice_url(invoice.getInvoiceUrl());
+        } catch (XenditException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -131,22 +163,7 @@ public class XenditServiceImpl implements XenditService {
             System.out.println("id not saved");
 
         XenditVA xenditVA = optionalXenditVA.get();
-        xenditVA.setPayment_status("DONE");
-
-        Xendit.apiKey = appProperties.getXendit().getApiKey();
-        Map<String, Object> params = new HashMap<>();
-        params.put("is_single_use", false);
-        params.put("expiration_date", DateUtil.getYesterdayString(DATE_PATTERN));
-
-        try {
-            FixedVirtualAccount va = FixedVirtualAccount.update(payload.getId(), params);
-            // xenditVA.setPayment_status(va.getStatus());
-            System.out.println(va.getStatus());
-            xenditVA.setExpired_date(String.valueOf(va.getExpirationDate()));
-            xenditRepository.save(xenditVA);
-        } catch (XenditException e) {
-            throw new RuntimeException(e);
-        }
+        xenditVA.setPayment_status(XenditEnum.PAID);
     }
 
     @Override

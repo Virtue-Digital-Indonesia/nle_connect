@@ -26,6 +26,7 @@ public class XenditResponse {
      private String accountNumber;
      private String name;
      private String currency;
+     private Long amount;
 
      @JsonProperty("is_single_use")
      private Boolean isSingleUse;
@@ -36,4 +37,6 @@ public class XenditResponse {
      @JsonProperty("expiration_date")
      private String expirationDate;
      private String status;
+
+     private String invoice_url;
 }
