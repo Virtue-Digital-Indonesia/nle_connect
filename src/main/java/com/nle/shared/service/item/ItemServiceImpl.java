@@ -117,16 +117,16 @@ public class ItemServiceImpl implements ItemService {
         if (!item.getDepoOwnerAccount().getCompanyEmail().equalsIgnoreCase(currentUserLogin.get()))
             throw new BadRequestException("this item is not in this depo ");
 
-        if (request.getItem_code() != null) {
+        if (request.getItem_code() != null && !request.getItem_code().trim().isEmpty()) {
             Optional<ItemType> itemType = itemTypeRepository.findByCode(request.getItem_code());
             if (itemType.isEmpty())
                 throw new CommonException("Cannot find this item code");
             item.setItem_name(itemType.get());
         }
 
-        if (request.getSku() != null)
+        if (request.getSku() != null && !request.getSku().trim().isEmpty())
             item.setSku(request.getSku());
-        if (request.getDescription() != null)
+        if (request.getDescription() != null && !request.getDescription().trim().isEmpty())
             item.setDescription(request.getDescription());
         if (Integer.valueOf(request.getPrice()) != null)
             item.setPrice(request.getPrice());
