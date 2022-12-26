@@ -1,6 +1,7 @@
 package com.nle.io.entity;
 
 import com.nle.constant.enums.XenditEnum;
+import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.entity.common.AbstractAuditingEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,10 @@ public class XenditVA extends AbstractAuditingEntity implements Serializable {
 
     @Column(name = "xendit_id")
     private String xendit_id;
+
+    @OneToOne
+    @JoinColumn(name = "booking_header_id", referencedColumnName = "id")
+    private BookingHeader booking_header_id;
 
     @Column(name = "invoice_id")
     private String invoice_id;

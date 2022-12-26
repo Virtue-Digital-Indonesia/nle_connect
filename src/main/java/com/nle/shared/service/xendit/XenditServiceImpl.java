@@ -4,11 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
+import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.XenditEnum;
 import com.nle.exception.BadRequestException;
+import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
+import com.nle.io.entity.booking.BookingHeader;
+import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.XenditRepository;
+import com.nle.io.repository.booking.BookingHeaderRepository;
+import com.nle.security.SecurityUtils;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditResponse;
@@ -41,47 +47,61 @@ public class XenditServiceImpl implements XenditService {
     private final String DATE_PATTERN = "yyyy-MM-dd";
     private final String VA_CODE = "9999"; //kalo live 90566
     private final XenditRepository xenditRepository;
+    private final BookingHeaderRepository bookingHeaderRepository;
+    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
 
     private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
 
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
 
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty() || !username.get().startsWith("+62") || !username.get().startsWith("62") || !username.get().startsWith("0"))
+            throw new BadRequestException("invalid token");
+
         Optional<XenditVA> optionalXendit = xenditRepository.findByPhoneAndBank(request.getPhone_number(),
                 request.getBack_code());
 
-        XenditResponse response = null;
-        if (optionalXendit.isEmpty())
-            response = CreateNewVirtualAccount(request);
-        else {
-            if (optionalXendit.get().getPayment_status() == XenditEnum.PENDING)
-                throw new BadRequestException("Haven't paid previous invoices");
+        Optional<DepoOwnerAccount> accountOptional = depoOwnerAccountRepository.findById(request.getDepo_id());
+        if (accountOptional.isEmpty())
+            throw new BadRequestException("can't find depo");
 
-            response = UpdateVirtualAccount(optionalXendit.get(), request);
-        }
+        DepoOwnerAccount doa = accountOptional.get();
+        if (doa.getXenditVaId() == null)
+            throw new BadRequestException("this depo is not active");
 
+        XenditResponse response = CreateNewVirtualAccount(request, doa);
         return response;
     }
 
     @Override
-    public XenditResponse CreateNewVirtualAccount(XenditRequest request) {
+    public XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo) {
 
         int va_index = request.getPhone_number().length();
         String va_number = VA_CODE + request.getPhone_number().substring(va_index - 8, va_index);
+
+        Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository.findById(request.getBooking_header_id());
+        if (optionalBookingHeader.isEmpty())
+            throw new CommonException("not found booking id");
+        if (optionalBookingHeader.get().getBooking_status() != BookingStatusEnum.WAITING)
+            throw new BadRequestException("this booking already paid");
+        if (optionalBookingHeader.get().getDepoOwnerAccount().getId() != depo.getId())
+            throw new BadRequestException("this booking not for this depo");
+
 
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", "va-" + request.getBack_code() + "-" + request.getPhone_number());
         params.put("bank_code", request.getBack_code());
         params.put("name", request.getName());
-         params.put("virtual_account_number", va_number);
+        params.put("virtual_account_number", va_number);
         params.put("expected_amount", request.getExpected_amount());
         params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN) + "T23:59:00");
         params.put("is_closed", true);
         params.put("is_single_use", true);
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("for-user-id", request.getUser_xendit_id());
+        headers.put("for-user-id", depo.getXenditVaId());
         headers.put("with-fee-rule", feeRule);
 
         XenditResponse response = new XenditResponse();
@@ -97,7 +117,8 @@ public class XenditServiceImpl implements XenditService {
             xenditVA.setAmount(closedVA.getExpectedAmount());
             xenditVA.setBank_code(closedVA.getBankCode());
             xenditVA.setPayment_status(XenditEnum.PENDING);
-            BindWithInvoice(response, request.getUser_xendit_id(), xenditVA);
+            xenditVA.setBooking_header_id(optionalBookingHeader.get());
+            BindWithInvoice(response, depo.getXenditVaId(), xenditVA);
             xenditRepository.save(xenditVA);
         } catch (XenditException e) {
             throw new RuntimeException(e);
@@ -139,7 +160,7 @@ public class XenditServiceImpl implements XenditService {
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", xenditResponse.getExternalId());
         params.put("amount", xenditResponse.getAmount());
-        params.put("description", "Invoice-{{$timestamp}}");
+        params.put("description", "Invoice-" + DateUtil.getNowString(DATE_PATTERN));
         params.put("callback_virtual_account_id", xenditResponse.getId());
         params.put("payment_methods", paymentMethod);
 
