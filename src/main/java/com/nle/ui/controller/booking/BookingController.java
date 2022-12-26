@@ -152,9 +152,16 @@ public class BookingController {
 
     @Operation(hidden = true)
     @PutMapping(value = "/payment/callback")
-    public ResponseEntity<Invoice> callbackBooking (@RequestBody XenditCallbackPayload payload) {
+    public ResponseEntity<XenditCallbackPayload> callbackBooking (@RequestBody XenditCallbackPayload payload) {
         Invoice invoice = xenditService.VirtualAccountPayment(payload);
 //        return ResponseEntity.ok("Success paid");
-        return ResponseEntity.ok(invoice);
+//        return ResponseEntity.ok(invoice);
+        return ResponseEntity.ok(payload);
+    }
+
+    @Operation(hidden = true)
+    @PutMapping(value = "/payment/callback/invoice")
+    public ResponseEntity<XenditCallbackPayload> callbackInvoice (@RequestBody XenditCallbackPayload payload) {
+        return ResponseEntity.ok(payload);
     }
 }
