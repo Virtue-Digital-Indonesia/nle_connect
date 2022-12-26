@@ -5,6 +5,7 @@ import com.nle.io.entity.XenditVA;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditResponse;
+import com.xendit.model.Invoice;
 
 public interface XenditService {
     XenditResponse CreateVirtualAccount(XenditRequest request);
@@ -13,7 +14,7 @@ public interface XenditService {
 
     XenditResponse UpdateVirtualAccount(XenditVA xenditVA, XenditRequest request);
 
-    void VirtualAccountPayment(XenditCallbackPayload payload);
+    Invoice VirtualAccountPayment(XenditCallbackPayload payload);
 
     String createXenditAccount(DepoOwnerAccount depoOwnerAccount);
 }
