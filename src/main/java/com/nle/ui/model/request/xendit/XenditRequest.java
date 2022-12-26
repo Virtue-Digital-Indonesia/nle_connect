@@ -8,7 +8,7 @@ import lombok.Setter;
 public class XenditRequest {
     private Long depo_id;
     private Long booking_header_id;
-    private String back_code;
+    private String bank_code;
     private String name;
     private String phone_number;
     private Number expected_amount;
