@@ -60,7 +60,7 @@ public class XenditServiceImpl implements XenditService {
             throw new BadRequestException("invalid token");
 
         Optional<XenditVA> optionalXendit = xenditRepository.findByPhoneAndBank(request.getPhone_number(),
-                request.getBack_code());
+                request.getBank_code());
 
         Optional<DepoOwnerAccount> accountOptional = depoOwnerAccountRepository.findById(request.getDepo_id());
         if (accountOptional.isEmpty())
@@ -91,8 +91,8 @@ public class XenditServiceImpl implements XenditService {
 
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         Map<String, Object> params = new HashMap<>();
-        params.put("external_id", "va-" + request.getBack_code() + "-" + request.getPhone_number());
-        params.put("bank_code", request.getBack_code());
+        params.put("external_id", "va-" + request.getBank_code() + "-" + request.getPhone_number());
+        params.put("bank_code", request.getBank_code());
         params.put("name", request.getName());
         params.put("virtual_account_number", va_number);
         params.put("expected_amount", request.getExpected_amount());
@@ -134,7 +134,7 @@ public class XenditServiceImpl implements XenditService {
         params.put("is_single_use", false);
         params.put("expected_amount", request.getExpected_amount());
         params.put("expiration_date", DateUtil.getTomorrowString(DATE_PATTERN));
-        params.put("external_id", "va-" + request.getBack_code() + "-" + request.getPhone_number());
+        params.put("external_id", "va-" + request.getBank_code() + "-" + request.getPhone_number());
 
         XenditResponse response = new XenditResponse();
         try {
