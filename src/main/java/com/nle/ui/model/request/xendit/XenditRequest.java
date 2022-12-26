@@ -6,9 +6,10 @@ import lombok.Setter;
 @Setter
 @Getter
 public class XenditRequest {
-    private String back_code;
+    private Long depo_id;
+    private Long booking_header_id;
+    private String bank_code;
     private String name;
     private String phone_number;
     private Number expected_amount;
-    private String description;
 }

@@ -5,6 +5,12 @@ import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
 
+    public static String getNowString(String pattern) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        String now = formatter.format(LocalDateTime.now());
+        return now;
+    }
+
     public static String getTomorrowString(String pattern) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         String now = formatter.format(LocalDateTime.now().plusDays(1));

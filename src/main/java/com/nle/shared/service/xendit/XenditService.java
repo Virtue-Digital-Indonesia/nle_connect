@@ -9,7 +9,7 @@ import com.nle.ui.model.response.XenditResponse;
 public interface XenditService {
     XenditResponse CreateVirtualAccount(XenditRequest request);
 
-    XenditResponse CreateNewVirtualAccount(XenditRequest request);
+    XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo);
 
     XenditResponse UpdateVirtualAccount(XenditVA xenditVA, XenditRequest request);
 
