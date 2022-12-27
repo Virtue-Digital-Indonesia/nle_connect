@@ -58,7 +58,7 @@ public class XenditServiceImpl implements XenditService {
         if (username.isEmpty() || !username.get().startsWith("+62") || !username.get().startsWith("62") || !username.get().startsWith("0"))
             throw new BadRequestException("invalid token");
 
-        Optional<XenditVA> optionalXendit = xenditRepository.findByPhoneAndBank(request.getPhone_number(),
+        Optional<XenditVA> optionalXendit = xenditRepository.getVaWithPhoneAndBank(request.getPhone_number(),
                 request.getBank_code());
 
         Optional<DepoOwnerAccount> accountOptional = depoOwnerAccountRepository.findById(request.getDepo_id());
@@ -178,7 +178,7 @@ public class XenditServiceImpl implements XenditService {
 
     @Override
     public void VirtualAccountPayment(XenditCallbackPayload payload) {
-        Optional<XenditVA> optionalXenditVA = xenditRepository.findByXendit_id(payload.getId());
+        Optional<XenditVA> optionalXenditVA = xenditRepository.getVaWithXenditId(payload.getId());
         if (optionalXenditVA.isEmpty())
             System.out.println("id not saved");
 
