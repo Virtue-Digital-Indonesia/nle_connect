@@ -38,18 +38,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Base64;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class XenditServiceImpl implements XenditService {
 
     private final AppProperties appProperties;
-    private String DATE_PATTERN = "yyyy-MM-dd";
-    private String VA_CODE = "9999"; //kalo live 90566
+    private final String DATE_PATTERN = "yyyy-MM-dd";
+    private final String VA_CODE = "9999"; //kalo live 90566
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
-    private String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
+    private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
 
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
