@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Base64;
 
-@RequiredArgsConstructor
 @Service
 @Transactional
 public class XenditServiceImpl implements XenditService {
@@ -50,6 +49,13 @@ public class XenditServiceImpl implements XenditService {
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
+
+    public XenditServiceImpl (AppProperties appProperties, XenditRepository xenditRepository, BookingHeaderRepository bookingHeaderRepository, DepoOwnerAccountRepository depoOwnerAccountRepository) {
+        this.appProperties = appProperties;
+        this.xenditRepository = xenditRepository;
+        this.bookingHeaderRepository = bookingHeaderRepository;
+        this.depoOwnerAccountRepository = depoOwnerAccountRepository;
+    }
 
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
