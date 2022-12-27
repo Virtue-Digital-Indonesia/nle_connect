@@ -11,8 +11,6 @@ public interface XenditService {
 
     XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo);
 
-    XenditResponse UpdateVirtualAccount(XenditVA xenditVA, XenditRequest request);
-
     void VirtualAccountPayment(XenditCallbackPayload payload);
 
     String createXenditAccount(DepoOwnerAccount depoOwnerAccount);
