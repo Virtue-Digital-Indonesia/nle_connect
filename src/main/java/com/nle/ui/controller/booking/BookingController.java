@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -44,6 +45,8 @@ public class BookingController {
     private final BookingService bookingService;
     private final ApplicantService applicantService;
     private final ItemService itemService;
+
+    @Autowired
     private final XenditService xenditService;
 
     @Operation(description = "get booking by id", operationId = "getBookingById", summary = "get booking by Id")
