@@ -44,7 +44,7 @@ public class BookingController {
     private final BookingService bookingService;
     private final ApplicantService applicantService;
     private final ItemService itemService;
-    private final XenditService xenditService;
+//    private final XenditService xenditService;
 
     @Operation(description = "get booking by id", operationId = "getBookingById", summary = "get booking by Id")
     @SecurityRequirement(name = "nleapi")
@@ -142,17 +142,17 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.searchBooking(request, pageable));
     }
 
-    @Operation(description = "create virtual account for payment", operationId = "paymentBooking", summary = "create virtual account for payment")
-    @SecurityRequirement(name = "nleapi")
-    @PostMapping(value = "/payment")
-    public ResponseEntity<XenditResponse> paymentBooking(@RequestBody XenditRequest request) {
-        return ResponseEntity.ok(xenditService.CreateVirtualAccount(request));
-    }
-
-    @Operation(hidden = true)
-    @PutMapping(value = "/payment/callback")
-    public ResponseEntity<String> callbackBooking (@RequestBody XenditCallbackPayload payload) {
-        xenditService.VirtualAccountPayment(payload);
-        return ResponseEntity.ok("Success paid");
-    }
+//    @Operation(description = "create virtual account for payment", operationId = "paymentBooking", summary = "create virtual account for payment")
+//    @SecurityRequirement(name = "nleapi")
+//    @PostMapping(value = "/payment")
+//    public ResponseEntity<XenditResponse> paymentBooking(@RequestBody XenditRequest request) {
+//        return ResponseEntity.ok(xenditService.CreateVirtualAccount(request));
+//    }
+//
+//    @Operation(hidden = true)
+//    @PutMapping(value = "/payment/callback")
+//    public ResponseEntity<String> callbackBooking (@RequestBody XenditCallbackPayload payload) {
+//        xenditService.VirtualAccountPayment(payload);
+//        return ResponseEntity.ok("Success paid");
+//    }
 }
