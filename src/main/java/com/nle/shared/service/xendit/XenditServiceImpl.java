@@ -24,6 +24,9 @@ import com.xendit.exception.XenditException;
 import com.xendit.model.FixedVirtualAccount;
 import com.xendit.model.Invoice;
 import lombok.RequiredArgsConstructor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +46,7 @@ public class XenditServiceImpl implements XenditService {
 
     private final AppProperties appProperties;
     private final String DATE_PATTERN = "yyyy-MM-dd";
-    private final String VA_CODE = "9999"; //kalo live 90566
+    private final String VA_CODE = "9999"; // kalo live 90566
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
@@ -53,7 +56,8 @@ public class XenditServiceImpl implements XenditService {
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
 
         Optional<String> username = SecurityUtils.getCurrentUserLogin();
-        if (username.isEmpty() || !username.get().startsWith("+62") || !username.get().startsWith("62") || !username.get().startsWith("0"))
+        if (username.isEmpty() || !username.get().startsWith("+62") || !username.get().startsWith("62")
+                || !username.get().startsWith("0"))
             throw new BadRequestException("invalid token");
 
         Optional<XenditVA> optionalXendit = xenditRepository.getVaWithPhoneAndBank(request.getPhone_number(),
@@ -77,14 +81,14 @@ public class XenditServiceImpl implements XenditService {
         int va_index = request.getPhone_number().length();
         String va_number = VA_CODE + request.getPhone_number().substring(va_index - 8, va_index);
 
-        Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository.findById(request.getBooking_header_id());
+        Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository
+                .findById(request.getBooking_header_id());
         if (optionalBookingHeader.isEmpty())
             throw new CommonException("not found booking id");
         if (optionalBookingHeader.get().getBooking_status() != BookingStatusEnum.WAITING)
             throw new BadRequestException("this booking already paid");
         if (optionalBookingHeader.get().getDepoOwnerAccount().getId() != depo.getId())
             throw new BadRequestException("this booking not for this depo");
-
 
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         Map<String, Object> params = new HashMap<>();
@@ -126,7 +130,7 @@ public class XenditServiceImpl implements XenditService {
     private void BindWithInvoice(XenditResponse xenditResponse, String depo_Xendit_id, XenditVA xenditVA) {
         Xendit.apiKey = appProperties.getXendit().getApiKey();
 
-        String [] paymentMethod = {xenditResponse.getBankCode()};
+        String[] paymentMethod = { xenditResponse.getBankCode() };
 
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", xenditResponse.getExternalId());
@@ -160,44 +164,44 @@ public class XenditServiceImpl implements XenditService {
 
     @Override
     public String createXenditAccount(DepoOwnerAccount depoOwnerAccount) {
-//        String createAccountUrl = "https://api.xendit.co/v2/accounts";
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        String username = appProperties.getXendit().getApiKey();
-//        String auth = username + ":";
-//        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-//
-//        httpHeaders.add("Authorization", "Basic " + encodedAuth);
-//        httpHeaders.add("Content-Type", "application/json");
-//
-//        JSONObject publicProfile = new JSONObject();
-//        try {
-//            publicProfile.put("business_name", depoOwnerAccount.getOrganizationName());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        JSONObject accountProfile = new JSONObject();
-//        try {
-//            accountProfile.put("email", depoOwnerAccount.getCompanyEmail());
-//            accountProfile.put("type", "OWNED");
-//            accountProfile.put("public_profile", publicProfile);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        final ObjectMapper objectMapper = new ObjectMapper();
-//
-//        HttpEntity<String> request = new HttpEntity<String>(accountProfile.toString(), httpHeaders);
-//        String result = restTemplate.postForObject(createAccountUrl, request,
-//                String.class);
-//        try {
-//            JsonNode root = objectMapper.readTree(result);
-//            return root.path("id").asText();
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
+        String createAccountUrl = "https://api.xendit.co/v2/accounts";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String username = appProperties.getXendit().getApiKey();
+        String auth = username + ":";
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+        httpHeaders.add("Authorization", "Basic " + encodedAuth);
+        httpHeaders.add("Content-Type", "application/json");
+
+        JSONObject publicProfile = new JSONObject();
+        try {
+            publicProfile.put("business_name", depoOwnerAccount.getOrganizationName());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject accountProfile = new JSONObject();
+        try {
+            accountProfile.put("email", depoOwnerAccount.getCompanyEmail());
+            accountProfile.put("type", "OWNED");
+            accountProfile.put("public_profile", publicProfile);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+        HttpEntity<String> request = new HttpEntity<String>(accountProfile.toString(), httpHeaders);
+        String result = restTemplate.postForObject(createAccountUrl, request,
+                String.class);
+        try {
+            JsonNode root = objectMapper.readTree(result);
+            return root.path("id").asText();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         return "failed";
     }
 }
