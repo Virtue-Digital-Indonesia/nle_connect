@@ -1,10 +1,12 @@
 package com.nle.ui.model.request.xendit;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
+@Data
 public class XenditCallbackPayload {
 
     private String id;
