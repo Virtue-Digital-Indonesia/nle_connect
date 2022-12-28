@@ -28,8 +28,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
@@ -162,44 +160,44 @@ public class XenditServiceImpl implements XenditService {
 
     @Override
     public String createXenditAccount(DepoOwnerAccount depoOwnerAccount) {
-        String createAccountUrl = "https://api.xendit.co/v2/accounts";
-
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        String username = appProperties.getXendit().getApiKey();
-        String auth = username + ":";
-        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-
-        httpHeaders.add("Authorization", "Basic " + encodedAuth);
-        httpHeaders.add("Content-Type", "application/json");
-
-        JSONObject publicProfile = new JSONObject();
-        try {
-            publicProfile.put("business_name", depoOwnerAccount.getOrganizationName());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject accountProfile = new JSONObject();
-        try {
-            accountProfile.put("email", depoOwnerAccount.getCompanyEmail());
-            accountProfile.put("type", "OWNED");
-            accountProfile.put("public_profile", publicProfile);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        final ObjectMapper objectMapper = new ObjectMapper();
-
-        HttpEntity<String> request = new HttpEntity<String>(accountProfile.toString(), httpHeaders);
-        String result = restTemplate.postForObject(createAccountUrl, request,
-                String.class);
-        try {
-            JsonNode root = objectMapper.readTree(result);
-            return root.path("id").asText();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+//        String createAccountUrl = "https://api.xendit.co/v2/accounts";
+//
+//        RestTemplate restTemplate = new RestTemplate();
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        String username = appProperties.getXendit().getApiKey();
+//        String auth = username + ":";
+//        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+//
+//        httpHeaders.add("Authorization", "Basic " + encodedAuth);
+//        httpHeaders.add("Content-Type", "application/json");
+//
+//        JSONObject publicProfile = new JSONObject();
+//        try {
+//            publicProfile.put("business_name", depoOwnerAccount.getOrganizationName());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        JSONObject accountProfile = new JSONObject();
+//        try {
+//            accountProfile.put("email", depoOwnerAccount.getCompanyEmail());
+//            accountProfile.put("type", "OWNED");
+//            accountProfile.put("public_profile", publicProfile);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        final ObjectMapper objectMapper = new ObjectMapper();
+//
+//        HttpEntity<String> request = new HttpEntity<String>(accountProfile.toString(), httpHeaders);
+//        String result = restTemplate.postForObject(createAccountUrl, request,
+//                String.class);
+//        try {
+//            JsonNode root = objectMapper.readTree(result);
+//            return root.path("id").asText();
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
         return "failed";
     }
 }
