@@ -57,9 +57,11 @@ public class XenditServiceImpl implements XenditService {
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
 
         Optional<String> username = SecurityUtils.getCurrentUserLogin();
-        if (username.isEmpty() || !username.get().startsWith("+62") || !username.get().startsWith("62")
-                || !username.get().startsWith("0"))
+        if (username.isEmpty())
             throw new BadRequestException("invalid token");
+
+        if (!username.get().startsWith("+62") && !username.get().startsWith("62") && !username.get().startsWith("0"))
+            throw new BadRequestException("not token from phone");
 
         Optional<XenditVA> optionalXendit = xenditRepository.getVaWithPhoneAndBank(request.getPhone_number(),
                 request.getBank_code());
