@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.BookingStatusEnum;
+import com.nle.constant.enums.PaymentMethodEnum;
 import com.nle.constant.enums.XenditEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
@@ -168,6 +169,11 @@ public class XenditServiceImpl implements XenditService {
             entity.setPayment_status(XenditEnum.EXPIRED);
         }
 
+        BookingHeader bookingHeader = xenditVA.get().getBooking_header_id();
+        bookingHeader.setPayment_method(PaymentMethodEnum.BANK);
+        bookingHeader.setBooking_status(BookingStatusEnum.SUCCESS);
+
+        bookingHeaderRepository.save(bookingHeader);
         xenditRepository.save(entity);
     }
 
