@@ -19,6 +19,7 @@ import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.XenditResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
+import com.xendit.model.Invoice;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -150,9 +151,10 @@ public class BookingController {
     }
 
     @Operation(hidden = true)
-    @PutMapping(value = "/payment/callback")
-    public ResponseEntity<String> callbackBooking (@RequestBody XenditCallbackPayload payload) {
-        xenditService.VirtualAccountPayment(payload);
-        return ResponseEntity.ok("Success paid");
+    @PutMapping(value = "/payment/callback/invoice")
+    public ResponseEntity<XenditCallbackPayload> callbackInvoice (@RequestBody XenditCallbackPayload payload) {
+        System.out.println(payload.toString());
+        xenditService.CallbackInvoice(payload);
+        return ResponseEntity.ok(payload);
     }
 }
