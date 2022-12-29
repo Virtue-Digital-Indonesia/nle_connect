@@ -151,7 +151,7 @@ public class BookingController {
     }
 
     @Operation(hidden = true)
-    @PutMapping(value = "/payment/callback/invoice")
+    @PostMapping(value = "/payment/callback/invoice")
     public ResponseEntity<XenditCallbackPayload> callbackInvoice (@RequestBody XenditCallbackPayload payload) {
         System.out.println(payload.toString());
         xenditService.CallbackInvoice(payload);
