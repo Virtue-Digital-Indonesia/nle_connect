@@ -12,7 +12,7 @@ public interface XenditService {
 
     XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo);
 
-    Invoice VirtualAccountPayment(XenditCallbackPayload payload);
+    void CallbackInvoice(XenditCallbackPayload payload);
 
     String createXenditAccount(DepoOwnerAccount depoOwnerAccount);
 }

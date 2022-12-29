@@ -10,16 +10,21 @@ import lombok.Setter;
 public class XenditCallbackPayload {
 
     private String id;
-    private String payment_id;
-    private String callback_virtual_account_id;
-    private String owner_id;
+    private String user_id;
     private String external_id;
-    private String account_number;
-    private String bank_code;
-    private String transaction_timestamp;
+    private Boolean is_high;
+    private String status;
+    private String merchant_name;
     private int amount;
-    private String merchant_code;
+    private String created;
+    private String updated;
+    private String description;
+    private int paid_amount;
+    private String payment_method;
+    private String bank_code;
     private String currency;
-    private String sender_name;
-    private XenditDetailPayload payment_detail;
+    private int initial_amount;
+    private String paid_at;
+    private String payment_channel;
+    private String payment_destination;
 }

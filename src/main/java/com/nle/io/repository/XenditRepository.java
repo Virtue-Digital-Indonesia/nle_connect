@@ -15,4 +15,6 @@ public interface XenditRepository extends JpaRepository<XenditVA, Long> {
 
     @Query(value = "SELECT xa FROM XenditVA xa WHERE xa.xendit_id = :xendit_id")
     Optional<XenditVA> getVaWithXenditId(String xendit_id);
+
+    Optional<XenditVA> findWithInvoiceId(String xendit_id);
 }

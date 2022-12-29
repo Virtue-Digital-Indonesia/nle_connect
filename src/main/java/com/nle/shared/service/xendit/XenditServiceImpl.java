@@ -153,35 +153,22 @@ public class XenditServiceImpl implements XenditService {
     }
 
     @Override
-    public Invoice VirtualAccountPayment(XenditCallbackPayload payload) {
-        Optional<XenditVA> optionalXenditVA = xenditRepository.getVaWithXenditId(payload.getId());
-        if (optionalXenditVA.isEmpty())
-            System.out.println("id not saved");
-        XenditVA xenditVA = optionalXenditVA.get();
+    public void CallbackInvoice(XenditCallbackPayload payload) {
+        Optional<XenditVA> xenditVA = xenditRepository.findWithInvoiceId(payload.getId());
 
-        //get xendit sub account id
-        BookingHeader bookingHeader = xenditVA.getBooking_header_id();
-        DepoOwnerAccount depo = bookingHeader.getDepoOwnerAccount();
-        Map<String, String> headers = new HashMap<>();
-        headers.put("for-user-id", depo.getXenditVaId());
+        if (xenditVA.isEmpty())
+            throw new BadRequestException("not found invoice id");
 
-        Xendit.apiKey = appProperties.getXendit().getApiKey();
-        Invoice invoice = null;
-        try {
-            invoice = Invoice.getById(headers, xenditVA.getInvoice_id());
-            if (invoice.getStatus().equalsIgnoreCase("SETTLED")) {
-                xenditVA.setPayment_status(XenditEnum.PAID);
-                xenditVA.setPayment_id(payload.getPayment_id());
-            }
-            if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
-                xenditVA.setPayment_status(XenditEnum.EXPIRED);
-                xenditVA.setPayment_id(payload.getPayment_id());
-            }
-            xenditRepository.save(xenditVA);
-        } catch (XenditException e) {
-            throw new RuntimeException(e);
+        XenditVA entity = xenditVA.get();
+        if (payload.getStatus().equalsIgnoreCase("PAID")) {
+            entity.setPayment_id(payload.getPaid_at());
+            entity.setPayment_status(XenditEnum.PAID);
         }
-        return invoice;
+        else if (payload.getStatus().equalsIgnoreCase("EXPIRED")) {
+            entity.setPayment_status(XenditEnum.EXPIRED);
+        }
+
+        xenditRepository.save(entity);
     }
 
     @Override
