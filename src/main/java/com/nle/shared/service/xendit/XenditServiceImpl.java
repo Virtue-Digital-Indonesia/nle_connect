@@ -162,21 +162,32 @@ public class XenditServiceImpl implements XenditService {
         if (xenditVA.isEmpty())
             throw new BadRequestException("not found invoice id");
 
-        XenditVA entity = xenditVA.get();
-        if (payload.getStatus().equalsIgnoreCase("PAID")) {
-            entity.setPayment_id(payload.getPaid_at());
-            entity.setPayment_status(XenditEnum.PAID);
-        }
-        else if (payload.getStatus().equalsIgnoreCase("EXPIRED")) {
-            entity.setPayment_status(XenditEnum.EXPIRED);
-        }
+        Map<String, String> headers = new HashMap<>();
+        headers.put("for-user-id", payload.getUser_id());
 
-        BookingHeader bookingHeader = xenditVA.get().getBooking_header_id();
-        bookingHeader.setPayment_method(PaymentMethodEnum.BANK);
-        bookingHeader.setBooking_status(BookingStatusEnum.SUCCESS);
+        try {
+            Invoice invoice = Invoice.getById(headers, payload.getId());
+            XenditVA entity = xenditVA.get();
 
-        bookingHeaderRepository.save(bookingHeader);
-        xenditRepository.save(entity);
+            if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
+                return;
+            }
+            else if (invoice.getStatus().equalsIgnoreCase("PAID")) {
+                entity.setPayment_id(payload.getPaid_at());
+                entity.setPayment_status(XenditEnum.PAID);
+                BookingHeader bookingHeader = xenditVA.get().getBooking_header_id();
+                bookingHeader.setPayment_method(PaymentMethodEnum.BANK);
+                bookingHeader.setBooking_status(BookingStatusEnum.SUCCESS);
+                bookingHeaderRepository.save(bookingHeader);
+            }
+            else if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
+                entity.setPayment_status(XenditEnum.EXPIRED);
+            }
+
+            xenditRepository.save(entity);
+        } catch (XenditException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
