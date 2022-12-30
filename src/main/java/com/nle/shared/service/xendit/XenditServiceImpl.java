@@ -158,6 +158,7 @@ public class XenditServiceImpl implements XenditService {
     @Override
     public void CallbackInvoice(XenditCallbackPayload payload) {
         Optional<XenditVA> xenditVA = xenditRepository.findWithInvoiceId(payload.getId());
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
 
         if (xenditVA.isEmpty())
             throw new BadRequestException("not found invoice id");
