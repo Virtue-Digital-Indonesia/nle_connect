@@ -5,6 +5,7 @@ import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.ItemResponse;
+import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
 import com.nle.ui.model.response.booking.DetailLoadingResponse;
 import com.nle.ui.model.response.booking.DetailUnloadingResponse;
@@ -20,16 +21,16 @@ public class ConvertBookingUtil {
 
     public static BookingResponse convertBookingHeaderToResponse(BookingHeader entity) {
 
-//      convert Booking Header
+        // convert Booking Header
         BookingResponse response = new BookingResponse();
         BeanUtils.copyProperties(entity, response);
 
-//      convert depo / applicant
+        // convert depo / applicant
         ApplicantResponse applicantResponse = new ApplicantResponse();
         BeanUtils.copyProperties(entity.getDepoOwnerAccount(), applicantResponse);
         response.setDepo(applicantResponse);
 
-//      convert item
+        // convert item
         List<ItemResponse> orderDetailResponseList = new ArrayList<>();
         orderDetailResponseList = convertBookingUnloadingDetail(entity, orderDetailResponseList);
         orderDetailResponseList = convertBookingLoadingDetail(entity, orderDetailResponseList);
@@ -37,7 +38,8 @@ public class ConvertBookingUtil {
         return response;
     }
 
-    public static List<ItemResponse> convertBookingUnloadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
+    public static List<ItemResponse> convertBookingUnloadingDetail(BookingHeader entity,
+            List<ItemResponse> orderDetailResponseList) {
 
         Set<BookingDetailUnloading> unloadingList = entity.getBookingDetailUnloadings();
         if (unloadingList == null || unloadingList.isEmpty()) {
@@ -52,14 +54,20 @@ public class ConvertBookingUtil {
         return orderDetailResponseList;
     }
 
-    public static DetailUnloadingResponse convertUnloading(BookingDetailUnloading detail){
-        //convert item to unloading response
+    public static DetailUnloadingResponse convertUnloading(BookingDetailUnloading detail) {
+        // convert item to unloading response
         DetailUnloadingResponse unloadingResponse = new DetailUnloadingResponse();
         BeanUtils.copyProperties(detail.getItem(), unloadingResponse);
-        //convert unloading to unloading response
+        // convert unloading to unloading response
         unloadingResponse.setPrice(detail.getPrice());
         unloadingResponse.setContainer_number(detail.getContainer_number());
-        //convert fleet
+
+        // convert item type
+        ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
+        BeanUtils.copyProperties(detail.getItem().getItem_name(), itemTypeResponse);
+        unloadingResponse.setItem_name(itemTypeResponse);
+
+        // convert fleet
         if (detail.getItem().getDepoFleet() != null) {
             unloadingResponse.setFleet(ConvertResponseUtil.convertDepoFleetToResponse(detail.getItem().getDepoFleet()));
         }
@@ -67,10 +75,11 @@ public class ConvertBookingUtil {
         return unloadingResponse;
     }
 
-    public static List<ItemResponse> convertBookingLoadingDetail(BookingHeader entity, List<ItemResponse> orderDetailResponseList) {
+    public static List<ItemResponse> convertBookingLoadingDetail(BookingHeader entity,
+            List<ItemResponse> orderDetailResponseList) {
 
         Set<BookingDetailLoading> loadingList = entity.getBookingDetailLoadings();
-        if(loadingList == null || loadingList.isEmpty())
+        if (loadingList == null || loadingList.isEmpty())
             return orderDetailResponseList;
 
         for (BookingDetailLoading loading : loadingList) {
@@ -87,6 +96,11 @@ public class ConvertBookingUtil {
 
         loadingResponse.setPrice(detail.getPrice());
         loadingResponse.setQuantity(detail.getQuantity());
+
+        // convert item type
+        ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
+        BeanUtils.copyProperties(detail.getItem().getItem_name(), itemTypeResponse);
+        loadingResponse.setItem_name(itemTypeResponse);
 
         if (detail.getItem().getDepoFleet() != null)
             loadingResponse.setFleet(ConvertResponseUtil.convertDepoFleetToResponse(detail.getItem().getDepoFleet()));
