@@ -173,7 +173,7 @@ public class XenditServiceImpl implements XenditService {
             if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
                 return;
             }
-            else if (invoice.getStatus().equalsIgnoreCase("PAID")) {
+            else if (invoice.getStatus().equalsIgnoreCase("SETTLED")) {
                 entity.setPayment_id(payload.getPaid_at());
                 entity.setPayment_status(XenditEnum.PAID);
                 BookingHeader bookingHeader = xenditVA.get().getBooking_header_id();
