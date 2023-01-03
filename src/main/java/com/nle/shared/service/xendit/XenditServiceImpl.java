@@ -122,7 +122,7 @@ public class XenditServiceImpl implements XenditService {
             xenditVA.setBank_code(closedVA.getBankCode());
             xenditVA.setPayment_status(XenditEnum.PENDING);
             xenditVA.setBooking_header_id(optionalBookingHeader.get());
-            BindWithInvoice(response, depo.getXenditVaId(), xenditVA);
+            BindWithInvoice(response, depo.getXenditVaId(), xenditVA, optionalBookingHeader.get().getEmail());
             xenditRepository.save(xenditVA);
         } catch (XenditException e) {
             throw new RuntimeException(e);
@@ -130,15 +130,24 @@ public class XenditServiceImpl implements XenditService {
         return response;
     }
 
-    private void BindWithInvoice(XenditResponse xenditResponse, String depo_Xendit_id, XenditVA xenditVA) {
+    private void BindWithInvoice(XenditResponse xenditResponse, String depo_Xendit_id, XenditVA xenditVA,
+            String bookingHeaderEmail) {
         Xendit.apiKey = appProperties.getXendit().getApiKey();
 
         String[] paymentMethod = { xenditResponse.getBankCode() };
+
+        Map<String, Object> customerObject = new HashMap<>();
+        customerObject.put("email", bookingHeaderEmail);
+        Map<String, Object> customerNotificationPreference = new HashMap<>();
+        String[] notifications = { "email" };
+        customerNotificationPreference.put("invoice_created", notifications);
 
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", xenditResponse.getExternalId());
         params.put("amount", xenditResponse.getAmount());
         params.put("description", "Invoice-" + DateUtil.getNowString(DATE_PATTERN));
+        params.put("customer", customerObject);
+        params.put("customer_notification_preference", customerNotificationPreference);
         params.put("callback_virtual_account_id", xenditResponse.getId());
         params.put("payment_methods", paymentMethod);
 
@@ -172,16 +181,14 @@ public class XenditServiceImpl implements XenditService {
 
             if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
                 return;
-            }
-            else if (invoice.getStatus().equalsIgnoreCase("SETTLED")) {
+            } else if (invoice.getStatus().equalsIgnoreCase("SETTLED")) {
                 entity.setPayment_id(payload.getPaid_at());
                 entity.setPayment_status(XenditEnum.PAID);
                 BookingHeader bookingHeader = xenditVA.get().getBooking_header_id();
                 bookingHeader.setPayment_method(PaymentMethodEnum.BANK);
                 bookingHeader.setBooking_status(BookingStatusEnum.SUCCESS);
                 bookingHeaderRepository.save(bookingHeader);
-            }
-            else if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
+            } else if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 entity.setPayment_status(XenditEnum.EXPIRED);
             }
 
