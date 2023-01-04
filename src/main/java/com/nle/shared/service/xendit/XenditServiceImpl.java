@@ -20,6 +20,7 @@ import com.nle.ui.model.request.xendit.XenditCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditResponse;
 import com.nle.util.DateUtil;
+import com.nle.util.XenditUtil;
 import com.xendit.Xendit;
 import com.xendit.exception.XenditException;
 import com.xendit.model.FixedVirtualAccount;
@@ -75,17 +76,18 @@ public class XenditServiceImpl implements XenditService {
             throw new BadRequestException("this depo is not active");
 
         Optional<XenditVA> optionalXenditPending = xenditRepository
-                .getVaWithPhoneAndPendingPayment(request.getPhone_number());
+                .getVaWithPhoneAndBankAndPendingPayment(request.getPhone_number(), request.getBank_code());
 
         XenditResponse response = new XenditResponse();
         if (!optionalXendit.isEmpty()) {
             XenditVA xenditVA = optionalXenditPending.get();
-            Invoice invoice = getInvoice(doa.getXenditVaId(), xenditVA.getInvoice_id());
+            Xendit.apiKey = appProperties.getXendit().getApiKey();
+            Invoice invoice = XenditUtil.getInvoice(doa.getXenditVaId(), xenditVA.getInvoice_id());
             if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 xenditVA.setPayment_status(XenditEnum.EXPIRED);
                 xenditRepository.save(xenditVA);
             } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
-                FixedVirtualAccount fvAccount = getVA(doa.getXenditVaId(), xenditVA.getXendit_id());
+                FixedVirtualAccount fvAccount = XenditUtil.getVA(doa.getXenditVaId(), xenditVA.getXendit_id());
                 BeanUtils.copyProperties(fvAccount, response);
                 response.setExpirationDate(String.valueOf(fvAccount.getExpirationDate()));
                 response.setAmount(fvAccount.getExpectedAmount());
@@ -95,32 +97,6 @@ public class XenditServiceImpl implements XenditService {
 
         response = CreateNewVirtualAccount(request, doa);
         return response;
-    }
-
-    private Invoice getInvoice(String forUserId, String invoiceId) {
-        Xendit.apiKey = appProperties.getXendit().getApiKey();
-        Map<String, String> headers = new HashMap<>();
-        headers.put("for-user-id", forUserId);
-        try {
-            Invoice invoice = Invoice.getById(headers, invoiceId);
-            return invoice;
-        } catch (XenditException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private FixedVirtualAccount getVA(String forUserId, String vaId) {
-        Xendit.apiKey = appProperties.getXendit().getApiKey();
-        Map<String, String> headers = new HashMap<>();
-        headers.put("for-user-id", forUserId);
-        try {
-            FixedVirtualAccount fvAccount = FixedVirtualAccount.getFixedVA(headers, vaId);
-            return fvAccount;
-        } catch (XenditException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override
