@@ -133,7 +133,6 @@ public class ApplicantServiceImpl implements ApplicantService {
             DepoOwnerAccount savedEntity = depoOwnerAccountRepository.save(entity);
 
             responseList.add(this.convertFromEntity(savedEntity));
-            responseList.add(this.convertFromEntity(entity));
         }
         return responseList;
     }
