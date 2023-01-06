@@ -141,6 +141,8 @@ public class XenditServiceImpl implements XenditService {
         Map<String, Object> customerNotificationPreference = new HashMap<>();
         String[] notifications = { "email" };
         customerNotificationPreference.put("invoice_created", notifications);
+        customerNotificationPreference.put("invoice_paid", notifications);
+        customerNotificationPreference.put("invoice_expired", notifications);
 
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", xenditResponse.getExternalId());
