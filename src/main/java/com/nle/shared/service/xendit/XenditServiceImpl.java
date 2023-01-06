@@ -64,9 +64,6 @@ public class XenditServiceImpl implements XenditService {
         if (!username.get().startsWith("+62") && !username.get().startsWith("62") && !username.get().startsWith("0"))
             throw new BadRequestException("not token from phone");
 
-        Optional<XenditVA> optionalXendit = xenditRepository.getVaWithPhoneAndBank(request.getPhone_number(),
-                request.getBank_code());
-
         Optional<DepoOwnerAccount> accountOptional = depoOwnerAccountRepository.findById(request.getDepo_id());
         if (accountOptional.isEmpty())
             throw new BadRequestException("can't find depo");
@@ -79,7 +76,7 @@ public class XenditServiceImpl implements XenditService {
                 .getVaWithPhoneAndBankAndPendingPayment(request.getPhone_number(), request.getBank_code());
 
         XenditResponse response = new XenditResponse();
-        if (!optionalXendit.isEmpty()) {
+        if (!optionalXenditPending.isEmpty()) {
             XenditVA xenditVA = optionalXenditPending.get();
             Xendit.apiKey = appProperties.getXendit().getApiKey();
             Invoice invoice = XenditUtil.getInvoice(doa.getXenditVaId(), xenditVA.getInvoice_id());
@@ -91,6 +88,8 @@ public class XenditServiceImpl implements XenditService {
                 BeanUtils.copyProperties(fvAccount, response);
                 response.setExpirationDate(String.valueOf(fvAccount.getExpirationDate()));
                 response.setAmount(fvAccount.getExpectedAmount());
+                response.setInvoice_url("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+                response.setStatus("PENDING");
                 return response;
             }
         }

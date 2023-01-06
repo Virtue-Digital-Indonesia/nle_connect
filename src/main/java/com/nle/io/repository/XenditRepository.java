@@ -10,9 +10,6 @@ import java.util.Optional;
 @Repository
 public interface XenditRepository extends JpaRepository<XenditVA, Long> {
 
-    @Query(value = "SELECT xa FROM XenditVA xa WHERE xa.phone_number = :phone AND xa.bank_code = :bank")
-    Optional<XenditVA> getVaWithPhoneAndBank(String phone, String bank);
-
     @Query(value = "SELECT xa FROM XenditVA xa WHERE xa.xendit_id = :xendit_id")
     Optional<XenditVA> getVaWithXenditId(String xendit_id);
 
