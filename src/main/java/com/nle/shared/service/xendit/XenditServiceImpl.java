@@ -36,10 +36,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Base64;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -260,5 +257,38 @@ public class XenditServiceImpl implements XenditService {
         }
         return "failed";
     }
+
+    public XenditResponse getXenditByBookingId(Long booking_id) {
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty())
+            throw new BadRequestException("invalid token");
+
+        Optional<XenditVA> optionalXenditVA = xenditRepository.findWithBookingID(booking_id);
+        XenditResponse response = new XenditResponse();
+        if (optionalXenditVA.isEmpty())
+            return response;
+
+        XenditVA xenditVA = optionalXenditVA.get();
+        BookingHeader bookingHeader = xenditVA.getBooking_header_id();
+        DepoOwnerAccount doa = bookingHeader.getDepoOwnerAccount();
+
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+        Invoice invoice = XenditUtil.getInvoice(doa.getXenditVaId(), xenditVA.getInvoice_id());
+        BeanUtils.copyProperties(invoice, response);
+        response.setInvoice_url(invoice.getInvoiceUrl());
+        response.setExpirationDate(invoice.getExpiryDate());
+        response.setOwnerId(doa.getXenditVaId());
+        response.setName(bookingHeader.getFull_name());
+        response.setAmount(invoice.getAmount().longValue());
+
+        int va_index = xenditVA.getPhone_number().length();
+        String va_number = VA_CODE + xenditVA.getPhone_number().substring(va_index - 8, va_index);
+        response.setAccountNumber(va_number);
+        response.setIsClosed(Boolean.TRUE);
+        response.setIsSingleUse(Boolean.TRUE);
+        return response;
+    }
+
+
 
 }
