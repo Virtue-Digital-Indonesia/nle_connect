@@ -15,4 +15,6 @@ public interface XenditService {
     void CallbackInvoice(XenditCallbackPayload payload);
 
     String createXenditAccount(DepoOwnerAccount depoOwnerAccount);
+
+    XenditResponse getXenditByBookingId(Long booking_id);
 }
