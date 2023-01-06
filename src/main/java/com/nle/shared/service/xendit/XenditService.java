@@ -7,6 +7,8 @@ import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditResponse;
 import com.xendit.model.Invoice;
 
+import java.util.List;
+
 public interface XenditService {
     XenditResponse CreateVirtualAccount(XenditRequest request);
 
@@ -17,4 +19,5 @@ public interface XenditService {
     String createXenditAccount(DepoOwnerAccount depoOwnerAccount);
 
     XenditResponse getXenditByBookingId(Long booking_id);
+    List<XenditResponse> getMultipleXenditByBookingId(List<Long> list_booking_header);
 }
