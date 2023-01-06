@@ -289,6 +289,14 @@ public class XenditServiceImpl implements XenditService {
         return response;
     }
 
+    public List<XenditResponse> getMultipleXenditByBookingId(List<Long> list_booking_header) {
+        List<XenditResponse> list = new ArrayList<>();
 
+        for (Long booking_id : list_booking_header) {
+            list.add(getXenditByBookingId(booking_id));
+        }
+
+        return list;
+    }
 
 }
