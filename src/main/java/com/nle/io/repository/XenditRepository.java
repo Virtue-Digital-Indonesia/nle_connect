@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,5 +22,8 @@ public interface XenditRepository extends JpaRepository<XenditVA, Long> {
 
     @Query(value = "SELECT xa FROM XenditVA xa WHERE xa.booking_header_id.id = :booking_id AND xa.payment_status != 'EXPIRED'")
     Optional<XenditVA> findWithBookingID(Long booking_id);
+
+    @Query(value = "SELECT xa FROM XenditVA xa WHERE xa.phone_number = :phone ")
+    List<XenditVA> findWithPhone(String phone);
 
 }

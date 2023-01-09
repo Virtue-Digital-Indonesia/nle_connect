@@ -4,6 +4,7 @@ import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
+import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
 import com.xendit.model.Invoice;
 
@@ -19,5 +20,8 @@ public interface XenditService {
     String createXenditAccount(DepoOwnerAccount depoOwnerAccount);
 
     XenditResponse getXenditByBookingId(Long booking_id);
+
     List<XenditResponse> getMultipleXenditByBookingId(List<Long> list_booking_header);
+
+    List<XenditListResponse> getMultipleXenditByPhone();
 }
