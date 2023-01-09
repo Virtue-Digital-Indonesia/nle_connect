@@ -58,8 +58,8 @@ public class XenditServiceImpl implements XenditService {
         if (username.isEmpty())
             throw new BadRequestException("invalid token");
 
-//        if (!username.get().startsWith("+62") && !username.get().startsWith("62") && !username.get().startsWith("0"))
-//            throw new BadRequestException("not token from phone");
+        if (!username.get().startsWith("+62") && !username.get().startsWith("62") && !username.get().startsWith("0"))
+            throw new BadRequestException("not token from phone");
 
         Optional<DepoOwnerAccount> accountOptional = depoOwnerAccountRepository.findById(request.getDepo_id());
         if (accountOptional.isEmpty())
