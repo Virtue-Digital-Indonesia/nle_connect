@@ -50,7 +50,7 @@ public class XenditServiceImpl implements XenditService {
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
-    private final String feeRule = "xpfeeru_800a5bcb-f007-4547-b4f4-5ae704f839b0";
+    private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
 
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
