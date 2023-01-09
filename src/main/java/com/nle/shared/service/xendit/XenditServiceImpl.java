@@ -18,6 +18,7 @@ import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
+import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
 import com.nle.util.DateUtil;
 import com.nle.util.XenditUtil;
@@ -299,6 +300,40 @@ public class XenditServiceImpl implements XenditService {
         }
 
         return list;
+    }
+
+    @Override
+    public List<XenditListResponse> getMultipleXenditByPhone() {
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty())
+            throw new BadRequestException("invalid token");
+
+        if (!username.get().startsWith("+62") && !username.get().startsWith("62") &&
+                !username.get().startsWith("0"))
+            throw new BadRequestException("not token from phone");
+        String phone = username.get();
+
+        List<XenditVA> listXenditVA = xenditRepository.findWithPhone(phone);
+        List<XenditListResponse> listResponse = new ArrayList<>();
+
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+        for (XenditVA xenditVA : listXenditVA) {
+            String forUserId = xenditVA.getBooking_header_id().getDepoOwnerAccount().getXenditVaId();
+            Invoice invoice = XenditUtil.getInvoice(forUserId, xenditVA.getInvoice_id());
+            FixedVirtualAccount fVa = XenditUtil.getVA(forUserId, xenditVA.getXendit_id());
+            XenditListResponse xenditListResponse = new XenditListResponse();
+            xenditListResponse.setBookingId(xenditVA.getBooking_header_id().getId());
+            xenditListResponse.setBookingType(xenditVA.getBooking_header_id().getBooking_type().toString());
+            xenditListResponse.setBankCode(xenditVA.getBank_code());
+            xenditListResponse.setVa(fVa.getAccountNumber());
+            xenditListResponse.setExpiryDate(invoice.getExpiryDate());
+            xenditListResponse.setAmount(xenditVA.getAmount());
+            xenditListResponse.setInvoiceUrl(invoice.getInvoiceUrl());
+            xenditListResponse.setStatus(xenditVA.getPayment_status().toString());
+            listResponse.add(xenditListResponse);
+        }
+
+        return listResponse;
     }
 
 }

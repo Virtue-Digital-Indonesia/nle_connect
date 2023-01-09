@@ -1,6 +1,7 @@
 package com.nle.ui.controller.booking;
 
 import com.nle.shared.service.xendit.XenditService;
+import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -29,5 +30,12 @@ public class PaymentController {
     @PostMapping(value = "/list")
     public ResponseEntity<List<XenditResponse>> getListXendit(@RequestBody List<Long> list_booking_header) {
         return ResponseEntity.ok(xenditService.getMultipleXenditByBookingId(list_booking_header));
+    }
+
+    @Operation(description = "get list Xendit VA by phone", operationId = "getListXenditByPhone", summary = "get list Xendit VA by phone")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/bookinglist")
+    public ResponseEntity<List<XenditListResponse>> getListXenditByPhone() {
+        return ResponseEntity.ok(xenditService.getMultipleXenditByPhone());
     }
 }
