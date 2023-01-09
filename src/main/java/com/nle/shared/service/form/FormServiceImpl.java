@@ -237,11 +237,15 @@ public class FormServiceImpl implements FormService {
 
             List<FormBonDTO> bons = new ArrayList<FormBonDTO>();
 
+            dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            String formattedDate = bookingHeader.getTxDateFormatted().format(dateTimeFormatter);
+
             if (bookingType.equalsIgnoreCase("UNLOADING")) {
                 List<BookingDetailUnloading> unloadingList = bookingDetailUnloadingRepository
                         .getAllByBookingHeaderId(id);
                 for (BookingDetailUnloading unloading : unloadingList) {
-                    String detailId = String.valueOf(unloading.getId());
+                    String detailId = String
+                            .valueOf(("BON/" + formattedDate + "/" + String.format("%04d", unloading.getId())));
                     String container = unloading.getContainer_number();
                     String item = unloading.getItem().getItem_name().getItemCode() + " "
                             + unloading.getItem().getItem_name().getItemType();
@@ -271,7 +275,8 @@ public class FormServiceImpl implements FormService {
                 String shipper = consignee;
                 consignee = "";
                 for (BookingDetailLoading loading : loadingList) {
-                    String detailId = String.valueOf(loading.getId());
+                    String detailId = String
+                            .valueOf(("BON/" + formattedDate + "/" + String.format("%04d", loading.getId())));
                     String container = "";
                     String item = loading.getItem().getItem_name().getItemCode() + " "
                             + loading.getItem().getItem_name().getItemType();
