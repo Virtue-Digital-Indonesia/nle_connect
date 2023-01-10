@@ -10,9 +10,11 @@ import com.nle.constant.enums.XenditEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.io.entity.DepoWorkerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.DepoWorkerAccountRepository;
 import com.nle.io.repository.XenditRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
@@ -49,6 +51,7 @@ public class XenditServiceImpl implements XenditService {
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+    private final DepoWorkerAccountRepository depoWorkerAccountRepository;
     private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
 
     @Override
@@ -299,6 +302,48 @@ public class XenditServiceImpl implements XenditService {
         }
 
         return list;
+    }
+
+    @Override
+    public XenditResponse CreatePaymentOrder(XenditRequest request) {
+
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+
+        if (username.isEmpty())
+            throw new BadRequestException("Invalid Token!");
+
+        Optional<DepoOwnerAccount> accountOptional = depoOwnerAccountRepository.findById(request.getDepo_id());
+        if (accountOptional.isEmpty())
+            throw new BadRequestException("Can't Find Depo!");
+
+        DepoOwnerAccount depoOwnerAccount = accountOptional.get();
+        if (depoOwnerAccount.getXenditVaId() == null)
+            throw new BadRequestException("This Depo is Not Active!");
+
+        Optional<XenditVA> optionalXenditPending = xenditRepository
+                .getVaWithPhoneAndBankAndPendingPayment(request.getPhone_number(),request.getBank_code());
+
+        XenditResponse xenditResponse = new XenditResponse();
+        if (!optionalXenditPending.isEmpty()){
+            XenditVA xenditVA = optionalXenditPending.get();
+            Xendit.apiKey = appProperties.getXendit().getApiKey();
+            Invoice invoice = XenditUtil.getInvoice(depoOwnerAccount.getXenditVaId(), xenditVA.getInvoice_id());
+            if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
+                xenditVA.setPayment_status(XenditEnum.EXPIRED);
+                xenditRepository.save(xenditVA);
+            } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
+                FixedVirtualAccount fixedVirtualAccount = XenditUtil.getVA(depoOwnerAccount.getXenditVaId(), xenditVA.getXendit_id());
+                BeanUtils.copyProperties(fixedVirtualAccount, xenditResponse);
+                xenditResponse.setExpirationDate(String.valueOf(fixedVirtualAccount.getExpirationDate()));
+                xenditResponse.setAmount(fixedVirtualAccount.getExpectedAmount());
+                xenditResponse.setInvoice_url("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+                xenditResponse.setStatus("PENDING");
+                return xenditResponse;
+            }
+        }
+
+        xenditResponse = CreateNewVirtualAccount(request, depoOwnerAccount);
+        return xenditResponse;
     }
 
 }
