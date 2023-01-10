@@ -46,11 +46,11 @@ public class XenditServiceImpl implements XenditService {
 
     private final AppProperties appProperties;
     private final String DATE_PATTERN = "yyyy-MM-dd";
-    private final String VA_CODE = "90566"; // kalo test 9999
+    private final String VA_CODE = "9999"; // kalo live 90566
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
-    private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
+    private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
 
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
@@ -100,7 +100,7 @@ public class XenditServiceImpl implements XenditService {
     public XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo) {
 
         int va_index = request.getPhone_number().length();
-        String va_number = VA_CODE + request.getPhone_number().substring(va_index - 7, va_index);
+        String va_number = VA_CODE + request.getPhone_number().substring(va_index - 8, va_index);
 
         Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository
                 .findById(request.getBooking_header_id());
