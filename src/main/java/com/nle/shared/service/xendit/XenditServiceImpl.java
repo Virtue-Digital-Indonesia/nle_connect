@@ -20,6 +20,7 @@ import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
+import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
 import com.nle.util.DateUtil;
 import com.nle.util.XenditUtil;
@@ -47,12 +48,11 @@ public class XenditServiceImpl implements XenditService {
 
     private final AppProperties appProperties;
     private final String DATE_PATTERN = "yyyy-MM-dd";
-    private final String VA_CODE = "9999"; // kalo live 90566
+    private final String VA_CODE = "90566"; // kalo test 9999
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
-    private final DepoWorkerAccountRepository depoWorkerAccountRepository;
-    private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
+    private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
 
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
@@ -102,7 +102,7 @@ public class XenditServiceImpl implements XenditService {
     public XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo) {
 
         int va_index = request.getPhone_number().length();
-        String va_number = VA_CODE + request.getPhone_number().substring(va_index - 8, va_index);
+        String va_number = VA_CODE + request.getPhone_number().substring(va_index - 7, va_index);
 
         Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository
                 .findById(request.getBooking_header_id());
@@ -140,6 +140,7 @@ public class XenditServiceImpl implements XenditService {
             xenditVA.setPhone_number(request.getPhone_number());
             xenditVA.setAmount(closedVA.getExpectedAmount());
             xenditVA.setBank_code(closedVA.getBankCode());
+            xenditVA.setAccount_number(closedVA.getAccountNumber());
             xenditVA.setPayment_status(XenditEnum.PENDING);
             xenditVA.setBooking_header_id(optionalBookingHeader.get());
             BindWithInvoice(response, depo.getXenditVaId(), xenditVA, optionalBookingHeader.get().getEmail());
@@ -180,6 +181,7 @@ public class XenditServiceImpl implements XenditService {
         try {
             Invoice invoice = Invoice.create(headers, params);
             xenditVA.setInvoice_id(invoice.getId());
+            xenditVA.setExpiry_date(invoice.getExpiryDate());
             xenditResponse.setInvoice_url(invoice.getInvoiceUrl());
         } catch (XenditException e) {
             throw new RuntimeException(e);
@@ -321,10 +323,10 @@ public class XenditServiceImpl implements XenditService {
             throw new BadRequestException("This Depo is Not Active!");
 
         Optional<XenditVA> optionalXenditPending = xenditRepository
-                .getVaWithPhoneAndBankAndPendingPayment(request.getPhone_number(),request.getBank_code());
+                .getVaWithPhoneAndBankAndPendingPayment(request.getPhone_number(), request.getBank_code());
 
         XenditResponse xenditResponse = new XenditResponse();
-        if (!optionalXenditPending.isEmpty()){
+        if (!optionalXenditPending.isEmpty()) {
             XenditVA xenditVA = optionalXenditPending.get();
             Xendit.apiKey = appProperties.getXendit().getApiKey();
             Invoice invoice = XenditUtil.getInvoice(depoOwnerAccount.getXenditVaId(), xenditVA.getInvoice_id());
@@ -344,6 +346,35 @@ public class XenditServiceImpl implements XenditService {
 
         xenditResponse = CreateNewVirtualAccount(request, depoOwnerAccount);
         return xenditResponse;
+
+    }
+    public List<XenditListResponse> getMultipleXenditByPhone() {
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty())
+            throw new BadRequestException("invalid token");
+
+        if (!username.get().startsWith("+62") && !username.get().startsWith("62") &&
+                !username.get().startsWith("0"))
+            throw new BadRequestException("not token from phone");
+        String phone = username.get();
+
+        List<XenditVA> listXenditVA = xenditRepository.findWithPhone(phone);
+        List<XenditListResponse> listResponse = new ArrayList<>();
+
+        for (XenditVA xenditVA : listXenditVA) {
+            XenditListResponse xenditListResponse = new XenditListResponse();
+            xenditListResponse.setBookingId(xenditVA.getBooking_header_id().getId());
+            xenditListResponse.setBookingType(xenditVA.getBooking_header_id().getBooking_type().toString());
+            xenditListResponse.setBankCode(xenditVA.getBank_code());
+            xenditListResponse.setVa(xenditVA.getAccount_number());
+            xenditListResponse.setExpiryDate(xenditVA.getExpiry_date());
+            xenditListResponse.setAmount(xenditVA.getAmount());
+            xenditListResponse.setInvoiceUrl("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+            xenditListResponse.setStatus(xenditVA.getPayment_status().toString());
+            listResponse.add(xenditListResponse);
+        }
+
+        return listResponse;
     }
 
 }

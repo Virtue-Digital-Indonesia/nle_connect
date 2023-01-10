@@ -14,7 +14,6 @@ import javax.transaction.Transactional;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.nle.config.prop.AppProperties;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.XenditVA;
@@ -31,9 +30,6 @@ import com.nle.ui.model.form.FormInvoiceDTO;
 import com.nle.ui.model.form.FormLoadingItems;
 import com.nle.ui.model.form.FormUnloadingItems;
 import com.nle.util.QrCodeUtil;
-import com.nle.util.XenditUtil;
-import com.xendit.Xendit;
-import com.xendit.model.FixedVirtualAccount;
 
 import fr.opensagres.poi.xwpf.converter.core.XWPFConverterException;
 import fr.opensagres.xdocreport.converter.ConverterTypeTo;
@@ -55,7 +51,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class FormServiceImpl implements FormService {
 
-    private final AppProperties appProperties;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final XenditRepository xenditRepository;
     private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
@@ -129,12 +124,10 @@ public class FormServiceImpl implements FormService {
             invoiceDTO.setEmail(bookingHeader.getEmail());
             invoiceDTO.setAmount(String.format(Locale.US, "%,d", xenditVA.getAmount()).replace(',', '.'));
             invoiceDTO.setBank(xenditVA.getBank_code());
-
-            Xendit.apiKey = appProperties.getXendit().getApiKey();
-            FixedVirtualAccount fixedVirtualAccount = XenditUtil.getVA(
-                    bookingHeader.getDepoOwnerAccount().getXenditVaId(),
-                    xenditVA.getXendit_id());
-            invoiceDTO.setVa(fixedVirtualAccount.getAccountNumber());
+            if (xenditVA.getAccount_number() == null)
+                invoiceDTO.setVa("");
+            else
+                invoiceDTO.setVa(xenditVA.getAccount_number());
 
             context.put("invoice", invoiceDTO);
 
