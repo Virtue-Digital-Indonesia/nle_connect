@@ -43,6 +43,12 @@ public class XenditVA extends AbstractAuditingEntity implements Serializable {
     @Column(name = "bank_code")
     private String bank_code;
 
+    @Column(name = "expiry_date")
+    private String expiry_date;
+
+    @Column(name = "account_number")
+    private String account_number;
+
     @Column(name = "payment_status")
     @Enumerated(EnumType.STRING)
     private XenditEnum payment_status;
