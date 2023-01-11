@@ -115,11 +115,4 @@ public class OrderController {
         return ResponseEntity.ok(xenditService.CreatePaymentOrder(request));
     }
 
-    @Operation(hidden = true)
-    @PostMapping(value = "/payment/callback/invoice")
-    public ResponseEntity<XenditCallbackPayload> callbackInvoice (@RequestBody XenditCallbackPayload payload) {
-        System.out.println(payload.toString());
-        xenditService.CallbackInvoice(payload);
-        return ResponseEntity.ok(payload);
-    }
 }

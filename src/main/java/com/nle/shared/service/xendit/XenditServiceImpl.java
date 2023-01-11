@@ -314,12 +314,12 @@ public class XenditServiceImpl implements XenditService {
         if (username.isEmpty())
             throw new BadRequestException("Invalid Token!");
 
-        Optional<DepoOwnerAccount> accountOptional = depoOwnerAccountRepository.findById(request.getDepo_id());
-        if (accountOptional.isEmpty())
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
+        if (depoOwnerAccount.isEmpty())
             throw new BadRequestException("Can't Find Depo!");
 
-        DepoOwnerAccount depoOwnerAccount = accountOptional.get();
-        if (depoOwnerAccount.getXenditVaId() == null)
+        DepoOwnerAccount doa = depoOwnerAccount.get();
+        if (doa.getXenditVaId() == null)
             throw new BadRequestException("This Depo is Not Active!");
 
         Optional<XenditVA> optionalXenditPending = xenditRepository
@@ -329,12 +329,12 @@ public class XenditServiceImpl implements XenditService {
         if (!optionalXenditPending.isEmpty()) {
             XenditVA xenditVA = optionalXenditPending.get();
             Xendit.apiKey = appProperties.getXendit().getApiKey();
-            Invoice invoice = XenditUtil.getInvoice(depoOwnerAccount.getXenditVaId(), xenditVA.getInvoice_id());
+            Invoice invoice = XenditUtil.getInvoice(doa.getXenditVaId(), xenditVA.getInvoice_id());
             if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 xenditVA.setPayment_status(XenditEnum.EXPIRED);
                 xenditRepository.save(xenditVA);
             } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
-                FixedVirtualAccount fixedVirtualAccount = XenditUtil.getVA(depoOwnerAccount.getXenditVaId(), xenditVA.getXendit_id());
+                FixedVirtualAccount fixedVirtualAccount = XenditUtil.getVA(doa.getXenditVaId(), xenditVA.getXendit_id());
                 BeanUtils.copyProperties(fixedVirtualAccount, xenditResponse);
                 xenditResponse.setExpirationDate(String.valueOf(fixedVirtualAccount.getExpirationDate()));
                 xenditResponse.setAmount(fixedVirtualAccount.getExpectedAmount());
@@ -344,7 +344,7 @@ public class XenditServiceImpl implements XenditService {
             }
         }
 
-        xenditResponse = CreateNewVirtualAccount(request, depoOwnerAccount);
+        xenditResponse = CreateNewVirtualAccount(request, doa);
         return xenditResponse;
 
     }
