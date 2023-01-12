@@ -6,10 +6,14 @@ import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.booking.OrderService;
+import com.nle.shared.service.xendit.XenditService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
 import com.nle.ui.model.request.search.BookingSearchRequest;
+import com.nle.ui.model.request.xendit.XenditCallbackPayload;
+import com.nle.ui.model.request.xendit.XenditRequest;
+import com.nle.ui.model.response.XenditResponse;
 import com.nle.ui.model.response.booking.BookingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,6 +39,7 @@ public class OrderController {
     private final OrderService orderService;
     private final BookingService bookingService;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+    private final XenditService xenditService;
 
     @Operation(description = "get list order booking for depo with paging", operationId = "getOrderDepo", summary = "get list order booking for depo with paging")
     @SecurityRequirement(name = "nleapi")
@@ -102,4 +107,12 @@ public class OrderController {
     ){
         return ResponseEntity.ok(orderService.searchOrderDepo(request,pageable));
     }
+
+    @Operation(description = "create virtual account for payment order", operationId = "paymentOrder", summary = "create virtual account for payment order")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/payment")
+    public ResponseEntity<XenditResponse> paymentOrder(@RequestBody XenditRequest request) {
+        return ResponseEntity.ok(xenditService.CreatePaymentOrder(request));
+    }
+
 }
