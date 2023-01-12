@@ -1,5 +1,6 @@
 package com.nle.util;
 
+import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -37,8 +39,8 @@ public class ConvertBookingUtil {
 
         // Add invoice_no,bon_no,bank_code
         response.setInvoice_no(getInvoice(entity).getInvoice_no());
-        response.setBon_no(orderDetailResponseList);
-//        response.setBank_code();
+        response.setBon_no(getBonList(entity));
+        response.setBank_code(getBankCode(entity));
 
         return response;
     }
@@ -113,6 +115,32 @@ public class ConvertBookingUtil {
         return loadingResponse;
     }
 
+    public static List<BankCodeResponse> getBankCode(BookingHeader entity){
+        List<BankCodeResponse> bankCodeResponses = new ArrayList<>();
+        Set<XenditVA> xenditVAS = entity.getXenditVAS();
+
+        for (XenditVA xenditVA : xenditVAS) {
+            BankCodeResponse bankCodeResponse = convertBankCode(xenditVA);
+            bankCodeResponses.add(bankCodeResponse);
+        }
+
+        return bankCodeResponses;
+    }
+
+    public static BankCodeResponse convertBankCode(XenditVA xenditVA) {
+        BankCodeResponse bankCodeResponse = new BankCodeResponse();
+        BeanUtils.copyProperties(xenditVA.getBank_code(), bankCodeResponse);
+
+        if (xenditVA.getPayment_status().equals("PENDING")){
+        bankCodeResponse.setBank_code(xenditVA.getBank_code());
+        } else {
+            bankCodeResponse.setBank_code(null);
+        }
+
+        return bankCodeResponse;
+    }
+
+
     public static InvoiceResponse getInvoice(BookingHeader entity) {
         InvoiceResponse invoiceResponse = new InvoiceResponse();
         try {
@@ -125,34 +153,36 @@ public class ConvertBookingUtil {
         return invoiceResponse;
     }
 
-    public static List<String> getBonListLoading(BookingHeader entity) {
-        Set<BookingDetailLoading> loadingList = entity.getBookingDetailLoadings();
-        List<String> bon = new ArrayList<>();
-        if (loadingList == null || loadingList.isEmpty())
-            return bon;
-
-        for (BookingDetailLoading loading : loadingList) {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-            String formattedDate = entity.getCreatedDate().format(dateTimeFormatter);
-            String bonNo = ("BON/" + formattedDate + "/" + String.format("%04d", loading.getId()));
-            bon.add(bonNo);
+    public static List<BonResponse> getBonList(BookingHeader entity) {
+        List<BonResponse> bon = new ArrayList<>();
+        try {
+            if (entity.getBooking_type().equals("LOADING")){
+            Set<BookingDetailLoading> loadingList = entity.getBookingDetailLoadings();
+            for (BookingDetailLoading loading : loadingList) {
+                BonResponse bonResponse = new BonResponse();
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                String formattedDate = entity.getCreatedDate().format(dateTimeFormatter);
+                String bonNo = ("BON/" + formattedDate + "/"+ String.format("%04d", loading.getId()));
+                bonResponse.setBon_no(bonNo);
+                bon.add(bonResponse);
+            }
+            } else {
+                Set<BookingDetailUnloading> unloadingsList = entity.getBookingDetailUnloadings();
+                for (BookingDetailUnloading unloading : unloadingsList) {
+                    BonResponse bonResponse = new BonResponse();
+                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                    String formattedDate = entity.getCreatedDate().format(dateTimeFormatter);
+                    String bonNo = ("BON/" + formattedDate + "/"+ String.format("%04d", unloading.getId()));
+                    bonResponse.setBon_no(bonNo);
+                    bon.add(bonResponse);
+                }
+            }
+        } catch (Exception e){
+            bon = null;
         }
-
         return bon;
     }
 
-    public static BonLoadingResponse getBonLoading(BookingHeader entity,BookingDetailLoading detailLoading){
-        BonLoadingResponse bonLoadingResponse = new BonLoadingResponse();
-        BeanUtils.copyProperties(detailLoading.getItem(), bonLoadingResponse);
-        try {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-            String formattedDate = entity.getCreatedDate().format(dateTimeFormatter);
-            String bonNo = ("BON/" + formattedDate + "/" + String.format("%04d", detailLoading.getId()));
-            bonLoadingResponse.setBon_no(bonNo);
-        } catch (Exception e){
-            bonLoadingResponse.setBon_no(null);
-        }
-        return bonLoadingResponse;
-    }
+
 
 }

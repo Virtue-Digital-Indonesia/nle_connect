@@ -23,5 +23,4 @@ public interface XenditService {
 
     XenditResponse CreatePaymentOrder(XenditRequest request);
     List<XenditListResponse> getMultipleXenditByPhone();
-    String getInvoice(Long id);
 }

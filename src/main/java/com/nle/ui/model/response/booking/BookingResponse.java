@@ -4,6 +4,8 @@ import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.BonResponse;
+import com.nle.ui.model.response.BonResponseList;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +33,6 @@ public class BookingResponse {
     private ApplicantResponse depo;
     private List<ItemResponse> items;
     private String invoice_no;
-    private List<ItemResponse> bon_no;
-    private String bank_code;
+    private List<BonResponse> bon_no;
+    private List<BankCodeResponse> bank_code;
 }
