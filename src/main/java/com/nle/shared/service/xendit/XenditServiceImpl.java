@@ -280,31 +280,21 @@ public class XenditServiceImpl implements XenditService {
         BookingHeader bookingHeader = xenditVA.getBooking_header_id();
         DepoOwnerAccount doa = bookingHeader.getDepoOwnerAccount();
 
-        Xendit.apiKey = appProperties.getXendit().getApiKey();
-        Invoice invoice = XenditUtil.getInvoice(doa.getXenditVaId(), xenditVA.getInvoice_id());
-        BeanUtils.copyProperties(invoice, response);
-        response.setInvoice_url(invoice.getInvoiceUrl());
-        response.setExpirationDate(invoice.getExpiryDate());
-        response.setOwnerId(doa.getXenditVaId());
+        response.setId(xenditVA.getXendit_id());
         response.setName(bookingHeader.getFull_name());
-        response.setAmount(invoice.getAmount().longValue());
-
-        int va_index = xenditVA.getPhone_number().length();
-        String va_number = VA_CODE + xenditVA.getPhone_number().substring(va_index - 8, va_index);
-        response.setAccountNumber(va_number);
+        response.setCurrency("IDR");
+        response.setAmount(xenditVA.getAmount());
+        response.setStatus(xenditVA.getPayment_status().toString());
+        response.setInvoice_url("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+        response.setExternalId("va-" + xenditVA.getBank_code() + "-" + xenditVA.getPhone_number());
+        response.setOwnerId(doa.getXenditVaId());
+        response.setBankCode(xenditVA.getBank_code());
+        response.setAccountNumber(xenditVA.getAccount_number());
         response.setIsClosed(Boolean.TRUE);
         response.setIsSingleUse(Boolean.TRUE);
+        response.setExpirationDate(xenditVA.getExpiry_date());
+
         return response;
-    }
-
-    public List<XenditResponse> getMultipleXenditByBookingId(List<Long> list_booking_header) {
-        List<XenditResponse> list = new ArrayList<>();
-
-        for (Long booking_id : list_booking_header) {
-            list.add(getXenditByBookingId(booking_id));
-        }
-
-        return list;
     }
 
     @Override

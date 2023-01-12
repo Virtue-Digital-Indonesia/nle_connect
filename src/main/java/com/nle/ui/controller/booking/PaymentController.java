@@ -25,13 +25,6 @@ public class PaymentController {
         return ResponseEntity.ok(xenditService.getXenditByBookingId(booking_id));
     }
 
-    @Operation(description = "get list Xendit VA by booking Header id", operationId = "getListXendit", summary = "get list Xendit VA by booking Header id")
-    @SecurityRequirement(name = "nleapi")
-    @PostMapping(value = "/list")
-    public ResponseEntity<List<XenditResponse>> getListXendit(@RequestBody List<Long> list_booking_header) {
-        return ResponseEntity.ok(xenditService.getMultipleXenditByBookingId(list_booking_header));
-    }
-
     @Operation(description = "get list Xendit VA by phone", operationId = "getListXenditByPhone", summary = "get list Xendit VA by phone")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "/bookinglist")

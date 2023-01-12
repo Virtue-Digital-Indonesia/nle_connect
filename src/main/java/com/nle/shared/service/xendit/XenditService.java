@@ -19,8 +19,7 @@ public interface XenditService {
 
     XenditResponse getXenditByBookingId(Long booking_id);
 
-    List<XenditResponse> getMultipleXenditByBookingId(List<Long> list_booking_header);
-
     XenditResponse CreatePaymentOrder(XenditRequest request);
+
     List<XenditListResponse> getMultipleXenditByPhone();
 }
