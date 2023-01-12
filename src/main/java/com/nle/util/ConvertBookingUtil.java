@@ -3,20 +3,19 @@ package com.nle.util;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
-import com.nle.ui.model.response.ApplicantResponse;
-import com.nle.ui.model.response.ItemResponse;
-import com.nle.ui.model.response.ItemTypeResponse;
-import com.nle.ui.model.response.booking.BookingResponse;
-import com.nle.ui.model.response.booking.DetailLoadingResponse;
-import com.nle.ui.model.response.booking.DetailUnloadingResponse;
+import com.nle.ui.model.response.*;
+import com.nle.ui.model.response.booking.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class ConvertBookingUtil {
 
     public static BookingResponse convertBookingHeaderToResponse(BookingHeader entity) {
@@ -35,6 +34,12 @@ public class ConvertBookingUtil {
         orderDetailResponseList = convertBookingUnloadingDetail(entity, orderDetailResponseList);
         orderDetailResponseList = convertBookingLoadingDetail(entity, orderDetailResponseList);
         response.setItems(orderDetailResponseList);
+
+        // Add invoice_no,bon_no,bank_code
+        response.setInvoice_no(getInvoice(entity).getInvoice_no());
+        response.setBon_no(orderDetailResponseList);
+//        response.setBank_code();
+
         return response;
     }
 
@@ -106,6 +111,48 @@ public class ConvertBookingUtil {
             loadingResponse.setFleet(ConvertResponseUtil.convertDepoFleetToResponse(detail.getItem().getDepoFleet()));
 
         return loadingResponse;
+    }
+
+    public static InvoiceResponse getInvoice(BookingHeader entity) {
+        InvoiceResponse invoiceResponse = new InvoiceResponse();
+        try {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            String formattedDate = entity.getCreatedDate().format(dateTimeFormatter);
+            invoiceResponse.setInvoice_no("INV/" + formattedDate + "/" + String.format("%04d", entity.getId()));
+        } catch (Exception e){
+            invoiceResponse.setInvoice_no(null);
+        }
+        return invoiceResponse;
+    }
+
+    public static List<String> getBonListLoading(BookingHeader entity) {
+        Set<BookingDetailLoading> loadingList = entity.getBookingDetailLoadings();
+        List<String> bon = new ArrayList<>();
+        if (loadingList == null || loadingList.isEmpty())
+            return bon;
+
+        for (BookingDetailLoading loading : loadingList) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            String formattedDate = entity.getCreatedDate().format(dateTimeFormatter);
+            String bonNo = ("BON/" + formattedDate + "/" + String.format("%04d", loading.getId()));
+            bon.add(bonNo);
+        }
+
+        return bon;
+    }
+
+    public static BonLoadingResponse getBonLoading(BookingHeader entity,BookingDetailLoading detailLoading){
+        BonLoadingResponse bonLoadingResponse = new BonLoadingResponse();
+        BeanUtils.copyProperties(detailLoading.getItem(), bonLoadingResponse);
+        try {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            String formattedDate = entity.getCreatedDate().format(dateTimeFormatter);
+            String bonNo = ("BON/" + formattedDate + "/" + String.format("%04d", detailLoading.getId()));
+            bonLoadingResponse.setBon_no(bonNo);
+        } catch (Exception e){
+            bonLoadingResponse.setBon_no(null);
+        }
+        return bonLoadingResponse;
     }
 
 }

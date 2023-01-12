@@ -39,6 +39,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -375,6 +376,24 @@ public class XenditServiceImpl implements XenditService {
         }
 
         return listResponse;
+    }
+
+    @Override
+    public String getInvoice(Long id) {
+//        Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository.findById(id);
+//        if (optionalBookingHeader.isEmpty())
+//            throw new BadRequestException("Ga ketemu!");
+//        BookingHeader bookingHeader = optionalBookingHeader.get();
+//        String invoiceNo;
+//        try {
+//            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+//            String formattedDate = bookingHeader.getCreatedDate().format(dateTimeFormatter);
+//            invoiceNo     = "INV/" + formattedDate + "/" + String.format("%04d", bookingHeader.getId());
+//        } catch (Exception e){
+//            invoiceNo = null;
+//        }
+        String idtes = id.toString();
+        return idtes;
     }
 
 }

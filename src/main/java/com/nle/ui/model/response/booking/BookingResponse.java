@@ -30,4 +30,7 @@ public class BookingResponse {
     private LocalDateTime txDateFormatted;
     private ApplicantResponse depo;
     private List<ItemResponse> items;
+    private String invoice_no;
+    private List<ItemResponse> bon_no;
+    private String bank_code;
 }
