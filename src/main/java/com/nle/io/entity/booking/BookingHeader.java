@@ -12,6 +12,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -75,7 +76,8 @@ public class BookingHeader extends AbstractAuditingEntity implements Serializabl
     @OneToMany(mappedBy = "bookingHeader", fetch = FetchType.LAZY)
     private Set<BookingDetailLoading> bookingDetailLoadings;
 
-    @OneToMany(mappedBy = "booking_header_id", fetch = FetchType.LAZY)
-    private Set<XenditVA> xenditVAS;
+    @OneToMany
+    @JoinColumn(name = "booking_header_id", referencedColumnName = "id")
+    private List<XenditVA> xenditVAS;
 
 }

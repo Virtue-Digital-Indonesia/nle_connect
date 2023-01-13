@@ -34,5 +34,5 @@ public class BookingResponse {
     private List<ItemResponse> items;
     private String invoice_no;
     private List<BonResponse> bon_no;
-    private List<BankCodeResponse> bank_code;
+    private String bank_code;
 }

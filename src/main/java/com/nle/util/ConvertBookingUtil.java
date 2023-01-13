@@ -115,17 +115,40 @@ public class ConvertBookingUtil {
         return loadingResponse;
     }
 
-    public static List<BankCodeResponse> getBankCode(BookingHeader entity){
-        List<BankCodeResponse> bankCodeResponses = new ArrayList<>();
-        Set<XenditVA> xenditVAS = entity.getXenditVAS();
+    public static String getBankCode(BookingHeader entity){
+        List<String> bankCodeResponses = new ArrayList<>();
+        List<XenditVA> xenditVAS = entity.getXenditVAS();
 
         for (XenditVA xenditVA : xenditVAS) {
-            BankCodeResponse bankCodeResponse = convertBankCode(xenditVA);
-            bankCodeResponses.add(bankCodeResponse);
+//            BankCodeResponse bankCodeResponse = new BankCodeResponse();
+            if (xenditVA.getPayment_status().toString().equals("PENDING")){
+//            bankCodeResponse.setBank_code(xenditVA.getBank_code());
+            bankCodeResponses.add(xenditVA.getBank_code());
+            }
         }
-
-        return bankCodeResponses;
+        String bank_code;
+        if (bankCodeResponses.isEmpty()){
+            bank_code = null;
+        } else {
+            bank_code = bankCodeResponses.get(0);
+        }
+        return bank_code;
     }
+
+//    public static List<BankCodeResponse> getBankCode(BookingHeader entity){
+//        List<BankCodeResponse> bankCodeResponses = new ArrayList<>();
+//        List<XenditVA> xenditVAS = entity.getXenditVAS();
+//
+//        for (XenditVA xenditVA : xenditVAS) {
+//            BankCodeResponse bankCodeResponse = new BankCodeResponse();
+//            if (xenditVA.getPayment_status().toString().equals("PENDING")){
+//                bankCodeResponse.setBank_code(xenditVA.getBank_code());
+//                bankCodeResponses.add(bankCodeResponse);
+//            }
+//        }
+//
+//        return bankCodeResponses;
+//    }
 
     public static BankCodeResponse convertBankCode(XenditVA xenditVA) {
         BankCodeResponse bankCodeResponse = new BankCodeResponse();
