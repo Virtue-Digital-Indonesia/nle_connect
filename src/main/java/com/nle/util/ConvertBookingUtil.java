@@ -1,5 +1,6 @@
 package com.nle.util;
 
+import com.nle.constant.AppConstant;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
@@ -8,8 +9,12 @@ import com.nle.ui.model.response.*;
 import com.nle.ui.model.response.booking.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +42,11 @@ public class ConvertBookingUtil {
         orderDetailResponseList = convertBookingLoadingDetail(entity, orderDetailResponseList);
         response.setItems(orderDetailResponseList);
 
-        // Add invoice_no,bon_no,bank_code
+        // Add invoice_no,bon_no,bank_code,paid_date
         response.setInvoice_no(getInvoice(entity).getInvoice_no());
         response.setBon_no(getBonList(entity));
         response.setBank_code(getBankCode(entity));
+        response.setPaid_date(getPaidDate(entity));
 
         return response;
     }
@@ -119,13 +125,20 @@ public class ConvertBookingUtil {
         List<String> bankCodeResponses = new ArrayList<>();
         List<XenditVA> xenditVAS = entity.getXenditVAS();
 
-        for (XenditVA xenditVA : xenditVAS) {
-//            BankCodeResponse bankCodeResponse = new BankCodeResponse();
-            if (xenditVA.getPayment_status().toString().equals("PENDING")){
-//            bankCodeResponse.setBank_code(xenditVA.getBank_code());
-            bankCodeResponses.add(xenditVA.getBank_code());
+        if (entity.getBooking_status().toString().equals("SUCCESS")){
+            for (XenditVA xenditVA : xenditVAS) {
+                if (xenditVA.getPayment_status().toString().equals("PAID")){
+                    bankCodeResponses.add(xenditVA.getBank_code());
+                }
+            }
+        } else {
+            for (XenditVA xenditVA : xenditVAS) {
+                if (xenditVA.getPayment_status().toString().equals("PENDING")){
+                    bankCodeResponses.add(xenditVA.getBank_code());
+                }
             }
         }
+
         String bank_code;
         if (bankCodeResponses.isEmpty()){
             bank_code = null;
@@ -135,34 +148,39 @@ public class ConvertBookingUtil {
         return bank_code;
     }
 
-//    public static List<BankCodeResponse> getBankCode(BookingHeader entity){
-//        List<BankCodeResponse> bankCodeResponses = new ArrayList<>();
-//        List<XenditVA> xenditVAS = entity.getXenditVAS();
-//
-//        for (XenditVA xenditVA : xenditVAS) {
-//            BankCodeResponse bankCodeResponse = new BankCodeResponse();
-//            if (xenditVA.getPayment_status().toString().equals("PENDING")){
-//                bankCodeResponse.setBank_code(xenditVA.getBank_code());
-//                bankCodeResponses.add(bankCodeResponse);
-//            }
-//        }
-//
-//        return bankCodeResponses;
-//    }
+    public static LocalDateTime getPaidDate(BookingHeader entity){
+        List<String> paidDate = new ArrayList<>();
+        List<XenditVA> xenditVAS = entity.getXenditVAS();
 
-    public static BankCodeResponse convertBankCode(XenditVA xenditVA) {
-        BankCodeResponse bankCodeResponse = new BankCodeResponse();
-        BeanUtils.copyProperties(xenditVA.getBank_code(), bankCodeResponse);
-
-        if (xenditVA.getPayment_status().equals("PENDING")){
-        bankCodeResponse.setBank_code(xenditVA.getBank_code());
-        } else {
-            bankCodeResponse.setBank_code(null);
+        for (XenditVA xenditVA : xenditVAS) {
+            if (xenditVA.getPayment_status().toString().equals("PAID")){
+            paidDate.add(xenditVA.getPayment_id());
+            }
         }
 
-        return bankCodeResponse;
+        LocalDateTime localDateTime;
+        if (paidDate.isEmpty()){
+            localDateTime = null;
+        } else {
+            String paid_date            = paidDate.get(0);
+            LocalDateTime dateTimeParse = LocalDateTime.parse(paid_date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+            localDateTime               = convertLocalDateWithTimeZone(dateTimeParse,"GMT+7");
+        }
+        return localDateTime;
     }
 
+    public static LocalDateTime convertLocalDateWithTimeZone(LocalDateTime oldDateTime, String timeZone){
+        if (oldDateTime == null)
+            return null;
+
+        if (timeZone == null || timeZone.equals(""))
+            timeZone = "GMT+7";
+
+        LocalDateTime newDateTime = oldDateTime.atZone(ZoneId.of("UTC")).
+                withZoneSameInstant(ZoneId.of(timeZone)).toLocalDateTime();
+
+        return newDateTime;
+    }
 
     public static InvoiceResponse getInvoice(BookingHeader entity) {
         InvoiceResponse invoiceResponse = new InvoiceResponse();
@@ -205,7 +223,5 @@ public class ConvertBookingUtil {
         }
         return bon;
     }
-
-
 
 }
