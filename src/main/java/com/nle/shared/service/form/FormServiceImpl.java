@@ -307,4 +307,9 @@ public class FormServiceImpl implements FormService {
         return output;
     }
 
+    @Override
+    public ByteArrayOutputStream exportInvoiceOrder(Long id) {
+        return null;
+    }
+
 }

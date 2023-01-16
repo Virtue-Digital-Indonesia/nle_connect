@@ -45,8 +45,8 @@ public class ConvertBookingUtil {
         // Add invoice_no,bon_no,bank_code,paid_date
         response.setInvoice_no(getInvoice(entity).getInvoice_no());
         response.setBon_no(getBonList(entity));
-        response.setBank_code(getBankCode(entity));
-        response.setPaid_date(getPaidDate(entity));
+        response.setBank_code(getBookingTemp(entity).getBank_code());
+        response.setPaid_date(getBookingTemp(entity).getPaid_date());
 
         return response;
     }
@@ -121,65 +121,36 @@ public class ConvertBookingUtil {
         return loadingResponse;
     }
 
-    public static String getBankCode(BookingHeader entity){
+    public static BookingTempDto getBookingTemp(BookingHeader entity) {
         List<String> bankCodeResponses = new ArrayList<>();
-        List<XenditVA> xenditVAS = entity.getXenditVAS();
-
-        if (entity.getBooking_status().toString().equals("SUCCESS")){
-            for (XenditVA xenditVA : xenditVAS) {
-                if (xenditVA.getPayment_status().toString().equals("PAID")){
-                    bankCodeResponses.add(xenditVA.getBank_code());
-                }
-            }
-        } else {
-            for (XenditVA xenditVA : xenditVAS) {
-                if (xenditVA.getPayment_status().toString().equals("PENDING")){
-                    bankCodeResponses.add(xenditVA.getBank_code());
-                }
-            }
-        }
-
-        String bank_code;
-        if (bankCodeResponses.isEmpty()){
-            bank_code = null;
-        } else {
-            bank_code = bankCodeResponses.get(0);
-        }
-        return bank_code;
-    }
-
-    public static LocalDateTime getPaidDate(BookingHeader entity){
-        List<String> paidDate = new ArrayList<>();
-        List<XenditVA> xenditVAS = entity.getXenditVAS();
+        List<String> paidDate          = new ArrayList<>();
+        List<XenditVA> xenditVAS       = entity.getXenditVAS();
 
         for (XenditVA xenditVA : xenditVAS) {
-            if (xenditVA.getPayment_status().toString().equals("PAID")){
-            paidDate.add(xenditVA.getPayment_id());
+            if (xenditVA.getPayment_status().toString().equals("PAID")) {
+                bankCodeResponses.add(xenditVA.getBank_code());
+                paidDate.add(xenditVA.getPayment_id());
+            } else if (xenditVA.getPayment_status().toString().equals("PENDING")) {
+                bankCodeResponses.add(xenditVA.getBank_code());
             }
         }
 
-        LocalDateTime localDateTime;
-        if (paidDate.isEmpty()){
-            localDateTime = null;
-        } else {
-            String paid_date            = paidDate.get(0);
-            LocalDateTime dateTimeParse = LocalDateTime.parse(paid_date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-            localDateTime               = convertLocalDateWithTimeZone(dateTimeParse,"GMT+7");
+        String bank_code = null;
+        if (!bankCodeResponses.isEmpty())
+            bank_code = bankCodeResponses.get(0);
+
+        LocalDateTime localDateTime = null;
+        LocalDateTime dateTimeParse;
+        if (!paidDate.isEmpty()) {
+            dateTimeParse = LocalDateTime.parse(paidDate.get(0), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+            localDateTime = DateUtil.convertLocalDateWithTimeZone(dateTimeParse, "GMT+7");
         }
-        return localDateTime;
-    }
 
-    public static LocalDateTime convertLocalDateWithTimeZone(LocalDateTime oldDateTime, String timeZone){
-        if (oldDateTime == null)
-            return null;
+        BookingTempDto bookingTempDto = new BookingTempDto();
+        bookingTempDto.setBank_code(bank_code);
+        bookingTempDto.setPaid_date(localDateTime);
 
-        if (timeZone == null || timeZone.equals(""))
-            timeZone = "GMT+7";
-
-        LocalDateTime newDateTime = oldDateTime.atZone(ZoneId.of("UTC")).
-                withZoneSameInstant(ZoneId.of(timeZone)).toLocalDateTime();
-
-        return newDateTime;
+        return bookingTempDto;
     }
 
     public static InvoiceResponse getInvoice(BookingHeader entity) {
