@@ -62,15 +62,15 @@ public class FormServiceImpl implements FormService {
     @Override
     public ByteArrayOutputStream exportInvoice(Long id) {
         Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty())
+            throw new BadRequestException("invalid token");
+
         Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository.findById(id);
         if (optionalBookingHeader.isEmpty())
             throw new CommonException("not found booking id");
         BookingHeader bookingHeader = optionalBookingHeader.get();
 
         if (!username.get().startsWith("+62") && !username.get().startsWith("62") && !username.get().startsWith("0")){
-            if (username.isEmpty())
-                throw new BadRequestException("invalid token");
-
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
             if (depoOwnerAccount.isEmpty())
                 throw new BadRequestException("Can't Find Depo!");
@@ -79,10 +79,7 @@ public class FormServiceImpl implements FormService {
             if (doa.getXenditVaId() == null)
                 throw new BadRequestException("This Depo is Not Active!");
         } else {
-            if (username.isEmpty())
-                throw new BadRequestException("need to log in");
             String phone_number = username.get();
-
             if (!bookingHeader.getPhone_number().equals(phone_number))
                 throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
         }
