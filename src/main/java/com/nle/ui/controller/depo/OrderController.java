@@ -6,6 +6,7 @@ import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.booking.OrderService;
+import com.nle.shared.service.form.FormService;
 import com.nle.shared.service.xendit.XenditService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
@@ -22,13 +23,18 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 
 @RestController
@@ -40,6 +46,7 @@ public class OrderController {
     private final BookingService bookingService;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final XenditService xenditService;
+    private final FormService formService;
 
     @Operation(description = "get list order booking for depo with paging", operationId = "getOrderDepo", summary = "get list order booking for depo with paging")
     @SecurityRequirement(name = "nleapi")
@@ -113,6 +120,27 @@ public class OrderController {
     @PostMapping(value = "/payment")
     public ResponseEntity<XenditResponse> paymentOrder(@RequestBody XenditRequest request) {
         return ResponseEntity.ok(xenditService.CreatePaymentOrder(request));
+    }
+
+    @Operation(description = "Export invoice by booking id", operationId = "exportInvoiceByBookingId", summary = "Export invoice by booking id")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/invoice/{id}")
+    public ResponseEntity<ByteArrayResource> exportInvoiceByBookingId(@PathVariable Long id) {
+        ByteArrayOutputStream reportByte = formService.exportInvoiceOrder(id);
+        String filename = "Invoice_" + String.valueOf(id) + ".pdf";
+        ByteArrayResource resource = new ByteArrayResource(reportByte.toByteArray());
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" +
+                filename);
+        header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .headers(header)
+                .contentLength(reportByte.size())
+                .body(resource);
     }
 
 }

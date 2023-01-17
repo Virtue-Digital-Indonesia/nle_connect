@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.io.repository.DepoOwnerAccountRepository;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +57,7 @@ public class FormServiceImpl implements FormService {
     private final XenditRepository xenditRepository;
     private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
     private final BookingLoadingRepository bookingLoadingRepository;
+    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
 
     @Override
     public ByteArrayOutputStream exportInvoice(Long id) {
@@ -309,7 +312,132 @@ public class FormServiceImpl implements FormService {
 
     @Override
     public ByteArrayOutputStream exportInvoiceOrder(Long id) {
-        return null;
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty())
+            throw new BadRequestException("invalid token");
+
+        Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository.findById(id);
+        if (optionalBookingHeader.isEmpty())
+            throw new CommonException("not found booking id");
+        BookingHeader bookingHeader = optionalBookingHeader.get();
+
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
+        if (depoOwnerAccount.isEmpty())
+            throw new BadRequestException("Can't Find Depo!");
+
+        DepoOwnerAccount doa = depoOwnerAccount.get();
+        if (doa.getXenditVaId() == null)
+            throw new BadRequestException("This Depo is Not Active!");
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        FormInvoiceDTO formInvoiceDTO = new FormInvoiceDTO();
+
+        Optional<XenditVA> optionalXenditVA = xenditRepository.getVaWithBooking(id);
+        if (optionalXenditVA.isEmpty())
+            throw new CommonException("not found payment for this booking id");
+        XenditVA xenditVA = optionalXenditVA.get();
+
+        try {
+            String bookingType = bookingHeader.getBooking_type().toString();
+
+            String template = "";
+            if (bookingType.equalsIgnoreCase("UNLOADING")){
+                template = "templates/Template_Invoice_Bongkar.docx";
+            } else {
+                template = "templates/Template_Invoice_Muat.docx";
+            }
+
+            InputStream in = new ClassPathResource(template).getInputStream();
+
+            IXDocReport report = XDocReportRegistry.getRegistry().loadReport(in,
+                    TemplateEngineKind.Freemarker);
+
+            FieldsMetadata metadata = report.createFieldsMetadata();
+            if (bookingType.equalsIgnoreCase("UNLOADING"))
+                metadata.load("items", FormUnloadingItems.class, true);
+            else
+                metadata.load("items", FormLoadingItems.class, true);
+
+            IContext context = report.createContext();
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            String formattedDate = bookingHeader.getCreatedDate().format(dateTimeFormatter);
+            formInvoiceDTO.setNoInvoice("INV/" + formattedDate + "/" + String.format("%04d", bookingHeader.getId()));
+            formInvoiceDTO.setBookingId(Long.toString(bookingHeader.getId()));
+
+            dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            formattedDate = bookingHeader.getCreatedDate().format(dateTimeFormatter);
+            formInvoiceDTO.setCreatedDate(formattedDate);
+
+            if (xenditVA.getPayment_status().toString().equalsIgnoreCase("PAID")) {
+                formInvoiceDTO.setPaymentStatus("LUNAS");
+                String paymentId = xenditVA.getPayment_id();
+                formInvoiceDTO.setPaymentId(
+                        paymentId.substring(8, 10) + "/" + paymentId.substring(5, 7) + "/" + paymentId.substring(0, 4));
+            } else {
+                formInvoiceDTO.setPaymentStatus("");
+                formInvoiceDTO.setPaymentId("");
+            }
+
+            formInvoiceDTO.setFullName(bookingHeader.getFull_name());
+            formInvoiceDTO.setPhone(bookingHeader.getPhone_number());
+            formInvoiceDTO.setEmail(bookingHeader.getEmail());
+            formInvoiceDTO.setAmount(String.format(Locale.US, "%,d", xenditVA.getAmount()).replace(',', '.'));
+            formInvoiceDTO.setBank(xenditVA.getBank_code());
+            if (xenditVA.getAccount_number() == null)
+                formInvoiceDTO.setVa("");
+            else
+                formInvoiceDTO.setVa(xenditVA.getAccount_number());
+
+            context.put("invoice", formInvoiceDTO);
+
+            if (bookingType.equalsIgnoreCase("UNLOADING")) {
+                List<FormUnloadingItems> items = new ArrayList<FormUnloadingItems>();
+                List<BookingDetailUnloading> unloadingList = bookingDetailUnloadingRepository
+                        .getAllByBookingHeaderId(id);
+                int i = 0;
+                for (BookingDetailUnloading unloading : unloadingList) {
+                    i++;
+                    String itemName = unloading.getItem().getItem_name().getItemCode() + " "
+                            + unloading.getItem().getItem_name().getItemType();
+                    String itemPrice = String.format(Locale.US, "%,d", unloading.getPrice()).replace(',', '.');
+                    items.add(new FormUnloadingItems(String.valueOf(i), itemName,
+                            unloading.getContainer_number(),
+                            itemPrice, itemPrice));
+                }
+                context.put("items", items);
+            } else {
+                List<FormLoadingItems> items = new ArrayList<FormLoadingItems>();
+                List<BookingDetailLoading> loadingList = bookingLoadingRepository
+                        .getAllByBookingHeaderId(id);
+                int i = 0;
+                for (BookingDetailLoading loading : loadingList) {
+                    i++;
+                    String itemName = loading.getItem().getItem_name().getItemCode() + " "
+                            + loading.getItem().getItem_name().getItemType();
+                    String subTotal = String.format(Locale.US, "%,d", loading.getPrice()).replace(',', '.');
+                    String itemPrice = String.format(Locale.US, "%,d", loading.getPrice() / loading.getQuantity())
+                            .replace(',', '.');
+
+                    items.add(new FormLoadingItems(String.valueOf(i), itemName,
+                            String.valueOf(loading.getQuantity()),
+                            itemPrice, subTotal));
+                }
+                context.put("items", items);
+            }
+
+            Options options = Options.getTo(ConverterTypeTo.PDF).via(ConverterTypeVia.XWPF);
+            report.convert(context, options, byteArrayOutputStream);
+
+            return byteArrayOutputStream;
+
+        } catch (XWPFConverterException e){
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        } catch (XDocReportException e){
+            e.printStackTrace();
+        }
+        return byteArrayOutputStream;
     }
 
 }
