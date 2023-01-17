@@ -4,6 +4,7 @@ import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.BonResponse;
 import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,4 +31,8 @@ public class BookingResponse {
     private LocalDateTime txDateFormatted;
     private ApplicantResponse depo;
     private List<ItemResponse> items;
+    private String invoice_no;
+    private List<BonResponse> bon_no;
+    private String bank_code;
+    private LocalDateTime paid_date;
 }

@@ -6,4 +6,5 @@ public interface FormService {
     ByteArrayOutputStream exportInvoice(Long id);
 
     ByteArrayOutputStream exportBon(Long id);
+    ByteArrayOutputStream exportInvoiceOrder(Long id);
 }

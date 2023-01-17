@@ -4,6 +4,7 @@ import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
 import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.common.AbstractAuditingEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -73,4 +75,9 @@ public class BookingHeader extends AbstractAuditingEntity implements Serializabl
 
     @OneToMany(mappedBy = "bookingHeader", fetch = FetchType.LAZY)
     private Set<BookingDetailLoading> bookingDetailLoadings;
+
+    @OneToMany
+    @JoinColumn(name = "booking_header_id", referencedColumnName = "id")
+    private List<XenditVA> xenditVAS;
+
 }
