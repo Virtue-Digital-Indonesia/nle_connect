@@ -45,8 +45,10 @@ public class ConvertBookingUtil {
         // Add invoice_no,bon_no,bank_code,paid_date
         response.setInvoice_no(getInvoice(entity).getInvoice_no());
         response.setBon_no(getBonList(entity));
-        response.setBank_code(getBookingTemp(entity).getBank_code());
-        response.setPaid_date(getBookingTemp(entity).getPaid_date());
+
+        BookingTempDto tempDto = getBookingTemp(entity);
+        response.setBank_code(tempDto.getBank_code());
+        response.setPaid_date(tempDto.getPaid_date());
 
         return response;
     }
