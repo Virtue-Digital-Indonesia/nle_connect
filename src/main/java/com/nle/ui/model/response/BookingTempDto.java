@@ -8,4 +8,5 @@ import java.time.LocalDateTime;
 public class BookingTempDto {
     private String bank_code;
     private LocalDateTime paid_date;
+    private String invoice_url;
 }
