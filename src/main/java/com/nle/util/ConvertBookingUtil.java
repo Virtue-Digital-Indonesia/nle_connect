@@ -46,10 +46,12 @@ public class ConvertBookingUtil {
         response.setInvoice_no(getInvoice(entity).getInvoice_no());
         response.setBon_no(getBonList(entity));
 
-        BookingTempDto tempDto = getBookingTemp(entity);
-        response.setBank_code(tempDto.getBank_code());
-        response.setPaid_date(tempDto.getPaid_date());
-        response.setInvoice_url(tempDto.getInvoice_url());
+        if (entity.getXenditVAS() != null && entity.getXenditVAS().size() > 0) {
+            BookingTempDto tempDto = getBookingTemp(entity);
+            response.setBank_code(tempDto.getBank_code());
+            response.setPaid_date(tempDto.getPaid_date());
+            response.setInvoice_url(tempDto.getInvoice_url());
+        }
 
         return response;
     }
