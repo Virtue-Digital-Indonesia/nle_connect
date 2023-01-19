@@ -35,4 +35,5 @@ public class BookingResponse {
     private List<BonResponse> bon_no;
     private String bank_code;
     private LocalDateTime paid_date;
+    private String invoice_url;
 }

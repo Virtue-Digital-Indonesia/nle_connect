@@ -49,6 +49,7 @@ public class ConvertBookingUtil {
         BookingTempDto tempDto = getBookingTemp(entity);
         response.setBank_code(tempDto.getBank_code());
         response.setPaid_date(tempDto.getPaid_date());
+        response.setInvoice_url(tempDto.getInvoice_url());
 
         return response;
     }
@@ -126,14 +127,17 @@ public class ConvertBookingUtil {
     public static BookingTempDto getBookingTemp(BookingHeader entity) {
         List<String> bankCodeResponses = new ArrayList<>();
         List<String> paidDate          = new ArrayList<>();
+        List<String> invoiceId         = new ArrayList<>();
         List<XenditVA> xenditVAS       = entity.getXenditVAS();
 
         for (XenditVA xenditVA : xenditVAS) {
             if (xenditVA.getPayment_status().toString().equals("PAID")) {
                 bankCodeResponses.add(xenditVA.getBank_code());
                 paidDate.add(xenditVA.getPayment_id());
+                invoiceId.add(xenditVA.getInvoice_id());
             } else if (xenditVA.getPayment_status().toString().equals("PENDING")) {
                 bankCodeResponses.add(xenditVA.getBank_code());
+                invoiceId.add(xenditVA.getInvoice_id());
             }
         }
 
@@ -148,9 +152,14 @@ public class ConvertBookingUtil {
             localDateTime = DateUtil.convertLocalDateWithTimeZone(dateTimeParse, "GMT+7");
         }
 
+        String invoiceUrl = null;
+        if (!invoiceId.isEmpty())
+            invoiceUrl = "https://checkout-staging.xendit.co/web/"+invoiceId.get(0);
+
         BookingTempDto bookingTempDto = new BookingTempDto();
         bookingTempDto.setBank_code(bank_code);
         bookingTempDto.setPaid_date(localDateTime);
+        bookingTempDto.setInvoice_url(invoiceUrl);
 
         return bookingTempDto;
     }
