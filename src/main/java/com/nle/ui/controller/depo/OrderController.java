@@ -116,4 +116,11 @@ public class OrderController {
         return ResponseEntity.ok(xenditService.CreatePaymentOrder(request));
     }
 
+    @Operation(description = "Cancel order xendit VA", operationId = "cancelOrder", summary = "Cancel order for xendit VA")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/cancel")
+    public ResponseEntity<XenditResponse> cancelOrder(@RequestParam("booking_id") Long booking_id){
+        return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id));
+    }
+
 }
