@@ -3,6 +3,8 @@ package com.nle.util;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DateUtil {
 
@@ -22,6 +24,14 @@ public class DateUtil {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         String yesterday = formatter.format(LocalDateTime.now().minusDays(1));
         return yesterday;
+    }
+
+    public static String getCancelExpiration(String pattern) {
+        String dateTimePattern = pattern+"'T'HH:mm:ss";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
+        String cancelExpiration = formatter.format(LocalDateTime.now().plusSeconds(5));
+
+        return cancelExpiration;
     }
 
     public static LocalDateTime convertLocalDateWithTimeZone(LocalDateTime oldDateTime, String timeZone){

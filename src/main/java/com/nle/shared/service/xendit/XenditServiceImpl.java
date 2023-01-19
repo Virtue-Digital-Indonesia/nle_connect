@@ -368,4 +368,54 @@ public class XenditServiceImpl implements XenditService {
         return listResponse;
     }
 
+    @Override
+    public XenditResponse cancelOrderXendit(Long bookingId) {
+        Optional<String> userName = SecurityUtils.getCurrentUserLogin();
+        if (userName.isEmpty())
+            throw new BadRequestException("Invalid Token!");
+
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(userName.get());
+        if (depoOwnerAccount.isEmpty())
+            throw new BadRequestException("Can't Find Depo!");
+
+        DepoOwnerAccount doa = depoOwnerAccount.get();
+        if (doa.getXenditVaId() == null)
+            throw new BadRequestException("This depo is not active!");
+
+        Optional<XenditVA> xenditVAOptional = xenditRepository.findWithBookingID(bookingId);
+        if (xenditVAOptional.isEmpty())
+            throw new BadRequestException("Not found booking!");
+
+        XenditVA xenditVA = xenditVAOptional.get();
+        XenditResponse xenditResponse = new XenditResponse();
+        if (xenditVA.getPayment_status().equals("PENDING")){
+            Xendit.apiKey = appProperties.getXendit().getApiKey();
+            Map<String, Object> params = new HashMap<>();
+            params.put("expiration_date", DateUtil.getCancelExpiration(DATE_PATTERN));
+            try {
+                FixedVirtualAccount cancelVa = FixedVirtualAccount.update(xenditVA.getXendit_id(), params);
+                BeanUtils.copyProperties(cancelVa, xenditResponse);
+                xenditResponse.setExpirationDate(String.valueOf(cancelVa.getExpirationDate()));
+                xenditResponse.setStatus("CANCEL");
+
+                getCancelInvoice(xenditVA.getXendit_id(), xenditResponse);
+
+            } catch (XenditException e){
+                e.printStackTrace();
+            }
+
+        }
+
+        return null;
+    }
+
+    private void getCancelInvoice(String xenditId, XenditResponse xenditResponse) {
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+        try {
+            Invoice invoice = Invoice.expire(xenditId);
+        } catch (XenditException e){
+            e.printStackTrace();
+        }
+    }
+
 }
