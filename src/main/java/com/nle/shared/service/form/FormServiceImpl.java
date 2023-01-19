@@ -78,6 +78,10 @@ public class FormServiceImpl implements FormService {
             DepoOwnerAccount doa = depoOwnerAccount.get();
             if (doa.getXenditVaId() == null)
                 throw new BadRequestException("This Depo is Not Active!");
+
+            String depoOwnerAccountId = bookingHeader.getDepoOwnerAccount().getId().toString();
+            if (!depoOwnerAccountId.equals(doa.getId().toString()))
+                throw new BadRequestException("Cannot download this booking id!");
         } else {
             String phone_number = username.get();
             if (!bookingHeader.getPhone_number().equals(phone_number))
