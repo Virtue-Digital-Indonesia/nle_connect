@@ -3,6 +3,7 @@ package com.nle.shared.service.form;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import com.nle.ui.model.form.FormBonDTO;
 import com.nle.ui.model.form.FormInvoiceDTO;
 import com.nle.ui.model.form.FormLoadingItems;
 import com.nle.ui.model.form.FormUnloadingItems;
+import com.nle.util.DateUtil;
 import com.nle.util.QrCodeUtil;
 
 import fr.opensagres.poi.xwpf.converter.core.XWPFConverterException;
@@ -70,7 +72,8 @@ public class FormServiceImpl implements FormService {
             throw new CommonException("not found booking id");
         BookingHeader bookingHeader = optionalBookingHeader.get();
 
-        if (!username.get().startsWith("+62") && !username.get().startsWith("62") && !username.get().startsWith("0")){
+        if (!username.get().startsWith("+62") && !username.get().startsWith("62") &&
+                !username.get().startsWith("0")) {
             Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
             if (depoOwnerAccount.isEmpty())
                 throw new BadRequestException("Can't Find Depo!");
@@ -85,7 +88,8 @@ public class FormServiceImpl implements FormService {
         } else {
             String phone_number = username.get();
             if (!bookingHeader.getPhone_number().equals(phone_number))
-                throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
+                throw new BadRequestException("this booking is not belong to phone number: "
+                        + phone_number);
         }
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -116,29 +120,55 @@ public class FormServiceImpl implements FormService {
             else
                 metadata.load("items", FormLoadingItems.class, true);
 
+            metadata.addFieldAsImage("depoLogo");
+
             IContext context = report.createContext();
+
+            // Detail Depo
+            IImageProvider depoLogo = new ByteArrayImageProvider(
+                    new ClassPathResource("static/product-nle-connect-uppercase.png").getInputStream());
+            depoLogo.setSize(140f, 30f);
+            context.put("depoLogo", depoLogo);
 
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
             String formattedDate = bookingHeader.getCreatedDate().format(dateTimeFormatter);
             invoiceDTO.setNoInvoice("INV/" + formattedDate + "/" + String.format("%04d", bookingHeader.getId()));
-            invoiceDTO.setBookingId(Long.toString(bookingHeader.getId()));
+            invoiceDTO.setDepoName(bookingHeader.getDepoOwnerAccount().getOrganizationName());
+            invoiceDTO.setDepoAddress(bookingHeader.getDepoOwnerAccount().getAddress());
 
+            // Detail Consignee/Shipper
+            invoiceDTO.setConsignee(bookingHeader.getConsignee());
+            invoiceDTO.setNpwp(bookingHeader.getNpwp());
+            invoiceDTO.setBol(bookingHeader.getBill_landing());
+
+            // Detail Pemesan
+            invoiceDTO.setFullName(bookingHeader.getFull_name());
+            invoiceDTO.setPhone(bookingHeader.getPhone_number());
+            invoiceDTO.setEmail(bookingHeader.getEmail());
+
+            // Data Pembayaran
+            invoiceDTO.setBookingId(Long.toString(bookingHeader.getId()));
             dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             formattedDate = bookingHeader.getCreatedDate().format(dateTimeFormatter);
             invoiceDTO.setCreatedDate(formattedDate);
 
             if (xenditVA.getPayment_status().toString().equalsIgnoreCase("PAID")) {
-                invoiceDTO.setPaymentStatus("LUNAS");
+                invoiceDTO.setPaidStatus("LUNAS");
+                invoiceDTO.setCancelStatus("");
                 String paymentId = xenditVA.getPayment_id();
                 invoiceDTO.setPaymentId(
                         paymentId.substring(8, 10) + "/" + paymentId.substring(5, 7) + "/" + paymentId.substring(0, 4));
+            } else if (xenditVA.getPayment_status().toString().equalsIgnoreCase("CANCEL")) {
+                invoiceDTO.setCancelStatus("BATAL");
+                invoiceDTO.setPaidStatus("");
+                invoiceDTO.setPaymentId("-");
             } else {
-                invoiceDTO.setPaymentStatus("");
+                invoiceDTO.setPaidStatus("");
+                invoiceDTO.setCancelStatus("");
                 invoiceDTO.setPaymentId("");
             }
-            invoiceDTO.setFullName(bookingHeader.getFull_name());
-            invoiceDTO.setPhone(bookingHeader.getPhone_number());
-            invoiceDTO.setEmail(bookingHeader.getEmail());
+
+            // Detail Order
             invoiceDTO.setAmount(String.format(Locale.US, "%,d", xenditVA.getAmount()).replace(',', '.'));
             invoiceDTO.setBank(xenditVA.getBank_code());
             if (xenditVA.getAccount_number() == null)
@@ -146,6 +176,16 @@ public class FormServiceImpl implements FormService {
             else
                 invoiceDTO.setVa(xenditVA.getAccount_number());
 
+            dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy, HH:mm");
+            if (xenditVA.getPayment_id() == null) {
+                formattedDate = DateUtil.convertLocalDateWithTimeZone(xenditVA.getCreatedDate(),
+                        "GMT+7").format(dateTimeFormatter);
+            } else
+                formattedDate = DateUtil.convertLocalDateWithTimeZone(LocalDateTime.parse(
+                        xenditVA.getPayment_id(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")),
+                        "GMT+7").format(dateTimeFormatter);
+
+            invoiceDTO.setLastModified(formattedDate);
             context.put("invoice", invoiceDTO);
 
             if (bookingType.equalsIgnoreCase("UNLOADING")) {
@@ -212,7 +252,8 @@ public class FormServiceImpl implements FormService {
         BookingHeader bookingHeader = optionalBookingHeader.get();
 
         if (!bookingHeader.getPhone_number().equals(phone_number))
-            throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
+            throw new BadRequestException("this booking is not belong to phone number: "
+                    + phone_number);
 
         try {
             String bookingType = bookingHeader.getBooking_type().toString();
@@ -231,10 +272,16 @@ public class FormServiceImpl implements FormService {
             FieldsMetadata metadata = report.createFieldsMetadata();
 
             metadata.load("bons", FormBonDTO.class, true);
+            metadata.addFieldAsImage("depoLogo");
             metadata.addFieldAsList("bons.qrCode");
             metadata.addFieldAsImage("qrCode", "bon.qrCode");
 
             IContext context = report.createContext();
+
+            IImageProvider depoLogo = new ByteArrayImageProvider(
+                    new ClassPathResource("static/product-nle-connect-uppercase.png").getInputStream());
+            depoLogo.setSize(140f, 30f);
+            context.put("depoLogo", depoLogo);
 
             String depoName = bookingHeader.getDepoOwnerAccount().getOrganizationName();
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
