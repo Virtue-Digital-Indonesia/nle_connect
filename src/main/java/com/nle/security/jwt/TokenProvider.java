@@ -1,7 +1,6 @@
 package com.nle.security.jwt;
 
 import com.nle.config.prop.AppProperties;
-import com.nle.io.entity.DepoOwnerAccount;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;

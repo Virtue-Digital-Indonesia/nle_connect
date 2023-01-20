@@ -1,6 +1,5 @@
 package com.nle.ui.model.request.search;
 
-import com.nle.constant.enums.AccountStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
