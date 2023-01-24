@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface BankDepoService {
 
+    BankDepoResponse changeBankCode(BankDepoRequest request);
     BankDepoResponse insertBankCode(BankDepoRequest request);
 
     List<BankDepoResponse> getAllBankDepo();

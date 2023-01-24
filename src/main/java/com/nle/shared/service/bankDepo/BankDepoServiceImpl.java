@@ -27,6 +27,43 @@ public class BankDepoServiceImpl implements BankDepoService {
     private final BankDepoRepository bankDepoRepository;
 
     @Override
+    public BankDepoResponse changeBankCode(BankDepoRequest request) {
+        Optional<String> companyEmail = SecurityUtils.getCurrentUserLogin();
+
+        if (companyEmail.isEmpty())
+            throw new BadRequestException("invalid token");
+
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(companyEmail.get());
+
+        if (depoOwnerAccount.isEmpty())
+            throw new BadRequestException("cannot find depo");
+
+        //if not have will create
+        Optional<BankDepo> bankDefault = bankDepoRepository.findDefaultDepoByCompanyEmail(companyEmail.get());
+        if (bankDefault.isEmpty()) {
+            return insertBankCode(request);
+        }
+
+        //update
+        BankDepo bankDepo = bankDefault.get();
+        if (request.getBank_code() != null || !request.getBank_code().trim().isEmpty())
+            bankDepo.setBank_code(bankDepo.getBank_code());
+
+        if (request.getAccount_holder_name() != null || !request.getAccount_holder_name().trim().isEmpty())
+            bankDepo.setAccount_holder_name(request.getAccount_holder_name());
+
+        if (request.getAccount_number() != null || !request.getAccount_number().trim().isEmpty())
+            bankDepo.setAccount_number(request.getAccount_number());
+
+        if (request.getDescription_bank() != null || !request.getDescription_bank().trim().isEmpty())
+            bankDepo.setDescription_bank(request.getDescription_bank());
+
+        bankDepo.setDefault_bank(true);
+
+        return convertToResponse(bankDepoRepository.save(bankDepo));
+    }
+
+    @Override
     public BankDepoResponse insertBankCode(BankDepoRequest request) {
         Optional<String> companyEmail = SecurityUtils.getCurrentUserLogin();
 

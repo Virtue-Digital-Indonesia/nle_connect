@@ -25,10 +25,10 @@ public class BankDepoController {
         return ResponseEntity.ok(bankDepoService.getAllBankDepo());
     }
 
-    @Operation(description = "insert bank for depo", operationId = "insertBankCode", summary = "insert bank for depo")
+    @Operation(description = "change bank for depo", operationId = "changeBankCode", summary = "change bank for depo")
     @SecurityRequirement(name = "nleapi")
-    @PostMapping()
-    public ResponseEntity<BankDepoResponse> insertBankCode(@RequestBody BankDepoRequest request) {
-        return ResponseEntity.ok(bankDepoService.insertBankCode(request));
+    @PostMapping(value = "/change")
+    public ResponseEntity<BankDepoResponse> changetBankCode(@RequestBody BankDepoRequest request) {
+        return ResponseEntity.ok(bankDepoService.changeBankCode(request));
     }
 }
