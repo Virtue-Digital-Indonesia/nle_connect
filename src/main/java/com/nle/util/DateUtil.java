@@ -29,7 +29,7 @@ public class DateUtil {
     public static String getCancelExpiration(String pattern) {
         String dateTimePattern = pattern+"'T'HH:mm:ss";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
-        String cancelExpiration = formatter.format(LocalDateTime.now().plusSeconds(5));
+        String cancelExpiration = formatter.format(LocalDateTime.now().plusSeconds(3));
 
         return cancelExpiration;
     }

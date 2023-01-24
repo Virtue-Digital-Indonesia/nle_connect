@@ -387,35 +387,76 @@ public class XenditServiceImpl implements XenditService {
         if (xenditVAOptional.isEmpty())
             throw new BadRequestException("Not found booking!");
 
+        String xenditId = createXenditAccount(doa);
+
         XenditVA xenditVA = xenditVAOptional.get();
         XenditResponse xenditResponse = new XenditResponse();
-//        if (xenditVA.getPayment_status().equals("PENDING")){
-            Xendit.apiKey = appProperties.getXendit().getApiKey();
-            Map<String, Object> params = new HashMap<>();
-            params.put("expiration_date", DateUtil.getCancelExpiration(DATE_PATTERN));
-            try {
-                FixedVirtualAccount cancelVa = FixedVirtualAccount.update(xenditVA.getXendit_id(), params);
-                BeanUtils.copyProperties(cancelVa, xenditResponse);
-                xenditResponse.setExpirationDate(String.valueOf(cancelVa.getExpirationDate()));
-                xenditResponse.setStatus("CANCEL");
+        if (xenditVA.getPayment_status().toString().equalsIgnoreCase("PENDING")){
+                Xendit.apiKey = appProperties.getXendit().getApiKey();
+                Map<String, Object> params = new HashMap<>();
+                params.put("expiration_date", DateUtil.getCancelExpiration(DATE_PATTERN));
 
-            } catch (XenditException e){
+                Map<String, String> headers = new HashMap<>();
+                headers.put("for-user-id", doa.getXenditVaId());
+
+            try {
+//                FixedVirtualAccount cancelVa = FixedVirtualAccount.update(xenditId, params);
+//                BeanUtils.copyProperties(cancelVa, xenditResponse);
+                String getExpired = cancelVirtualAccount(xenditVA.getXendit_id());
+                xenditResponse.setExpirationDate(getExpired);
+                xenditResponse.setStatus("CANCEL");
+                getCancelInvoice(xenditVA.getXendit_id(), xenditResponse);
+                xenditRepository.updateCancelOrder(XenditEnum.CANCEL, xenditVA.getId());
+                return xenditResponse;
+            } catch (Exception e){
                 e.printStackTrace();
             }
 
-//        }
+        }
                 return xenditResponse;
-
-//        getCancelInvoice(xenditVA.getXendit_id(), xenditResponse);
     }
 
     private void getCancelInvoice(String xenditId, XenditResponse xenditResponse) {
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         try {
             Invoice invoice = Invoice.expire(xenditId);
+            xenditResponse.setInvoice_url(invoice.getInvoiceUrl());
         } catch (XenditException e){
             e.printStackTrace();
         }
+    }
+
+    public String cancelVirtualAccount(String xenditId){
+        String updateVa = "https://api.xendit.co/callback_virtual_accounts/"+xenditId;
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String username = appProperties.getXendit().getApiKey();
+        String auth = username + ":";
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+        httpHeaders.add("Authorization", "Basic " + encodedAuth);
+        httpHeaders.add("Content-Type", "application/json");
+
+        JSONObject paramBody = new JSONObject();
+        try {
+            paramBody.put("expiration_date", DateUtil.getCancelExpiration(DATE_PATTERN));
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+        HttpEntity<String> request = new HttpEntity<String>(paramBody.toString(), httpHeaders);
+        String result = restTemplate.postForObject(updateVa, request, String.class);
+
+        try {
+            JsonNode root = objectMapper.readTree(result);
+            return root.path("expiration_date").asText();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "failed";
     }
 
 }
