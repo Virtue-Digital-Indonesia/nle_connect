@@ -387,7 +387,7 @@ public class XenditServiceImpl implements XenditService {
         if (xenditVAOptional.isEmpty())
             throw new BadRequestException("Not found booking!");
 
-        String xenditId = createXenditAccount(doa);
+//        String xenditId = createXenditAccount(doa);
 
         XenditVA xenditVA = xenditVAOptional.get();
         XenditResponse xenditResponse = new XenditResponse();
@@ -448,7 +448,7 @@ public class XenditServiceImpl implements XenditService {
         final ObjectMapper objectMapper = new ObjectMapper();
 
         HttpEntity<String> request = new HttpEntity<String>(paramBody.toString(), httpHeaders);
-        String result = restTemplate.postForObject(updateVa, request, String.class);
+        String result = restTemplate.patchForObject(updateVa, request, String.class);
 
         try {
             JsonNode root = objectMapper.readTree(result);
