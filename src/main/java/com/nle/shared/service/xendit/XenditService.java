@@ -22,4 +22,5 @@ public interface XenditService {
     XenditResponse CreatePaymentOrder(XenditRequest request);
 
     List<XenditListResponse> getMultipleXenditByPhone();
+    XenditResponse cancelOrderXendit(Long bookingId);
 }

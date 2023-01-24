@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+
 import java.util.Optional;
 
 @RestController
@@ -141,6 +142,13 @@ public class OrderController {
                 .headers(header)
                 .contentLength(reportByte.size())
                 .body(resource);
+    }
+
+    @Operation(description = "Cancel order xendit VA", operationId = "cancelOrder", summary = "Cancel order for xendit VA")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/cancel")
+    public ResponseEntity<XenditResponse> cancelOrder(@RequestParam("booking_id") Long booking_id){
+        return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id));
     }
 
 }
