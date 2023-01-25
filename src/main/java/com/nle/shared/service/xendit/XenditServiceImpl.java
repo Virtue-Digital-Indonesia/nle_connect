@@ -54,7 +54,6 @@ public class XenditServiceImpl implements XenditService {
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
-
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
 
@@ -104,7 +103,6 @@ public class XenditServiceImpl implements XenditService {
 
         int va_index = request.getPhone_number().length();
         String va_number = VA_CODE + request.getPhone_number().substring(va_index - 7, va_index);
-
         Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository
                 .findById(request.getBooking_header_id());
         if (optionalBookingHeader.isEmpty())
@@ -113,6 +111,11 @@ public class XenditServiceImpl implements XenditService {
             throw new BadRequestException("this booking already paid");
         if (optionalBookingHeader.get().getDepoOwnerAccount().getId() != depo.getId())
             throw new BadRequestException("this booking not for this depo");
+
+        Optional<XenditVA> optionalXenditPending = xenditRepository
+                .findWithPhonePending(request.getPhone_number());
+        if (!optionalXenditPending.isEmpty())
+            throw new BadRequestException("Phone number still used!");
 
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         Map<String, Object> params = new HashMap<>();
