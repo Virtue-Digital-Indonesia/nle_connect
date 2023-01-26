@@ -47,7 +47,7 @@ public class BankDepoServiceImpl implements BankDepoService {
         //update
         BankDepo bankDepo = bankDefault.get();
         if (request.getBank_code() != null || !request.getBank_code().trim().isEmpty())
-            bankDepo.setBank_code(bankDepo.getBank_code());
+            bankDepo.setBank_code(request.getBank_code());
 
         if (request.getAccount_holder_name() != null || !request.getAccount_holder_name().trim().isEmpty())
             bankDepo.setAccount_holder_name(request.getAccount_holder_name());
