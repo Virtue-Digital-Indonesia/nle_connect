@@ -2,8 +2,6 @@ package com.nle.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 
 import org.springframework.stereotype.Component;
 

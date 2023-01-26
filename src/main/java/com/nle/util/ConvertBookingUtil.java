@@ -1,6 +1,5 @@
 package com.nle.util;
 
-import com.nle.constant.AppConstant;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
@@ -9,16 +8,12 @@ import com.nle.ui.model.response.*;
 import com.nle.ui.model.response.booking.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
