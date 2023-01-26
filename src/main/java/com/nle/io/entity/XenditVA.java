@@ -31,6 +31,9 @@ public class XenditVA extends AbstractAuditingEntity implements Serializable {
     @Column(name = "invoice_id")
     private String invoice_id;
 
+    @Column(name = "disbursement_id")
+    private String disbursement_id;
+
     @Column(name = "payment_id")
     private String payment_id;
 
