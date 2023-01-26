@@ -44,7 +44,7 @@ app:
     App-ID: ${APP_ID}
     API-Key: ${API_KEY}
   xendit:
-    API-Key: ${XENDIT_API_KEY}
+    API-Key: xnd_development_6uDJLBYetclDPyRDNijvWM4ldmn3ycBlhSAyICQ7q4INV08JrCxdcC2PfkOTEX
 
 spring:
   data:
