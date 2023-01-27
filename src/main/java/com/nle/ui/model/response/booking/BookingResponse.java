@@ -28,6 +28,8 @@ public class BookingResponse {
     private String npwp_address;
     private PaymentMethodEnum payment_method;
     private BookingStatusEnum booking_status;
+    private boolean disbursement_status;
+    private LocalDateTime disbursement_date;
     private LocalDateTime txDateFormatted;
     private ApplicantResponse depo;
     private List<ItemResponse> items;

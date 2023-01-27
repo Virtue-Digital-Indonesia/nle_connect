@@ -1,6 +1,8 @@
 package com.nle.ui.controller.booking;
 
 import com.nle.shared.service.xendit.XenditService;
+import com.nle.ui.model.request.xendit.XenditCallbackPayload;
+import com.nle.ui.model.request.xendit.XenditDisCallbackPayload;
 import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,5 +32,11 @@ public class PaymentController {
     @GetMapping(value = "/bookinglist")
     public ResponseEntity<List<XenditListResponse>> getListXenditByPhone() {
         return ResponseEntity.ok(xenditService.getMultipleXenditByPhone());
+    }
+
+    @Operation(hidden = true)
+    @PostMapping(value = "/callback/disbursement")
+    public ResponseEntity<String> callbackInvoice (@RequestBody XenditDisCallbackPayload payload) {
+        return ResponseEntity.ok(xenditService.CallbackDisbursements(payload));
     }
 }

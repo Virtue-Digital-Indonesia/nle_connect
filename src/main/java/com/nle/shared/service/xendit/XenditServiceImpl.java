@@ -9,16 +9,17 @@ import com.nle.constant.enums.PaymentMethodEnum;
 import com.nle.constant.enums.XenditEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
+import com.nle.io.entity.BankDepo;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.entity.DepoWorkerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.booking.BookingHeader;
+import com.nle.io.repository.BankDepoRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
-import com.nle.io.repository.DepoWorkerAccountRepository;
 import com.nle.io.repository.XenditRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
+import com.nle.ui.model.request.xendit.XenditDisCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
@@ -26,6 +27,8 @@ import com.nle.util.DateUtil;
 import com.nle.util.XenditUtil;
 import com.xendit.Xendit;
 import com.xendit.exception.XenditException;
+import com.xendit.model.Balance;
+import com.xendit.model.Disbursement;
 import com.xendit.model.FixedVirtualAccount;
 import com.xendit.model.Invoice;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +42,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -52,6 +57,7 @@ public class XenditServiceImpl implements XenditService {
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+    private final BankDepoRepository bankDepoRepository;
     private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
 
     @Override
@@ -144,6 +150,7 @@ public class XenditServiceImpl implements XenditService {
             xenditVA.setPayment_status(XenditEnum.PENDING);
             xenditVA.setBooking_header_id(optionalBookingHeader.get());
             BindWithInvoice(response, depo.getXenditVaId(), xenditVA, optionalBookingHeader.get().getEmail());
+            xenditVA.setDisbursement_id(null);
             xenditRepository.save(xenditVA);
         } catch (XenditException e) {
             throw new RuntimeException(e);
@@ -212,6 +219,7 @@ public class XenditServiceImpl implements XenditService {
                 bookingHeader.setPayment_method(PaymentMethodEnum.BANK);
                 bookingHeader.setBooking_status(BookingStatusEnum.SUCCESS);
                 bookingHeaderRepository.save(bookingHeader);
+                CreateDisbursements(payload.getUser_id(), entity);
             } else if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 entity.setPayment_status(XenditEnum.EXPIRED);
             }
@@ -365,6 +373,90 @@ public class XenditServiceImpl implements XenditService {
         }
 
         return listResponse;
+    }
+
+    @Override
+    public void CreateDisbursements(String xendit_id, XenditVA xenditVA){
+        //get balance
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+        Map<String, String> header = new HashMap<>();
+        header.put("for-user-id", xendit_id);
+
+        int balance_amount = 0;
+        try {
+            Balance balance = Balance.get(header, Balance.AccountType.CASH);
+            balance_amount = Integer.parseInt(balance.getBalance().toString()) - 5550;
+        } catch (XenditException e) {
+            e.printStackTrace();
+        }
+
+        if (balance_amount < 1)
+            return;
+
+        //get Bank Depo
+        Optional<DepoOwnerAccount> optional = depoOwnerAccountRepository.findByXenditVaId(xendit_id);
+        if (optional.isEmpty())
+            return;
+
+        Optional<BankDepo> bankDepoOptional = bankDepoRepository.findDefaultDepoByCompanyEmail(optional.get().getCompanyEmail());
+        if (bankDepoOptional.isEmpty())
+            return;
+
+        BankDepo bankDepo = bankDepoOptional.get();
+
+        //create disbursement
+        Map<String, Object> params = new HashMap<>();
+        params.put("external_id", "disb-nle-" + DateUtil.getNowString(DATE_PATTERN));
+        params.put("amount", balance_amount);
+        params.put("bank_code", bankDepo.getBank_code());
+        params.put("account_holder_name", bankDepo.getAccount_holder_name());
+        params.put("account_number", bankDepo.getAccount_number());
+        params.put("description", bankDepo.getDescription_bank());
+
+        try {
+            Disbursement disbursement = Disbursement.create(header, params);
+            xenditVA.setDisbursement_id(disbursement.getId());
+        } catch (XenditException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public String CallbackDisbursements(XenditDisCallbackPayload payload){
+        Optional<XenditVA> xenditVAOptional = xenditRepository.findByDisbursement_id(payload.getId());
+        if (xenditVAOptional.isEmpty())
+            throw new CommonException("Not found disbursement id");
+
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+        Map<String, String> header = new HashMap<>();
+        header.put("for-user-id", payload.getUser_id());
+
+        if (!payload.getStatus().equalsIgnoreCase("COMPLETED"))
+            return "status is " + payload.getStatus();
+
+
+        try {
+            Disbursement disbursement = Disbursement.getById(header, payload.getId());
+            if (!disbursement.getStatus().equalsIgnoreCase("COMPLETED"))
+                return "status in xendit is " + payload.getStatus();
+
+            XenditVA xenditVA = xenditVAOptional.get();
+            BookingHeader bookingHeader = xenditVA.getBooking_header_id();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            LocalDateTime UTC = LocalDateTime.parse(payload.getUpdated(), formatter);
+            LocalDateTime GMT = DateUtil.convertLocalDateWithTimeZone(UTC, "GMT+7");
+            bookingHeader.setDisbursement_status(true);
+            bookingHeader.setDisbursement_date(GMT);
+            bookingHeaderRepository.save(bookingHeader);
+        } catch (XenditException e) {
+            e.printStackTrace();
+            throw new BadRequestException("something wrong with xendit");
+        }
+
+        return "SUCCESS disbursement";
+
     }
 
 }
