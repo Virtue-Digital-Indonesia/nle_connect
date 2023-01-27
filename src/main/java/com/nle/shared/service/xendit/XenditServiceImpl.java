@@ -11,12 +11,10 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.BankDepo;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.entity.DepoWorkerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.BankDepoRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
-import com.nle.io.repository.DepoWorkerAccountRepository;
 import com.nle.io.repository.XenditRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
@@ -44,6 +42,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -399,7 +398,7 @@ public class XenditServiceImpl implements XenditService {
             return;
 
         Optional<BankDepo> bankDepoOptional = bankDepoRepository.findDefaultDepoByCompanyEmail(optional.get().getCompanyEmail());
-        if (optional.isEmpty())
+        if (bankDepoOptional.isEmpty())
             return;
 
         BankDepo bankDepo = bankDepoOptional.get();
@@ -423,7 +422,39 @@ public class XenditServiceImpl implements XenditService {
     }
 
     @Override
-    public void CallbackDisbursements(XenditDisCallbackPayload payload){
+    public String CallbackDisbursements(XenditDisCallbackPayload payload){
+        Optional<XenditVA> xenditVAOptional = xenditRepository.findByDisbursement_id(payload.getId());
+        if (xenditVAOptional.isEmpty())
+            throw new CommonException("Not found disbursement id");
+
+        Xendit.apiKey = appProperties.getXendit().getApiKey();
+        Map<String, String> header = new HashMap<>();
+        header.put("for-user-id", payload.getUser_id());
+
+        if (!payload.getStatus().equalsIgnoreCase("COMPLETED"))
+            return "status is " + payload.getStatus();
+
+
+        try {
+            Disbursement disbursement = Disbursement.getById(header, payload.getId());
+            if (!disbursement.getStatus().equalsIgnoreCase("COMPLETED"))
+                return "status in xendit is " + payload.getStatus();
+
+            XenditVA xenditVA = xenditVAOptional.get();
+            BookingHeader bookingHeader = xenditVA.getBooking_header_id();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            LocalDateTime UTC = LocalDateTime.parse(payload.getUpdated(), formatter);
+            LocalDateTime GMT = DateUtil.convertLocalDateWithTimeZone(UTC, "GMT+7");
+            bookingHeader.setDisbursement_status(true);
+            bookingHeader.setDisbursement_date(GMT);
+            bookingHeaderRepository.save(bookingHeader);
+        } catch (XenditException e) {
+            e.printStackTrace();
+            throw new BadRequestException("something wrong with xendit");
+        }
+
+        return "SUCCESS disbursement";
 
     }
 

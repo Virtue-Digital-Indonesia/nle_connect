@@ -27,5 +27,5 @@ public interface XenditService {
 
     void CreateDisbursements(String xendit_id, XenditVA xenditVA);
 
-    void CallbackDisbursements(XenditDisCallbackPayload payload);
+    String CallbackDisbursements(XenditDisCallbackPayload payload);
 }

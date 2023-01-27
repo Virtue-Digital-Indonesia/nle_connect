@@ -37,7 +37,6 @@ public class PaymentController {
     @Operation(hidden = true)
     @PostMapping(value = "/callback/disbursement")
     public ResponseEntity<String> callbackInvoice (@RequestBody XenditDisCallbackPayload payload) {
-        xenditService.CallbackDisbursements(payload);
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(xenditService.CallbackDisbursements(payload));
     }
 }
