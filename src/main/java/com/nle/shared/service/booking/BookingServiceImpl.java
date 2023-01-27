@@ -197,6 +197,8 @@ public class BookingServiceImpl implements BookingService {
         if (depoOwnerAccount.isEmpty())
             throw new BadRequestException("Depo Id cannot be find");
         entity.setDepoOwnerAccount(depoOwnerAccount.get());
+        entity.setDisbursement_status(false);
+        entity.setDisbursement_date(null);
         BookingHeader savedHeader = bookingHeaderRepository.save(entity);
 
         return savedHeader;

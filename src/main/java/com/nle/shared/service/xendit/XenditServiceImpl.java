@@ -150,6 +150,7 @@ public class XenditServiceImpl implements XenditService {
             xenditVA.setPayment_status(XenditEnum.PENDING);
             xenditVA.setBooking_header_id(optionalBookingHeader.get());
             BindWithInvoice(response, depo.getXenditVaId(), xenditVA, optionalBookingHeader.get().getEmail());
+            xenditVA.setDisbursement_id(null);
             xenditRepository.save(xenditVA);
         } catch (XenditException e) {
             throw new RuntimeException(e);
