@@ -1,7 +1,7 @@
 package com.nle.mapper;
 
-import com.nle.entity.DepoOwnerAccount;
-import com.nle.service.dto.DepoOwnerAccountDTO;
+import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.shared.dto.DepoOwnerAccountDTO;
 import org.mapstruct.Mapper;
 
 /**

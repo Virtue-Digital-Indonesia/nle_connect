@@ -67,16 +67,33 @@ public class SecurityConfiguration {
             .and()
                 .authorizeRequests()
                 .antMatchers("/api/register/**"
-                    , "/api/activate/**"
-                    , "/api/authenticate"
-                    , "/api/admins/authenticate"
-                    , "/api/depo-worker-accounts/join"
-                    , "/api/depo-worker-accounts/complete"
-                    , "/api/depo-worker-accounts/status/**"
-                    , "/api/ftp/**"
-                    , "/api/depo-worker-accounts/authenticate"
+                        , "/api/activate/**"
+                        , "/api/authenticate"
+                        , "/api/admins/authenticate"
+                        , "/api/depo-worker-accounts/join"
+                        , "/api/depo-worker-accounts/complete"
+                        , "/api/depo-worker-accounts/status/**"
+                        , "/api/ftp/**"
+                        , "/api/depo-worker-accounts/authenticate"
+                        , "/api/reset-password"
+                        , "/api/forgot-password"
+                        , "/api/fleets"
+                        , "/api/contact-us"
+                        , "/api/booking/depo/**"
+                        , "/api/booking/otp/**"
+                        , "/api/booking/payment/callback"
+                        , "/api/booking/payment/callback/invoice"
+                        , "/api/item-type"
                 ).permitAll()
-            .antMatchers("/impersonate", "/api/admins/profile").access("hasRole('ADMIN')")
+            .antMatchers("/impersonate"
+                    , "/api/admins/profile"
+                    , "/api/admins/update"
+                    , "/api/admins/change-password"
+                    , "/api/applicants/**"
+                    , "/api/switchUser/impersonate/**"
+                    , "/api/fleets/addFleet"
+                    , "/api/item-type/addItemType"
+                    ).access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
             .and()

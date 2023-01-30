@@ -103,4 +103,19 @@ public class TokenProvider {
         }
         return false;
     }
+
+    public String generateManualToken (String username, String authority) {
+
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+
+        return Jwts
+                .builder()
+                .setSubject(username)
+                .claim(AUTHORITIES_KEY, authority)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(validity)
+                .compact();
+
+    }
 }

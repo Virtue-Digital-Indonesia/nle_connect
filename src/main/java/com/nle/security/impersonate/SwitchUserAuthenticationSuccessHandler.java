@@ -21,8 +21,10 @@ public class SwitchUserAuthenticationSuccessHandler extends SavedRequestAwareAut
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         String jwt = tokenProvider.createToken(authentication);
-        HttpSession session = request.getSession(true);
-        session.setAttribute(DEPO_OWNER_IMPERSONATE_TOKEN, jwt);
-        getRedirectStrategy().sendRedirect(request, response, "/api/switchUser");
+//        HttpSession session = request.getSession(true);
+//        session.setAttribute(DEPO_OWNER_IMPERSONATE_TOKEN, jwt);
+//        getRedirectStrategy().sendRedirect(request, response, "/api/switchUser");
+//        response.sendRedirect("admin/home.html");
+        getRedirectStrategy().sendRedirect(request, response, "/api/switchUser/impersonate/"+jwt);
     }
 }

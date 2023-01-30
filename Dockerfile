@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM openjdk:11-jdk
 LABEL author="Virtue Digital Indonesia"
 
 # The application's jar file
