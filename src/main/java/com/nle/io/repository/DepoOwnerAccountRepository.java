@@ -53,4 +53,6 @@ public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccou
     @Query(value = DEPO_OWNER_SEARCH_QUERRY)
     Page<DepoOwnerAccount> searchByCondition(@Param("request") ApplicantSearchRequest request,
                                              Pageable pageable);
+
+    Optional<DepoOwnerAccount> findByXenditVaId(String xendit_id);
 }
