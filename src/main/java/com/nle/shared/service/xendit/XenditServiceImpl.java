@@ -94,7 +94,7 @@ public class XenditServiceImpl implements XenditService {
                 BeanUtils.copyProperties(fvAccount, response);
                 response.setExpirationDate(String.valueOf(fvAccount.getExpirationDate()));
                 response.setAmount(fvAccount.getExpectedAmount());
-                response.setInvoice_url("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+                response.setInvoice_url(appProperties.getUrl().getXenditCheckout() + xenditVA.getInvoice_id());
                 response.setStatus("PENDING");
                 return response;
             }
@@ -292,7 +292,7 @@ public class XenditServiceImpl implements XenditService {
         response.setCurrency("IDR");
         response.setAmount(xenditVA.getAmount());
         response.setStatus(xenditVA.getPayment_status().toString());
-        response.setInvoice_url("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+        response.setInvoice_url(appProperties.getUrl().getXenditCheckout() + xenditVA.getInvoice_id());
         response.setExternalId("va-" + xenditVA.getBank_code() + "-" + xenditVA.getPhone_number());
         response.setOwnerId(doa.getXenditVaId());
         response.setBankCode(xenditVA.getBank_code());
@@ -336,7 +336,7 @@ public class XenditServiceImpl implements XenditService {
                 BeanUtils.copyProperties(fixedVirtualAccount, xenditResponse);
                 xenditResponse.setExpirationDate(String.valueOf(fixedVirtualAccount.getExpirationDate()));
                 xenditResponse.setAmount(fixedVirtualAccount.getExpectedAmount());
-                xenditResponse.setInvoice_url("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+                xenditResponse.setInvoice_url(appProperties.getUrl().getXenditCheckout() + xenditVA.getInvoice_id());
                 xenditResponse.setStatus("PENDING");
                 return xenditResponse;
             }
@@ -367,7 +367,7 @@ public class XenditServiceImpl implements XenditService {
             xenditListResponse.setVa(xenditVA.getAccount_number());
             xenditListResponse.setExpiryDate(xenditVA.getExpiry_date());
             xenditListResponse.setAmount(xenditVA.getAmount());
-            xenditListResponse.setInvoiceUrl("https://checkout-staging.xendit.co/web/" + xenditVA.getInvoice_id());
+            xenditListResponse.setInvoiceUrl(appProperties.getUrl().getXenditCheckout() + xenditVA.getInvoice_id());
             xenditListResponse.setStatus(xenditVA.getPayment_status().toString());
             listResponse.add(xenditListResponse);
         }
