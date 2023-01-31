@@ -3,7 +3,6 @@ package com.nle.shared.service.xendit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nle.config.AppConfig;
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
@@ -11,11 +10,9 @@ import com.nle.constant.enums.XenditEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.entity.DepoWorkerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
-import com.nle.io.repository.DepoWorkerAccountRepository;
 import com.nle.io.repository.XenditRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
@@ -40,8 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -372,42 +367,13 @@ public class XenditServiceImpl implements XenditService {
     }
 
     @Override
-    public XenditResponse cancelOrderXendit(Long bookingId) {
-        Optional<String> username = SecurityUtils.getCurrentUserLogin();
-        if (username.isEmpty())
-            throw new BadRequestException("Invalid Token!");
+    public XenditResponse cancelOrderXendit(Long bookingId, DepoOwnerAccount doa) {
 
         Optional<XenditVA> xenditVAOptional = xenditRepository.findWithBookingID(bookingId);
         if (xenditVAOptional.isEmpty())
             throw new BadRequestException("Not found booking!");
         XenditVA xenditVA = xenditVAOptional.get();
         BookingHeader bookingHeader = xenditVA.getBooking_header_id();
-
-        //Validate depo login between booking and order
-        DepoOwnerAccount doa = null;
-        if (!username.get().startsWith("+62") && !username.get().startsWith("62") &&
-                !username.get().startsWith("0")) {
-            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
-            if (depoOwnerAccount.isEmpty())
-                throw new BadRequestException("Can't Find Depo!");
-
-            doa = depoOwnerAccount.get();
-            if (doa.getXenditVaId() == null)
-                throw new BadRequestException("This depo is not active!");
-        } else {
-            String phone_number = username.get();
-            if (!bookingHeader.getPhone_number().equals(phone_number))
-                throw new BadRequestException("this booking is not belong to phone number: "
-                        + phone_number);
-
-            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByPhoneNumber(phone_number);
-            if (depoOwnerAccount.isEmpty())
-                throw new BadRequestException("Can't Find Depo!");
-
-            doa = depoOwnerAccount.get();
-            if (doa.getXenditVaId() == null)
-                throw new BadRequestException("This depo is not active!");
-        }
 
         XenditResponse xenditResponse = new XenditResponse();
         if (xenditVA.getPayment_status().toString().equalsIgnoreCase("PENDING")){
@@ -429,10 +395,62 @@ public class XenditServiceImpl implements XenditService {
                 //for changed to expired DB
                 xenditRepository.updateCancelOrder(XenditEnum.CANCEL, xenditVA.getId());
                 xenditResponse.setStatus("CANCEL");
-                return xenditResponse;
-        } else {
+
+                //For soft delete booking header
+                bookingHeaderRepository.isDeleted(Boolean.TRUE, bookingId);
                 return xenditResponse;
         }
+                return xenditResponse;
+
+    }
+
+    //Method validate for customer
+    @Override
+    public DepoOwnerAccount bookingValidate(Optional<String> phone, Long booking_id) {
+            if (phone.isEmpty())
+                throw new BadRequestException("You must login!");
+
+            Optional<XenditVA> xenditVAOptional = xenditRepository.findWithBookingID(booking_id);
+            if (xenditVAOptional.isEmpty())
+                throw new BadRequestException("Not found booking!");
+            XenditVA xenditVA = xenditVAOptional.get();
+            BookingHeader bookingHeader = xenditVA.getBooking_header_id();
+
+            String phone_number = phone.get();
+            if (!bookingHeader.getPhone_number().equals(phone_number))
+                throw new BadRequestException("this booking is not belong to phone number: "
+                        + phone_number);
+
+            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByPhoneNumber(xenditVA.getPhone_number());
+            if (depoOwnerAccount.isEmpty())
+                throw new BadRequestException("Can't Find Depo!");
+
+            DepoOwnerAccount doa = depoOwnerAccount.get();
+            if (doa.getXenditVaId() == null)
+                throw new BadRequestException("This depo is not active!");
+
+            return doa;
+    }
+
+    //Method validate for depo
+    @Override
+    public DepoOwnerAccount orderValidate(Optional<String> username, Long booking_id) {
+        if (username.isEmpty())
+            throw new BadRequestException("Invalid Token!");
+
+        if (username.get().startsWith("+62") && username.get().startsWith("62") &&
+                username.get().startsWith("0"))
+            throw new BadRequestException("Please login!");
+
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
+        if (depoOwnerAccount.isEmpty())
+            throw new BadRequestException("Can't Find Depo!");
+
+        DepoOwnerAccount doa = depoOwnerAccount.get();
+        if (doa.getXenditVaId() == null)
+            throw new BadRequestException("This depo is not active!");
+
+        return doa;
     }
 
     private void getCancelInvoice(String invoiceId, XenditResponse xenditResponse, String depo_xendit_id) {
@@ -480,5 +498,6 @@ public class XenditServiceImpl implements XenditService {
             e.printStackTrace();
         }
     }
+
 
 }
