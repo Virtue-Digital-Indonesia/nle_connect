@@ -73,7 +73,7 @@ pipeline {
         }
 
         stage('Build docker image & update compose file') {
-            when {branch 'new_develop'}
+            when {branch 'develop'}
             steps {
                 withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
                     sh """
@@ -84,14 +84,14 @@ pipeline {
                         export VERSION=${shortGitCommit}
                         export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
-                        envsubst < docker-compose-template.yml > docker-compose.yml
+                        envsubst < docker-compose-template-1.yml > docker-compose.yml
                     """
                 }
             }
         }
 
         stage('Stop current backend') {
-            when {branch 'new_develop'}
+            when {branch 'develop'}
             steps {
                 script {
                     sh """
@@ -103,7 +103,7 @@ pipeline {
         }
 
         stage('Start backend with new version') {
-            when {branch 'new_develop'}
+            when {branch 'develop'}
             steps {
                 script {
                     sh """
