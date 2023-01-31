@@ -84,7 +84,7 @@ pipeline {
                         export VERSION=${shortGitCommit}
                         export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
-                        envsubst < docker-compose-template-1.yml > docker-compose.yml
+                        envsubst < docker-compose-template1.yml > docker-compose.yml
                     """
                 }
             }
