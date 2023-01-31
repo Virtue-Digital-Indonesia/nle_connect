@@ -2,6 +2,7 @@ package com.nle.ui.controller.booking;
 
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.exception.BadRequestException;
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.applicant.ApplicantService;
@@ -155,5 +156,14 @@ public class BookingController {
         System.out.println(payload.toString());
         xenditService.CallbackInvoice(payload);
         return ResponseEntity.ok(payload);
+    }
+
+    @Operation(description = "Cancel order xendit VA", operationId = "cancelOrder", summary = "Cancel order for xendit VA")
+    @SecurityRequirement(name = "nleapi")
+    @PutMapping(value = "/cancel")
+    public ResponseEntity<XenditResponse> cancelOrder(@RequestParam("booking_id") Long booking_id){
+        Optional<String> phone = SecurityUtils.getCurrentUserLogin();
+        DepoOwnerAccount doa = xenditService.bookingValidate(phone, booking_id);
+        return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id, doa));
     }
 }

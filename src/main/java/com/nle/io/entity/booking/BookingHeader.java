@@ -72,6 +72,9 @@ public class BookingHeader extends AbstractAuditingEntity implements Serializabl
     @Column(name = "tx_date_formatted")
     private LocalDateTime txDateFormatted;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted;
+
     @ManyToOne
     @JoinColumn(name = "depo_owner_account_id", referencedColumnName = "id")
     private DepoOwnerAccount depoOwnerAccount;

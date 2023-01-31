@@ -1,7 +1,9 @@
 package com.nle.config;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -9,6 +11,7 @@ import org.springframework.web.filter.CorsFilter;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.time.Duration;
 import java.util.Collections;
 
 @Configuration
@@ -34,5 +37,11 @@ public class AppConfig {
     public Validator validator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         return factory.getValidator();
+    }
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder){
+        return builder.setConnectTimeout(Duration.ofMillis(10000))
+                .setReadTimeout(Duration.ofMillis(10000))
+                .build();
     }
 }
