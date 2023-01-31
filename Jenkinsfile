@@ -96,7 +96,7 @@ pipeline {
                 script {
                     sh """
                         cd src/main/docker/
-                        docker-compose1 down
+                        docker compose -f docker-compose1.yml down
                     """
                 }
             }
@@ -108,7 +108,7 @@ pipeline {
                 script {
                     sh """
                         cd src/main/docker/
-                        docker-compose1 up -d
+                        docker compose -f docker-compose1.yml up -d
                     """
                 }
             }
