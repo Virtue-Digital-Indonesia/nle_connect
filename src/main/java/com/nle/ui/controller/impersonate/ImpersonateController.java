@@ -2,7 +2,6 @@ package com.nle.ui.controller.impersonate;
 
 import com.nle.shared.service.admin.AdminService;
 import com.nle.ui.model.JWTToken;
-import com.nle.security.impersonate.SwitchUserAuthenticationSuccessHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import static com.nle.constant.AppConstant.DEPO_OWNER_IMPERSONATE_TOKEN;
 @RequiredArgsConstructor
 public class ImpersonateController {
 
-    SwitchUserAuthenticationSuccessHandler switchUser;
     private final AdminService adminService;
 
     @Operation(description = "Get impersonate token from session then response to client", operationId = "findByCode", summary = "Get impersonate token from session then response to client")
