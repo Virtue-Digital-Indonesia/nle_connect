@@ -151,7 +151,7 @@ public class ConvertBookingUtil {
 
         String invoiceUrl = null;
         if (!invoiceId.isEmpty())
-            invoiceUrl = "https://checkout-staging.xendit.co/web/"+invoiceId.get(0);
+            invoiceUrl = "https://checkout.xendit.co/web/"+invoiceId.get(0);
 
         BookingTempDto bookingTempDto = new BookingTempDto();
         bookingTempDto.setBank_code(bank_code);

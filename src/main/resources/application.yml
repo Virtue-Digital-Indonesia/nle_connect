@@ -35,6 +35,7 @@ app:
     failed-redirect-url: https://nle-connect.id/sign-in
     impersonate-url: https://nle-connect.id/impersonate/token=
     tax-ministry: https://nlehub-dev.kemenkeu.go.id/DepoGate/Depo/post/data/depo-traffic
+    xendit-checkout: https://checkout.xendit.co/web/
   scheduler:
     enabled: true
     ftp-sync-cron: 59 59 17 * * *

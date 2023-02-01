@@ -9,4 +9,5 @@ public class Url {
     private String failedRedirectUrl;
     private String impersonateUrl;
     private String taxMinistry;
+    private String xenditCheckout;
 }
