@@ -85,6 +85,7 @@ public class SecurityConfiguration {
                         , "/api/booking/payment/callback/invoice"
                         , "/api/payment/callback/disbursement"
                         , "/api/item-type"
+                        , "/api/item-type/iso"
                 ).permitAll()
             .antMatchers("/impersonate"
                     , "/api/admins/profile"
@@ -94,6 +95,7 @@ public class SecurityConfiguration {
                     , "/api/switchUser/impersonate/**"
                     , "/api/fleets/addFleet"
                     , "/api/item-type/addItemType"
+                    , "/api/item-type/iso/addIso"
                     ).access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()

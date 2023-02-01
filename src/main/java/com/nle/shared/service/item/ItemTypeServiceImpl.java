@@ -24,7 +24,7 @@ public class ItemTypeServiceImpl implements ItemTypeService{
     @Override
     public PagingResponseModel<ItemTypeResponse> getAllItemType(Pageable pageable) {
         Page<ItemType> listItemType = itemTypeRepository.findAll(pageable);
-        return new PagingResponseModel<>(listItemType.map(ItemTypeServiceImpl::convertItemTypeToResponse));
+        return new PagingResponseModel<>(listItemType.map(this::convertItemTypeToResponse));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ItemTypeServiceImpl implements ItemTypeService{
         return this.convertItemTypeToResponse(savedEntity);
     }
 
-    public static ItemTypeResponse convertItemTypeToResponse(ItemType itemType) {
+    private ItemTypeResponse convertItemTypeToResponse(ItemType itemType) {
         ItemTypeResponse response = new ItemTypeResponse();
         BeanUtils.copyProperties(itemType, response);
         return response;
