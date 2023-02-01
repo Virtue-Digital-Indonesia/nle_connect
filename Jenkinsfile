@@ -84,7 +84,7 @@ pipeline {
                         export VERSION=${shortGitCommit}
                         export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
-                        envsubst < docker-compose-template1.yml > docker-compose1.yml
+                        envsubst < docker-compose-template1.yml > docker-compose.yml
                     """
                 }
             }
@@ -96,7 +96,7 @@ pipeline {
                 script {
                     sh """
                         cd src/main/docker/
-                        docker-compose1 down
+                        docker-compose -p stage down
                     """
                 }
             }
@@ -108,7 +108,7 @@ pipeline {
                 script {
                     sh """
                         cd src/main/docker/
-                        docker compose -f docker-compose1.yml up -d
+                        docker compose -p stage up -d
                     """
                 }
             }
