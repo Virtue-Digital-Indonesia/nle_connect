@@ -1,5 +1,6 @@
 package com.nle.io.repository.booking;
 
+import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import org.springframework.data.domain.Page;
@@ -50,7 +51,7 @@ public interface BookingHeaderRepository extends JpaRepository<BookingHeader, Lo
     Page<BookingHeader> getOrderDepo(@Param("companyEmail") String companyEmail, Pageable pageable);
 
     @Modifying
-    @Query(value = "update BookingHeader bh set bh.isDeleted =:status where bh.id =:id")
-    void isDeleted(@Param("status") Boolean statusDelete, @Param("id") Long bookingId);
+    @Query(value = "update BookingHeader bh set bh.booking_status =:status where bh.id =:id")
+    void cancelStatus(@Param("status") BookingStatusEnum statusEnum, @Param("id") Long bookingId);
 
 }
