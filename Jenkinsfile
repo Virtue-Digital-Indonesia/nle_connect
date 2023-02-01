@@ -73,9 +73,9 @@ pipeline {
         }
 
         stage('Build docker image & update compose file') {
-            if (env.BRANCH_NAME == "develop")
             steps {
                 withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
+                if (env.BRANCH_NAME == "develop") {
                     sh """
                         cp Dockerfile target/
                         cd target/
@@ -84,12 +84,9 @@ pipeline {
                         export VERSION=${shortGitCommit}
                         export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
-                        envsubst < docker-compose-template1.yml > docker-compose -p stage.yml
+                        envsubst < docker-compose-template1.yml > docker-compose.yml
                     """
-                }
-            } else if (env.BRANCH_NAME == "test-prod")
-            steps {
-                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
+                } else if (env.BRANCH_NAME == "test-prod") {
                     sh """
                         cp Dockerfile target/
                         cd target/
@@ -98,49 +95,45 @@ pipeline {
                         export VERSION=${shortGitCommit}
                         export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
-                        envsubst < docker-compose-template.yml > docker-compose -p prod.yml
+                        envsubst < docker-compose-template.yml > docker-compose.yml
                     """
                 }
-            }    
-            
+                }
+            }
         }
 
         stage('Stop current backend') {
-            if (env.BRANCH_NAME == "develop")
             steps {
                 script {
+                if (env.BRANCH_NAME == "develop") {
                     sh """
                         cd src/main/docker/
                         docker-compose -p stage down
                     """
-                }
-            } else if (env.BRANCH_NAME == "test-prod")
-            steps {
-                script {
+                } else if (env.BRANCH_NAME == "test-prod") {
                     sh """
                         cd src/main/docker/
                         docker-compose -p prod down
                     """
                 }
+                }
             }
         }
 
         stage('Start backend with new version') {
-            if (env.BRANCH_NAME == "develop")
             steps {
                 script {
+                if (env.BRANCH_NAME == "develop") {
                     sh """
                         cd src/main/docker/
                         docker compose -p stage up -d
                     """
-                }
-            } else if (env.BRANCH_NAME == "test-prod")
-            steps {
-                script {
+                } else if (env.BRANCH_NAME == "test-prod") {
                     sh """
                         cd src/main/docker/
                         docker compose -p prod up -d
                     """
+                }
                 }
             }
         }
