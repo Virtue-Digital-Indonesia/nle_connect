@@ -74,6 +74,7 @@ pipeline {
 
         stage('Build docker image & update compose file') {
             steps {
+                script {
                 withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
                 if (env.BRANCH_NAME == "develop") {
                     sh """
@@ -97,6 +98,7 @@ pipeline {
                         cd src/main/docker/
                         envsubst < docker-compose-template.yml > docker-compose.yml
                     """
+                }
                 }
                 }
             }
