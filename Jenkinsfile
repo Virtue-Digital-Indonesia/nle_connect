@@ -73,7 +73,7 @@ pipeline {
         }
 
         stage('Build docker image & update compose file') {
-            if (branch 'develop')
+            if (env.BRANCH_NAME == "develop")
             steps {
                 withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
                     sh """
@@ -87,7 +87,7 @@ pipeline {
                         envsubst < docker-compose-template1.yml > docker-compose -p stage.yml
                     """
                 }
-            } else if (branch 'test-prod')
+            } else if (env.BRANCH_NAME == "test-prod")
             steps {
                 withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
                     sh """
@@ -106,7 +106,7 @@ pipeline {
         }
 
         stage('Stop current backend') {
-            if (branch 'develop')
+            if (env.BRANCH_NAME == "develop")
             steps {
                 script {
                     sh """
@@ -114,7 +114,7 @@ pipeline {
                         docker-compose -p stage down
                     """
                 }
-            } else if (branch 'test-prod')
+            } else if (env.BRANCH_NAME == "test-prod")
             steps {
                 script {
                     sh """
@@ -126,7 +126,7 @@ pipeline {
         }
 
         stage('Start backend with new version') {
-            if {branch 'develop'}
+            if (env.BRANCH_NAME == "develop")
             steps {
                 script {
                     sh """
@@ -134,7 +134,7 @@ pipeline {
                         docker compose -p stage up -d
                     """
                 }
-            } else if {branch 'test-prod'}
+            } else if (env.BRANCH_NAME == "test-prod")
             steps {
                 script {
                     sh """
