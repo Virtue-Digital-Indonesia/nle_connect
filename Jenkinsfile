@@ -110,14 +110,12 @@ pipeline {
                 if (env.BRANCH_NAME == "stage") {
                     sh """
                         cd src/main/docker/
-                        docker-compose down
                         docker-compose -p stage down
                     """
                 } else if (env.BRANCH_NAME == "new_develop") {
                     sh """
                         cd src/main/docker/
                         docker-compose down
-                        docker-compose -p prod down
                     """
                 }
                 }
