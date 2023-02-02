@@ -133,7 +133,7 @@ pipeline {
                 } else {
                     sh """
                         cd src/main/docker/
-                        docker-compose -p prod up -d
+                        docker-compose up -d
                     """
                 }
                 }
