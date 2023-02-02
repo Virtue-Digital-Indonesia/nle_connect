@@ -121,23 +121,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Start backend with new version') {
-            steps {
-                script {
-                if (env.BRANCH_NAME == "develop") {
-                    sh """
-                        cd src/main/docker/
-                        docker compose -p stage up -d
-                    """
-                } else if (env.BRANCH_NAME == "test-prod") {
-                    sh """
-                        cd src/main/docker/
-                        docker compose -p prod up -d
-                    """
-                }
-                }
-            }
-        }
     }
 }
