@@ -73,9 +73,21 @@ pipeline {
         }
 
         stage('Build docker image & update compose file') {
-            when {branch 'new_develop'}
             steps {
+                script {
                 withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
+                if (env.BRANCH_NAME == "stage") {
+                    sh """
+                        cp Dockerfile target/
+                        cd target/
+                        docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
+                        cd ../
+                        export VERSION=${shortGitCommit}
+                        export DB_PASSWORD=$DB_PASSWORD
+                        cd src/main/docker/
+                        envsubst < docker-compose-template1.yml > docker-compose.yml
+                    """
+                } else {
                     sh """
                         cp Dockerfile target/
                         cd target/
@@ -87,29 +99,43 @@ pipeline {
                         envsubst < docker-compose-template.yml > docker-compose.yml
                     """
                 }
+                }
+                }
             }
         }
 
         stage('Stop current backend') {
-            when {branch 'new_develop'}
             steps {
                 script {
+                if (env.BRANCH_NAME == "stage") {
+                    sh """
+                        cd src/main/docker/
+                        docker-compose -p stage down
+                    """
+                } else {
                     sh """
                         cd src/main/docker/
                         docker-compose down
                     """
                 }
+                }
             }
         }
 
         stage('Start backend with new version') {
-            when {branch 'new_develop'}
             steps {
                 script {
+                    if (env.BRANCH_NAME == "stage") {
                     sh """
                         cd src/main/docker/
-                        docker-compose up -d
+                        docker-compose -p stage up -d
                     """
+                } else {
+                    sh """
+                        cd src/main/docker/
+                        docker-compose -p prod up -d
+                    """
+                }
                 }
             }
         }
