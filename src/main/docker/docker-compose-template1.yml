@@ -10,7 +10,7 @@ services:
     command:
       - --lower_case_table_names=1
     ports:
-      - '3308:3306'
+      - '3307:3306'
     environment:
       - MYSQL_DATABASE=nlebackend
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
@@ -20,7 +20,7 @@ services:
   nle-backend:
     image: 'nlebackend:${VERSION}'
     ports:
-      - '8081:8080'
+      - '8082:8080'
     depends_on:
       - mysql
     labels:
@@ -29,7 +29,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
-      - '9200:9200'
+      - '9201:9200'
     environment:
       - 'discovery.type=single-node'
     volumes:
@@ -38,8 +38,8 @@ services:
   logstash:
     image: docker.elastic.co/logstash/logstash:7.2.0
     ports:
-      - '25826:25826'
-      - '5044:5044'
+      - '25827:25826'
+      - '5045:5044'
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro # Pipeline configuration
     restart: on-failure
@@ -49,7 +49,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.2.0
     ports:
-      - '5601:5601'
+      - '5602:5601'
     restart: on-failure
     depends_on:
       - elasticsearch
