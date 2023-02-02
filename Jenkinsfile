@@ -115,7 +115,7 @@ pipeline {
                 } else {
                     sh """
                         cd src/main/docker/
-                        docker-compose down
+                        docker-compose -p prod down
                     """
                 }
                 }
