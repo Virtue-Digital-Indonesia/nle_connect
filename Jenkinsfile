@@ -76,7 +76,7 @@ pipeline {
             steps {
                 script {
                 withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
-                if (env.BRANCH_NAME == "stage") {
+                if (env.BRANCH_NAME == "Staging") {
                     sh """
                         cp Dockerfile target/
                         cd target/
@@ -107,7 +107,7 @@ pipeline {
         stage('Stop current backend') {
             steps {
                 script {
-                if (env.BRANCH_NAME == "stage") {
+                if (env.BRANCH_NAME == "Staging") {
                     sh """
                         cd src/main/docker/
                         docker-compose -p stage down
@@ -125,7 +125,7 @@ pipeline {
         stage('Start backend with new version') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == "stage") {
+                    if (env.BRANCH_NAME == "Staging") {
                     sh """
                         cd src/main/docker/
                         docker-compose -p stage up -d
