@@ -1,6 +1,7 @@
 package com.nle.config.prop;
 
 
+import com.nle.config.prop.insw.InswProperties;
 import com.nle.config.prop.springdoc.SpringDocProperties;
 import com.nle.config.prop.url.Url;
 import com.nle.config.prop.verihubs.VerihubProperties;
@@ -18,5 +19,6 @@ public class AppProperties {
     private String contactUsDestinationEmail;
     private VerihubProperties verihubs;
     private XenditProperties xendit;
+    private InswProperties insw;
 }
 
