@@ -111,6 +111,7 @@ pipeline {
                     sh """
                         cd src/main/docker/
                         docker-compose -p stage down
+                        docker-compose -p prod down
                     """
                 } else if (env.BRANCH_NAME == "new_develop") {
                     sh """
