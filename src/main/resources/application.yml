@@ -46,6 +46,11 @@ app:
     API-Key: ${API_KEY}
   xendit:
     API-Key: ${XENDIT_API_KEY}
+  insw:
+    Client-Id: qvEEKu5VPD2g11Ljq5A3GqoBh38uFZkE
+    Client-Secret: z3WSamhc2tLXqODjVPRsEyqxQ70uJ2fn
+    Provision-Key: BwSTNx2j9RNyDKG8yEORhi6QFUBRcV42
+    Redirect-URI: https://nle-connect.id/
 
 spring:
   data:
