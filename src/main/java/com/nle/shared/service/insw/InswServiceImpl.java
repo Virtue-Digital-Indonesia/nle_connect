@@ -5,13 +5,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AppConstant;
+import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.InswToken;
+import com.nle.io.entity.Item;
+import com.nle.io.entity.ItemType;
+import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.InswTokenRepository;
+import com.nle.io.repository.ItemRepository;
+import com.nle.security.SecurityUtils;
+import com.nle.shared.service.item.ItemTypeService;
+import com.nle.ui.model.response.ItemResponse;
+import com.nle.ui.model.response.ItemTypeResponse;
+import com.nle.ui.model.response.insw.*;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,10 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -34,8 +44,85 @@ public class InswServiceImpl implements InswService{
 
     private final AppProperties appProperties;
     private final InswTokenRepository inswTokenRepository;
+
+    private final ItemTypeService itemTypeService;
+    private final ItemRepository itemRepository;
+    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     @Override
-    public ResponseEntity<String> getBolData(String bolNumber) {
+    public InswResponse getBolData(String bolNumber) {
+        //Validasi between customer and depo
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty())
+            throw new BadRequestException("You must login!");
+
+        Optional<DepoOwnerAccount> depoOwnerAccount = null;
+        if (!username.get().startsWith("+62") && !username.get().startsWith("62") &&
+                !username.get().startsWith("0")){
+             depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
+        } else {
+            depoOwnerAccount = depoOwnerAccountRepository.findByPhoneNumber(username.get());
+        }
+
+        if (depoOwnerAccount.isEmpty())
+            throw new BadRequestException("Can't Find Depo!");
+
+        DepoOwnerAccount doa = depoOwnerAccount.get();
+
+        //Get data from insw and convert to nle response
+        InswResponse dataResponse = this.getBolDataInsw(bolNumber).getData();
+        InswResponse inswResponse = new InswResponse();
+        BeanUtils.copyProperties(dataResponse, inswResponse);
+
+        //Get data container as list
+        List<ContainerResponse> containerResponseList = new ArrayList<>();
+        List<ContainerResponse> containerResponse = dataResponse.getContainer();
+        for (ContainerResponse container: containerResponse) {
+            containerResponseList.add(this.convertContainerToResponse(container, doa.getId()));
+        }
+
+        inswResponse.setContainer(containerResponseList);
+        return inswResponse;
+    }
+
+    private ContainerResponse convertContainerToResponse(ContainerResponse containerResponse, Long depoId) {
+        ContainerResponse response = new ContainerResponse();
+        BeanUtils.copyProperties(containerResponse, response);
+
+        //Get item type base on size and type
+        List<ItemTypeResponse> itemTypeResponseList = itemTypeService.getFromIsoCode(containerResponse.getSize(), containerResponse.getType());
+        if (itemTypeResponseList.isEmpty())
+            response.setItemResponse(null);
+
+        try {
+            for (ItemTypeResponse getItemType: itemTypeResponseList) {
+                Optional<Item> getItemOfId = itemRepository.getByIdAndDepo(depoId,getItemType.getId());
+                if (!getItemOfId.isPresent()){
+                    response.setItemResponse(null);
+                } else {
+                    Item item = getItemOfId.get();
+                    ItemResponse itemResponse = new ItemResponse();
+                    itemResponse.setId(item.getId());
+                    ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
+                    BeanUtils.copyProperties(item.getItem_name(), itemTypeResponse);
+                    itemResponse.setItem_name(itemTypeResponse);
+                    itemResponse.setPrice(item.getPrice());
+                    itemResponse.setSku(item.getSku());
+                    itemResponse.setDescription(item.getDescription());
+                    itemResponse.setType(item.getType());
+                    itemResponse.setStatus(item.getStatus());
+                    itemResponse.setDeleted(item.getDeleted());
+                    response.setItemResponse(itemResponse);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+
+    public DataResponse getBolDataInsw(String bolNumber) {
         String curlLocUrl = "https://api-test.insw.go.id/api/v2/services/transaksi/do-sp2/container-asdeki?nomor_bl="+bolNumber;
 
         RestTemplate restTemplate = new RestTemplate();
@@ -60,15 +147,16 @@ public class InswServiceImpl implements InswService{
         httpHeaders.add("Content-Type", "application/json");
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(httpHeaders);
-        ResponseEntity<String> response = null;
+        ResponseEntity<DataResponse> response = null;
         try {
             response = restTemplate.exchange(curlLocUrl,
                     HttpMethod.GET,
-                    entity, String.class);
+                    entity, DataResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return response;
+
+        return response.getBody();
     }
 
     private Boolean checkToken(LocalDateTime expiredDate) {

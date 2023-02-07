@@ -1,5 +1,6 @@
 package com.nle.ui.controller.Item;
 
+import com.nle.io.entity.ItemType;
 import com.nle.shared.service.item.ItemTypeService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.ItemTypeRequest;
@@ -17,6 +18,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/item-type")
@@ -47,6 +50,13 @@ public class ItemTypeController {
     @PostMapping(value = "/addItemType")
     public ResponseEntity<ItemTypeResponse> createItemType(@RequestBody ItemTypeRequest request) {
         return ResponseEntity.ok(itemTypeService.createItemType(request));
+    }
+
+    @Operation(description = "create item type", operationId = "createItemType", summary = "create item type")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/getFromIso")
+    public List<ItemTypeResponse> getFromIsoCode() {
+        return ResponseEntity.ok(itemTypeService.getFromIsoCode("25", "22TD")).getBody();
     }
 
 }
