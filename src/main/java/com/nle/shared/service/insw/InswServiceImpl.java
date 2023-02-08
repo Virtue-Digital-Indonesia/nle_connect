@@ -16,6 +16,7 @@ import com.nle.io.repository.InswTokenRepository;
 import com.nle.io.repository.ItemRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.item.ItemTypeService;
+import com.nle.ui.model.request.insw.GetInswRequest;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
@@ -49,24 +50,14 @@ public class InswServiceImpl implements InswService{
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     @Override
-    public InswResponse getBolData(String bolNumber) {
-        //Validasi between customer and depo
-        Optional<String> username = SecurityUtils.getCurrentUserLogin();
-        if (username.isEmpty())
-            throw new BadRequestException("You must login!");
+    public InswResponse getBolData(String bolNumber, GetInswRequest getInswRequest) {
+        //Validasi depo id
+        if (getInswRequest.getDepoId() == null)
+            throw new BadRequestException("Can't Find Depo ID!");
 
-        Optional<DepoOwnerAccount> depoOwnerAccount = null;
-        if (!username.get().startsWith("+62") && !username.get().startsWith("62") &&
-                !username.get().startsWith("0")){
-             depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
-        } else {
-            depoOwnerAccount = depoOwnerAccountRepository.findByPhoneNumber(username.get());
-        }
-
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(getInswRequest.getDepoId());
         if (depoOwnerAccount.isEmpty())
             throw new BadRequestException("Can't Find Depo!");
-
-        DepoOwnerAccount doa = depoOwnerAccount.get();
 
         //Get data from insw and convert to nle response
         InswResponse dataResponse = this.getBolDataInsw(bolNumber).getData();
@@ -77,7 +68,7 @@ public class InswServiceImpl implements InswService{
         List<ContainerResponse> containerResponseList = new ArrayList<>();
         List<ContainerResponse> containerResponse = dataResponse.getContainer();
         for (ContainerResponse container: containerResponse) {
-            containerResponseList.add(this.convertContainerToResponse(container, doa.getId()));
+            containerResponseList.add(this.convertContainerToResponse(container, getInswRequest.getDepoId()));
         }
 
         inswResponse.setContainer(containerResponseList);
@@ -93,25 +84,30 @@ public class InswServiceImpl implements InswService{
         if (itemTypeResponseList.isEmpty())
             response.setItemResponse(null);
 
+        List<ItemResponse> itemResponseList = new ArrayList<>();
         try {
             for (ItemTypeResponse getItemType: itemTypeResponseList) {
-                Optional<Item> getItemOfId = itemRepository.getByIdAndDepo(depoId,getItemType.getId());
-                if (!getItemOfId.isPresent()){
+                List<Item> getItemOfId = itemRepository.getByIdAndDepo(depoId,getItemType.getId());
+                if (getItemOfId.isEmpty()){
                     response.setItemResponse(null);
                 } else {
-                    Item item = getItemOfId.get();
-                    ItemResponse itemResponse = new ItemResponse();
-                    itemResponse.setId(item.getId());
-                    ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
-                    BeanUtils.copyProperties(item.getItem_name(), itemTypeResponse);
-                    itemResponse.setItem_name(itemTypeResponse);
-                    itemResponse.setPrice(item.getPrice());
-                    itemResponse.setSku(item.getSku());
-                    itemResponse.setDescription(item.getDescription());
-                    itemResponse.setType(item.getType());
-                    itemResponse.setStatus(item.getStatus());
-                    itemResponse.setDeleted(item.getDeleted());
-                    response.setItemResponse(itemResponse);
+                    for (Item item: getItemOfId
+                         ) {
+                        ItemResponse itemResponse = new ItemResponse();
+                        itemResponse.setId(item.getId());
+                        ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
+                        BeanUtils.copyProperties(item.getItem_name(), itemTypeResponse);
+                        itemResponse.setItem_name(itemTypeResponse);
+                        itemResponse.setPrice(item.getPrice());
+                        itemResponse.setSku(item.getSku());
+                        itemResponse.setDescription(item.getDescription());
+                        itemResponse.setType(item.getType());
+                        itemResponse.setStatus(item.getStatus());
+                        itemResponse.setDeleted(item.getDeleted());
+                        itemResponseList.add(itemResponse);
+                    }
+                    int getIndex = itemResponseList.size()-1;
+                    response.setItemResponse(itemResponseList.get(getIndex));
                 }
             }
         } catch (Exception e){
