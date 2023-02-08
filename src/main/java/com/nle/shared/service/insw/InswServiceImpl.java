@@ -5,17 +5,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.AppConstant;
-import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.InswToken;
 import com.nle.io.entity.Item;
-import com.nle.io.entity.ItemType;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.InswTokenRepository;
 import com.nle.io.repository.ItemRepository;
 import com.nle.security.SecurityUtils;
+import com.nle.shared.service.fleet.FleetService;
 import com.nle.shared.service.item.ItemTypeService;
+import com.nle.ui.model.response.FleetResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
@@ -48,6 +48,8 @@ public class InswServiceImpl implements InswService{
     private final ItemTypeService itemTypeService;
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+    private final FleetService fleetService;
+
     @Override
     public InswResponse getBolData(String bolNumber) {
         //Validasi between customer and depo
@@ -81,6 +83,10 @@ public class InswServiceImpl implements InswService{
         }
 
         inswResponse.setContainer(containerResponseList);
+
+        FleetResponse fleetResponse = fleetService.searchFleetCode(inswResponse.getShippingLine());
+        inswResponse.setShippingFleet(fleetResponse);
+
         return inswResponse;
     }
 
