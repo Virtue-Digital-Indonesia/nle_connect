@@ -12,7 +12,7 @@ import com.nle.io.entity.Item;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.InswTokenRepository;
 import com.nle.io.repository.ItemRepository;
-import com.nle.security.SecurityUtils;
+
 import com.nle.shared.service.fleet.FleetService;
 import com.nle.shared.service.item.ItemTypeService;
 import com.nle.ui.model.response.FleetResponse;
@@ -51,24 +51,14 @@ public class InswServiceImpl implements InswService{
     private final FleetService fleetService;
 
     @Override
-    public InswResponse getBolData(String bolNumber) {
-        //Validasi between customer and depo
-        Optional<String> username = SecurityUtils.getCurrentUserLogin();
-        if (username.isEmpty())
-            throw new BadRequestException("You must login!");
+    public InswResponse getBolData(String bolNumber, Long depoId) {
+        //Validasi depo id
+        if (depoId == null)
+            throw new BadRequestException("Can't Find Depo ID!");
 
-        Optional<DepoOwnerAccount> depoOwnerAccount = null;
-        if (!username.get().startsWith("+62") && !username.get().startsWith("62") &&
-                !username.get().startsWith("0")){
-             depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
-        } else {
-            depoOwnerAccount = depoOwnerAccountRepository.findByPhoneNumber(username.get());
-        }
-
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(depoId);
         if (depoOwnerAccount.isEmpty())
             throw new BadRequestException("Can't Find Depo!");
-
-        DepoOwnerAccount doa = depoOwnerAccount.get();
 
         //Get data from insw and convert to nle response
         InswResponse dataResponse = this.getBolDataInsw(bolNumber).getData();
@@ -79,7 +69,7 @@ public class InswServiceImpl implements InswService{
         List<ContainerResponse> containerResponseList = new ArrayList<>();
         List<ContainerResponse> containerResponse = dataResponse.getContainer();
         for (ContainerResponse container: containerResponse) {
-            containerResponseList.add(this.convertContainerToResponse(container, doa.getId()));
+            containerResponseList.add(this.convertContainerToResponse(container, depoId));
         }
 
         inswResponse.setContainer(containerResponseList);
@@ -101,15 +91,17 @@ public class InswServiceImpl implements InswService{
 
         try {
             for (ItemTypeResponse getItemType: itemTypeResponseList) {
-                Optional<Item> getItemOfId = itemRepository.getByIdAndDepo(depoId,getItemType.getId());
-                if (!getItemOfId.isPresent()){
+                List<Item> getItemOfId = itemRepository.getByIdAndDepo(depoId,getItemType.getId());
+                if (getItemOfId.isEmpty()){
                     response.setItemResponse(null);
                 } else {
-                    Item item = getItemOfId.get();
+                    Item item = getItemOfId.get(getItemOfId.size()-1);
                     ItemResponse itemResponse = new ItemResponse();
                     itemResponse.setId(item.getId());
+
                     ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
                     BeanUtils.copyProperties(item.getItem_name(), itemTypeResponse);
+
                     itemResponse.setItem_name(itemTypeResponse);
                     itemResponse.setPrice(item.getPrice());
                     itemResponse.setSku(item.getSku());

@@ -4,6 +4,6 @@ import com.nle.ui.model.response.insw.InswResponse;
 
 
 public interface InswService {
-    InswResponse getBolData(String bolNumber);
+    InswResponse getBolData(String bolNumber, Long depoId);
 
 }

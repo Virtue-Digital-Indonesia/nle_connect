@@ -55,6 +55,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
                           String globalSearch,
                           Pageable pageable);
     @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.item_name.id = :id")
-    Optional<Item> getByIdAndDepo(@Param("depo_id") Long depo_id, @Param("id") Long id);
+    List<Item> getByIdAndDepo(@Param("depo_id") Long depo_id, @Param("id") Long id);
 
 }
