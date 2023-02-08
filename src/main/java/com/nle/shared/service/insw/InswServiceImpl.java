@@ -89,7 +89,6 @@ public class InswServiceImpl implements InswService{
         if (itemTypeResponseList.isEmpty())
             response.setItemResponse(null);
 
-        List<ItemResponse> itemResponseList = new ArrayList<>();
         try {
             for (ItemTypeResponse getItemType: itemTypeResponseList) {
                 List<Item> getItemOfId = itemRepository.getByIdAndDepo(depoId,getItemType.getId());
