@@ -96,23 +96,21 @@ public class InswServiceImpl implements InswService{
                 if (getItemOfId.isEmpty()){
                     response.setItemResponse(null);
                 } else {
-                    for (Item item: getItemOfId
-                         ) {
-                        ItemResponse itemResponse = new ItemResponse();
-                        itemResponse.setId(item.getId());
-                        ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
-                        BeanUtils.copyProperties(item.getItem_name(), itemTypeResponse);
-                        itemResponse.setItem_name(itemTypeResponse);
-                        itemResponse.setPrice(item.getPrice());
-                        itemResponse.setSku(item.getSku());
-                        itemResponse.setDescription(item.getDescription());
-                        itemResponse.setType(item.getType());
-                        itemResponse.setStatus(item.getStatus());
-                        itemResponse.setDeleted(item.getDeleted());
-                        itemResponseList.add(itemResponse);
-                    }
-                    int getIndex = itemResponseList.size()-1;
-                    response.setItemResponse(itemResponseList.get(getIndex));
+                    Item item = getItemOfId.get(getItemOfId.size()-1);
+                    ItemResponse itemResponse = new ItemResponse();
+                    itemResponse.setId(item.getId());
+
+                    ItemTypeResponse itemTypeResponse = new ItemTypeResponse();
+                    BeanUtils.copyProperties(item.getItem_name(), itemTypeResponse);
+
+                    itemResponse.setItem_name(itemTypeResponse);
+                    itemResponse.setPrice(item.getPrice());
+                    itemResponse.setSku(item.getSku());
+                    itemResponse.setDescription(item.getDescription());
+                    itemResponse.setType(item.getType());
+                    itemResponse.setStatus(item.getStatus());
+                    itemResponse.setDeleted(item.getDeleted());
+                    response.setItemResponse(itemResponse);
                 }
             }
         } catch (Exception e){
