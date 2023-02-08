@@ -16,7 +16,6 @@ import com.nle.io.repository.ItemRepository;
 import com.nle.shared.service.fleet.FleetService;
 import com.nle.shared.service.item.ItemTypeService;
 import com.nle.ui.model.response.FleetResponse;
-import com.nle.ui.model.request.insw.GetInswRequest;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
@@ -52,12 +51,12 @@ public class InswServiceImpl implements InswService{
     private final FleetService fleetService;
 
     @Override
-    public InswResponse getBolData(String bolNumber, GetInswRequest getInswRequest) {
+    public InswResponse getBolData(String bolNumber, Long depoId) {
         //Validasi depo id
-        if (getInswRequest.getDepoId() == null)
+        if (depoId == null)
             throw new BadRequestException("Can't Find Depo ID!");
 
-        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(getInswRequest.getDepoId());
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(depoId);
         if (depoOwnerAccount.isEmpty())
             throw new BadRequestException("Can't Find Depo!");
 
@@ -70,7 +69,7 @@ public class InswServiceImpl implements InswService{
         List<ContainerResponse> containerResponseList = new ArrayList<>();
         List<ContainerResponse> containerResponse = dataResponse.getContainer();
         for (ContainerResponse container: containerResponse) {
-            containerResponseList.add(this.convertContainerToResponse(container, getInswRequest.getDepoId()));
+            containerResponseList.add(this.convertContainerToResponse(container, depoId));
         }
 
         inswResponse.setContainer(containerResponseList);
