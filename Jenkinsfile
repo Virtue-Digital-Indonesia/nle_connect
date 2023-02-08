@@ -87,7 +87,7 @@ pipeline {
                         cd src/main/docker/
                         envsubst < docker-compose-template1.yml > docker-compose.yml
                     """
-                } else {
+                } else if (env.BRANCH_NAME == "new_develop") {
                     sh """
                         cp Dockerfile target/
                         cd target/
@@ -112,7 +112,7 @@ pipeline {
                         cd src/main/docker/
                         docker-compose -p stage down
                     """
-                } else {
+                } else if (env.BRANCH_NAME == "new_develop") {
                     sh """
                         cd src/main/docker/
                         docker-compose -p prod down
@@ -130,7 +130,7 @@ pipeline {
                         cd src/main/docker/
                         docker-compose -p stage up -d
                     """
-                } else {
+                } else if (env.BRANCH_NAME == "new_develop") {
                     sh """
                         cd src/main/docker/
                         docker-compose -p prod up -d
