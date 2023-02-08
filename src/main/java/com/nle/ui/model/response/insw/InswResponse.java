@@ -1,16 +1,16 @@
 package com.nle.ui.model.response.insw;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nle.ui.model.response.ItemTypeResponse;
+import com.nle.ui.model.response.FleetResponse;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 @Getter
 @Setter
 public class InswResponse {
     private String shippingLine;
+    private FleetResponse shippingFleet;
     private String noBL;
     private String dateBL;
     private String doReleaseDate;
