@@ -9,6 +9,7 @@ import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface XenditService {
     XenditResponse CreateVirtualAccount(XenditRequest request);
@@ -28,4 +29,11 @@ public interface XenditService {
     void CreateDisbursements(String xendit_id, XenditVA xenditVA);
 
     String CallbackDisbursements(XenditDisCallbackPayload payload);
+
+    XenditResponse cancelOrderXendit(Long bookingId, DepoOwnerAccount doa);
+
+    DepoOwnerAccount bookingValidate(Optional<String> phone, Long booking_id);
+
+    DepoOwnerAccount orderValidate(Optional<String> username, Long booking_id);
+
 }
