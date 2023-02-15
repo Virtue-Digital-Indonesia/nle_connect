@@ -1,7 +1,9 @@
 package com.nle.shared.service.insw;
 
-import org.springframework.http.ResponseEntity;
+import com.nle.ui.model.response.insw.InswResponse;
+
 
 public interface InswService {
-    ResponseEntity<String> getBolData(String bolNumber);
+    InswResponse getBolData(String bolNumber, Long depoId);
+
 }

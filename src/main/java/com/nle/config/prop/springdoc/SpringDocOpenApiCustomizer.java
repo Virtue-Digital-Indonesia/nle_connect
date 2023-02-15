@@ -119,7 +119,8 @@ public class SpringDocOpenApiCustomizer implements OpenApiCustomiser, Ordered {
                 String paths[] = {
                                 "/api/booking/**",
                                 "/api/payment/**",
-                                "/api/export/**" };
+                                "/api/export/**",
+                                "/api/insw/**"};
                 return GroupedOpenApi.builder()
                                 .group("booking")
                                 .pathsToMatch(paths)

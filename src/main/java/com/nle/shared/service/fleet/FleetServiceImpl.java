@@ -41,6 +41,17 @@ public class FleetServiceImpl implements FleetService{
         return this.convertToResponse(savedEntity);
     }
 
+    @Override
+    public FleetResponse searchFleetCode (String code) {
+        Optional<Fleet> fleet = fleetRepository.getByCode(code);
+
+        if (fleet.isEmpty()) {
+            fleet = fleetRepository.getByCode("APLU");
+        }
+
+        return this.convertToResponse(fleet.get());
+    }
+
     private FleetResponse convertToResponse (Fleet fleet) {
         FleetResponse fleetResponse = new FleetResponse();
         BeanUtils.copyProperties(fleet, fleetResponse);

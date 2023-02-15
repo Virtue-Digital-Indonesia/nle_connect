@@ -8,4 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface FleetService {
     PagingResponseModel<FleetResponse> getAllFleets (Pageable pageable);
     FleetResponse createFleet (FleetRequest request);
+    FleetResponse searchFleetCode (String code);
 }
