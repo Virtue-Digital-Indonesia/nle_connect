@@ -460,96 +460,49 @@ public class XenditServiceImpl implements XenditService {
 
     }
 
-    public XenditResponse cancelOrderXendit(Long bookingId, DepoOwnerAccount doa) {
+    public XenditResponse cancelOrderXendit(Long bookingId) {
         XenditResponse xenditResponse = new XenditResponse();
 
-        //Validate if any booking but there are no payment
+        //Validate if any booking
         Optional<BookingHeader> bookingHeaderOptional = bookingHeaderRepository.findById(bookingId);
+        if (bookingHeaderOptional.isEmpty())
+            throw new BadRequestException("Cannot find booking!");
+
+        //For set booking status at booking header
+        bookingHeaderRepository.cancelStatus(BookingStatusEnum.CANCEL, bookingId);
+
+        //Validate if payment no exist
         Optional<XenditVA> xenditVAOptional = xenditRepository.findWithBookingID(bookingId);
-        if (!bookingHeaderOptional.isEmpty() && xenditVAOptional.isEmpty()){
-            //For set booking status at booking header
-            bookingHeaderRepository.cancelStatus(BookingStatusEnum.CANCEL, bookingId);
+        if (xenditVAOptional.isEmpty()){
             return xenditResponse;
         }
 
         XenditVA xenditVA = xenditVAOptional.get();
-        BookingHeader bookingHeader = xenditVA.getBooking_header_id();
+        BookingHeader bookingHeader = bookingHeaderOptional.get();
 
         if (xenditVA.getPayment_status().toString().equalsIgnoreCase("PENDING")){
                 xenditResponse.setName(bookingHeader.getFull_name());
                 xenditResponse.setCurrency("IDR");
                 xenditResponse.setAmount(xenditVA.getAmount());
                 xenditResponse.setExternalId("va-" + xenditVA.getBank_code() + "-" + xenditVA.getPhone_number());
-                xenditResponse.setOwnerId(doa.getXenditVaId());
+                xenditResponse.setOwnerId(bookingHeader.getDepoOwnerAccount().getId().toString());
                 xenditResponse.setBankCode(xenditVA.getBank_code());
                 xenditResponse.setAccountNumber(xenditVA.getAccount_number());
                 xenditResponse.setIsClosed(Boolean.TRUE);
                 xenditResponse.setIsSingleUse(Boolean.TRUE);
                 //for changed to expired VA
-                cancelVirtualAccount(xenditVA.getXendit_id(), doa.getXenditVaId(), xenditResponse);
+                cancelVirtualAccount(xenditVA.getXendit_id(), bookingHeader.getDepoOwnerAccount().getXenditVaId(), xenditResponse);
 
                 //for changed to expired invoice
-                getCancelInvoice(xenditVA.getInvoice_id(), xenditResponse, doa.getXenditVaId());
+                getCancelInvoice(xenditVA.getInvoice_id(), xenditResponse, bookingHeader.getDepoOwnerAccount().getXenditVaId());
 
                 //for changed to expired DB
                 xenditRepository.updateCancelOrder(XenditEnum.CANCEL, xenditVA.getId());
                 xenditResponse.setStatus("CANCEL");
-
-                //For set booking status at booking header
-                bookingHeaderRepository.cancelStatus(BookingStatusEnum.CANCEL, bookingId);
-                return xenditResponse;
         }
+
                 return xenditResponse;
 
-    }
-
-    //Method validate for customer
-    @Override
-    public DepoOwnerAccount bookingValidate(Optional<String> phone, Long booking_id) {
-            if (phone.isEmpty())
-                throw new BadRequestException("You must login!");
-
-            Optional<XenditVA> xenditVAOptional = xenditRepository.findWithBookingID(booking_id);
-            if (xenditVAOptional.isEmpty())
-                throw new BadRequestException("Not found booking!");
-            XenditVA xenditVA = xenditVAOptional.get();
-            BookingHeader bookingHeader = xenditVA.getBooking_header_id();
-
-            String phone_number = phone.get();
-            if (!bookingHeader.getPhone_number().equals(phone_number))
-                throw new BadRequestException("this booking is not belong to phone number: "
-                        + phone_number);
-
-            Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByPhoneNumber(xenditVA.getPhone_number());
-            if (depoOwnerAccount.isEmpty())
-                throw new BadRequestException("Can't Find Depo!");
-
-            DepoOwnerAccount doa = depoOwnerAccount.get();
-            if (doa.getXenditVaId() == null)
-                throw new BadRequestException("This depo is not active!");
-
-            return doa;
-    }
-
-    //Method validate for depo
-    @Override
-    public DepoOwnerAccount orderValidate(Optional<String> username, Long booking_id) {
-        if (username.isEmpty())
-            throw new BadRequestException("Invalid Token!");
-
-        if (username.get().startsWith("+62") && username.get().startsWith("62") &&
-                username.get().startsWith("0"))
-            throw new BadRequestException("Please login!");
-
-        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
-        if (depoOwnerAccount.isEmpty())
-            throw new BadRequestException("Can't Find Depo!");
-
-        DepoOwnerAccount doa = depoOwnerAccount.get();
-        if (doa.getXenditVaId() == null)
-            throw new BadRequestException("This depo is not active!");
-
-        return doa;
     }
 
     private void getCancelInvoice(String invoiceId, XenditResponse xenditResponse, String depo_xendit_id) {
