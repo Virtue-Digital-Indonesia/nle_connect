@@ -54,10 +54,6 @@ public class OrderServiceImpl implements OrderService{
         if (username.isEmpty())
             throw new BadRequestException("Invalid Token!");
 
-        if (username.get().startsWith("+62") && username.get().startsWith("62") &&
-                username.get().startsWith("0"))
-            throw new BadRequestException("Please login!");
-
         Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findByCompanyEmail(username.get());
         if (depoOwnerAccount.isEmpty())
             throw new BadRequestException("Can't Find Depo!");
