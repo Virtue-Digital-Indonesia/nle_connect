@@ -9,6 +9,8 @@ import com.nle.ui.model.request.search.BookingSearchRequest;
 import com.nle.ui.model.response.booking.BookingResponse;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface BookingService {
 
     BookingResponse getBookingById(Long booking_id);
@@ -18,4 +20,5 @@ public interface BookingService {
     BookingResponse createBookingUnloading(CreateBookingUnloading request);
     BookingResponse createBookingLoading(CreateBookingLoading request);
     PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable);
+    void bookingValidate(Optional<String> phone, Long booking_id);
 }

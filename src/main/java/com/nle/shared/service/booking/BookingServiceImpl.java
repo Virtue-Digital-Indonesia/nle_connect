@@ -185,6 +185,28 @@ public class BookingServiceImpl implements BookingService {
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
     }
 
+    @Override
+    public void bookingValidate(Optional<String> phone, Long booking_id) {
+        if (phone.isEmpty())
+            throw new BadRequestException("You must login!");
+
+        if (!phone.get().startsWith("+62") && !phone.get().startsWith("62") &&
+                !phone.get().startsWith("0"))
+            throw new BadRequestException("not token from phone!");
+
+        Optional<BookingHeader> bookingHeaderOptional = bookingHeaderRepository.findById(booking_id);
+        BookingHeader bookingHeader = bookingHeaderOptional.get();
+
+        String phone_number = phone.get();
+        if (!bookingHeader.getPhone_number().equals(phone_number))
+            throw new BadRequestException("this booking is not belong to phone number: "
+                    + phone_number);
+
+        DepoOwnerAccount doa = bookingHeader.getDepoOwnerAccount();
+        if (doa.getXenditVaId() == null)
+            throw new BadRequestException("This depo is not active!");
+    }
+
     private BookingHeader saveBookingHeader(BookingHeaderRequest request, ItemTypeEnum booking_type) {
         BookingHeader entity = new BookingHeader();
         BeanUtils.copyProperties(request, entity);

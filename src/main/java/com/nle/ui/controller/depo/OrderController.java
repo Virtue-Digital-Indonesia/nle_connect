@@ -1,8 +1,6 @@
 package com.nle.ui.controller.depo;
 
-import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.booking.OrderService;
@@ -44,7 +42,6 @@ public class OrderController {
 
     private final OrderService orderService;
     private final BookingService bookingService;
-    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final XenditService xenditService;
     private final FormService formService;
 
@@ -69,15 +66,10 @@ public class OrderController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/unloading")
     public ResponseEntity<BookingResponse> createOrderUnloading(@RequestBody CreateBookingUnloading request) {
-            Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-            if (currentUserLogin.isEmpty())
-                throw new BadRequestException("you need to log in");
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        DepoOwnerAccount doa = orderService.orderValidate(username);
 
-            Optional<DepoOwnerAccount> entity = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
-            if (entity.isEmpty())
-                throw new BadRequestException("this depo is not registered");
-
-        request.setDepo_id(entity.get().getId());
+        request.setDepo_id(doa.getId());
         return ResponseEntity.ok(bookingService.createBookingUnloading(request));
     }
 
@@ -85,15 +77,10 @@ public class OrderController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/loading")
     public ResponseEntity<BookingResponse> createOrderLoading(@RequestBody CreateBookingLoading request) {
-        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isEmpty())
-            throw new BadRequestException("you need to log in");
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        DepoOwnerAccount doa = orderService.orderValidate(username);
 
-        Optional<DepoOwnerAccount> entity = depoOwnerAccountRepository.findByCompanyEmail(currentUserLogin.get());
-        if (entity.isEmpty())
-            throw new BadRequestException("this depo is not registered");
-
-        request.setDepo_id(entity.get().getId());
+        request.setDepo_id(doa.getId());
         return ResponseEntity.ok(bookingService.createBookingLoading(request));
     }
 
@@ -148,8 +135,8 @@ public class OrderController {
     @PutMapping(value = "/cancel")
     public ResponseEntity<XenditResponse> cancelOrder(@RequestParam("booking_id") Long booking_id){
         Optional<String> username = SecurityUtils.getCurrentUserLogin();
-        DepoOwnerAccount doa = xenditService.orderValidate(username, booking_id);
-        return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id, doa));
+        orderService.orderValidate(username);
+        return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id));
     }
 
 }
