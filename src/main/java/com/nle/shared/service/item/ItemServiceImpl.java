@@ -15,6 +15,7 @@ import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateItemRequest;
 import com.nle.ui.model.request.search.ItemSearchRequest;
+import com.nle.ui.model.response.DepoFleetResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.util.ConvertResponseUtil;
@@ -66,6 +67,28 @@ public class ItemServiceImpl implements ItemService {
             responseList.add(this.convertToResponse(item));
         }
         return responseList;
+    }
+
+    @Override
+    public String createMultipleItem(DepoFleet depoFleet) {
+        List<ItemType> itemTypeList = itemTypeRepository.findAll();
+        List<Item> itemList = new ArrayList<>();
+        for (ItemType itemType: itemTypeList) {
+            Item item = new Item();
+            item.setItem_name(itemType);
+            item.setDepoFleet(depoFleet);
+            item.setDepoOwnerAccount(depoFleet.getDepoOwnerAccount());
+            item.setSku("tes-"+depoFleet.getName());
+            item.setDescription("tes-"+depoFleet.getName());
+            item.setPrice(500000);
+            item.setStatus(true);
+            item.setType(ItemTypeEnum.UNLOADING);
+            itemList.add(item);
+        }
+        itemRepository.saveAll(itemList);
+        String countItem = itemTypeList.size()+" Item Created";
+
+        return countItem;
     }
 
     @Override

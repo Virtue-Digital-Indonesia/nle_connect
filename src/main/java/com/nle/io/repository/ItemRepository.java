@@ -54,7 +54,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
                           String fleetCode,
                           String globalSearch,
                           Pageable pageable);
-    @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.item_name.id = :id")
-    List<Item> getByIdAndDepo(@Param("depo_id") Long depo_id, @Param("id") Long id);
+    @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.item_name.id = :id AND it.depoFleet.id = :depo_fleet_id")
+    List<Item> getItemOfId(@Param("depo_id") Long depo_id, @Param("id") Long id, @Param("depo_fleet_id") Long depo_fleet_id);
 
 }
