@@ -190,6 +190,10 @@ public class BookingServiceImpl implements BookingService {
         if (phone.isEmpty())
             throw new BadRequestException("You must login!");
 
+        if (!phone.get().startsWith("+62") && !phone.get().startsWith("62") &&
+                !phone.get().startsWith("0"))
+            throw new BadRequestException("not token from phone!");
+
         Optional<BookingHeader> bookingHeaderOptional = bookingHeaderRepository.findById(booking_id);
         BookingHeader bookingHeader = bookingHeaderOptional.get();
 

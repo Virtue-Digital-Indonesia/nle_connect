@@ -1,8 +1,6 @@
 package com.nle.ui.controller.depo;
 
-import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.booking.OrderService;
@@ -44,7 +42,6 @@ public class OrderController {
 
     private final OrderService orderService;
     private final BookingService bookingService;
-    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final XenditService xenditService;
     private final FormService formService;
 
