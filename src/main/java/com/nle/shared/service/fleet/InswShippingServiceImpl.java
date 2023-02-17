@@ -41,6 +41,17 @@ public class InswShippingServiceImpl implements InswShippingService{
         return convertToResponse(savedEntity);
     }
 
+    @Override
+    public InswShippingResponse searchShippingCode(String code) {
+        Optional<InswShipping> inswShipping = inswShippingRepository.findByCode(code);
+
+        if (inswShipping.isEmpty()) {
+            inswShipping = inswShippingRepository.findByCode("SSI");
+        }
+
+        return convertToResponse(inswShipping.get());
+    }
+
     private InswShippingResponse convertToResponse(InswShipping entity) {
         InswShippingResponse response = new InswShippingResponse();
         BeanUtils.copyProperties(entity, response);
