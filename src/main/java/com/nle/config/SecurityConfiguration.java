@@ -86,6 +86,7 @@ public class SecurityConfiguration {
                         , "/api/payment/callback/disbursement"
                         , "/api/item-type"
                         , "/api/item-type/iso"
+                        , "/api/insw-shipping"
                 ).permitAll()
             .antMatchers("/impersonate"
                     , "/api/admins/profile"
@@ -96,6 +97,7 @@ public class SecurityConfiguration {
                     , "/api/fleets/addFleet"
                     , "/api/item-type/addItemType"
                     , "/api/item-type/iso/addIso"
+                    , "/api/insw-shipping/add-Insw-Shipping"
                     ).access("hasRole('ADMIN')")
             .anyRequest()
                 .authenticated()
