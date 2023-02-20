@@ -13,8 +13,10 @@ public class ConvertResponseUtil {
         depoFleetResponse.setDepo_fleet_id(depoFleet.getId());
         depoFleetResponse.setName(depoFleet.getName());
         depoFleetResponse.setFleet_manager_company(depoFleet.getFleet().getDescription());
-        depoFleetResponse.setCity(null);
-        depoFleetResponse.setCountry(null);
+
+        //TODO City && country akan dihapus
+        depoFleetResponse.setCity("Akan dihapus");
+        depoFleetResponse.setCountry("Akan dihapus");
         return depoFleetResponse;
     }
 }

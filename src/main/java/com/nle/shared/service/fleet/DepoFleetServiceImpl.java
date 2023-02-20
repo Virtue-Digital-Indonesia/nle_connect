@@ -4,7 +4,6 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.entity.Fleet;
 import com.nle.io.entity.InswShipping;
 import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;

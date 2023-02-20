@@ -8,12 +8,9 @@ import com.nle.constant.AppConstant;
 import com.nle.exception.BadRequestException;
 import com.nle.io.entity.*;
 import com.nle.io.repository.*;
-
 import com.nle.shared.service.fleet.FleetService;
-import com.nle.shared.service.fleet.InswShippingService;
 import com.nle.shared.service.item.ItemTypeService;
 import com.nle.ui.model.response.FleetResponse;
-import com.nle.ui.model.response.InswShippingResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
@@ -46,10 +43,8 @@ public class InswServiceImpl implements InswService{
     private final ItemTypeService itemTypeService;
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
-    private final FleetService fleetService;
-    private final InswShippingService inswShippingService;
     private final DepoFleetRepository depoFleetRepository;
-    private final InswShippingRepository inswShippingRepository;
+    private final FleetService fleetService;
 
     @Override
     public InswResponse getBolData(String bolNumber, Long depoId) {
@@ -76,17 +71,8 @@ public class InswServiceImpl implements InswService{
 
         inswResponse.setContainer(containerResponseList);
 
-        //Get Insw shipping
-        Optional<InswShipping> inswShippingOpt = inswShippingRepository.findByCode(inswResponse.getShippingLine());
-        FleetResponse fleetResponse = new FleetResponse();
-        if (!inswShippingOpt.isEmpty()){
-            InswShipping inswShipping = inswShippingOpt.get();
-
-            fleetResponse.setId(inswShipping.getId());
-            fleetResponse.setCode(inswShipping.getCode());
-            fleetResponse.setFleet_manager_company(inswShipping.getDescription());
-            inswResponse.setShippingFleet(fleetResponse);
-        }
+        FleetResponse fleetResponse = fleetService.searchFleetCode(inswResponse.getShippingLine());
+        inswResponse.setShippingFleet(fleetResponse);
 
         return inswResponse;
     }

@@ -1,7 +1,6 @@
 package com.nle.shared.service.fleet;
 
 import com.nle.exception.BadRequestException;
-import com.nle.io.entity.Fleet;
 import com.nle.io.entity.InswShipping;
 import com.nle.io.repository.InswShippingRepository;
 import com.nle.ui.model.request.InswShippingRequest;
@@ -43,17 +42,6 @@ public class InswShippingServiceImpl implements InswShippingService{
         BeanUtils.copyProperties(request, entity);
         InswShipping savedEntity = inswShippingRepository.save(entity);
         return convertToResponse(savedEntity);
-    }
-
-    @Override
-    public InswShippingResponse searchFleetCode(String code) {
-        Optional<InswShipping> fleet = inswShippingRepository.findByCode(code);
-
-        if (fleet.isEmpty()) {
-            fleet = null;
-        }
-
-        return this.convertToResponse(fleet.get());
     }
 
     private InswShippingResponse convertToResponse(InswShipping entity) {
