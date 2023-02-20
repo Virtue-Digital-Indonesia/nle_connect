@@ -1,13 +1,16 @@
 package com.nle.shared.service.fleet;
 
+import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.InswShippingRequest;
 import com.nle.ui.model.response.InswShippingResponse;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface InswShippingService {
 
-    List<InswShippingResponse> getAllInswShipping();
+    PagingResponseModel<InswShippingResponse> getAllInswShipping(Pageable pageable);
 
     InswShippingResponse insertInswShipping (InswShippingRequest request);
+
+    InswShippingResponse searchShippingCode(String code);
 }
