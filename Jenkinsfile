@@ -34,8 +34,11 @@ pipeline {
 
         stage('update secret') {
             steps {
+                script {
+                if (env.BRANCH_NAME == "Staging") {
                 withCredentials([
                     string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'DB_URL1', variable: 'DB_URL1'),
                     string(credentialsId: 'TRIGGER_URL', variable: 'TRIGGER_URL'),
                     string(credentialsId: 'TRIGGER_TOKEN', variable: 'TRIGGER_TOKEN'),
                     string(credentialsId: 'TAX_MINISTRY_API_KEY', variable: 'TAX_MINISTRY_API_KEY'),
@@ -47,6 +50,36 @@ pipeline {
                     ]) {
                     sh """
                         cd src/main/resources
+                        export DATABASE_URL=$DB_URL1
+                        export DB_PASSWORD=$DB_PASSWORD
+                        export TRIGGER_URL=$TRIGGER_URL
+                        export TRIGGER_TOKEN=$TRIGGER_TOKEN
+                        export TAX_MINISTRY_API_KEY=$TAX_MINISTRY_API_KEY
+                        export FTP_USERNAME=$FTP_USERNAME
+                        export FTP_PASSWORD=$FTP_PASSWORD
+                        export EMAIL_CONTACT_US=$EMAIL_CONTACT_US
+                        export APP_ID=$APP_ID
+                        export API_KEY=$API_KEY
+                        export XENDIT_API_KEY=$XENDIT_API_KEY
+                        envsubst < application.yml > application_tmp.yml
+                        mv application_tmp.yml application.yml
+                    """
+                } else if (env.BRANCH_NAME == "new_develop") {
+                    withCredentials([
+                    string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'DB_URL', variable: 'DB_URL'),
+                    string(credentialsId: 'TRIGGER_URL', variable: 'TRIGGER_URL'),
+                    string(credentialsId: 'TRIGGER_TOKEN', variable: 'TRIGGER_TOKEN'),
+                    string(credentialsId: 'TAX_MINISTRY_API_KEY', variable: 'TAX_MINISTRY_API_KEY'),
+                    string(credentialsId: 'EMAIL_CONTACT_US', variable: 'EMAIL_CONTACT_US'),
+                    usernamePassword(credentialsId: 'FTPCredentials', passwordVariable: 'FTP_PASSWORD', usernameVariable: 'FTP_USERNAME'),
+                    string(credentialsId: 'APP_ID', variable: 'APP_ID'),
+                    string(credentialsId: 'API_KEY', variable: 'API_KEY'),
+                    string(credentialsId: 'XENDIT_API_KEY', variable: 'XENDIT_API_KEY')
+                    ]) {
+                    sh """
+                        cd src/main/resources
+                        export DATABASE_URL=$DB_URL
                         export DB_PASSWORD=$DB_PASSWORD
                         export TRIGGER_URL=$TRIGGER_URL
                         export TRIGGER_TOKEN=$TRIGGER_TOKEN
@@ -61,6 +94,8 @@ pipeline {
                         mv application_tmp.yml application.yml
                     """
                 }
+                }
+            }
             }
         }
 
@@ -75,7 +110,11 @@ pipeline {
         stage('Build docker image & update compose file') {
             steps {
                 script {
-                withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
+                withCredentials([
+                string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')
+                string(credentialsId: 'DB_URL', variable: 'DB_URL'),
+                string(credentialsId: 'DB_URL1', variable: 'DB_URL1'),
+                ]) {
                 if (env.BRANCH_NAME == "Staging") {
                     sh """
                         cp Dockerfile target/
@@ -83,6 +122,7 @@ pipeline {
                         docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
                         cd ../
                         export VERSION=${shortGitCommit}
+                        export DATABASE_URL=$DB_URL1
                         export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
                         envsubst < docker-compose-template1.yml > docker-compose.yml
@@ -94,6 +134,7 @@ pipeline {
                         docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
                         cd ../
                         export VERSION=${shortGitCommit}
+                        export DATABASE_URL=$DB_URL
                         export DB_PASSWORD=$DB_PASSWORD
                         cd src/main/docker/
                         envsubst < docker-compose-template.yml > docker-compose.yml
