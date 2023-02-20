@@ -100,7 +100,7 @@ pipeline {
             steps {
                 script {
                 withCredentials([
-                string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')
+                string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                 string(credentialsId: 'DB_URL', variable: 'DB_URL'),
                 string(credentialsId: 'DB_URL1', variable: 'DB_URL1'),
                 ]) {
