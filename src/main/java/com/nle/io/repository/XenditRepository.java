@@ -1,8 +1,11 @@
 package com.nle.io.repository;
 
+import com.nle.constant.enums.XenditEnum;
 import com.nle.io.entity.XenditVA;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,6 +31,9 @@ public interface XenditRepository extends JpaRepository<XenditVA, Long> {
 
     @Query(value = "SELECT xa FROM XenditVA xa WHERE xa.booking_header_id.id = :bookingId")
     Optional<XenditVA> getVaWithBooking(Long bookingId);
+    @Modifying
+    @Query(value = "update XenditVA xa set xa.payment_status =:payment_status where xa.id =:id")
+    int updateCancelOrder(@Param("payment_status") XenditEnum paymentStatus, @Param("id") Long idXendit);
 
     @Query(value = "SELECT xa FROM XenditVA xa WHERE xa.disbursement_id = :disbursement_id")
     Optional<XenditVA> findByDisbursement_id(String disbursement_id);

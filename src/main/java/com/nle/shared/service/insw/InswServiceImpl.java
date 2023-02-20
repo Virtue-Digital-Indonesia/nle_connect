@@ -13,9 +13,9 @@ import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.InswTokenRepository;
 import com.nle.io.repository.ItemRepository;
 
-import com.nle.shared.service.fleet.FleetService;
+import com.nle.shared.service.fleet.InswShippingService;
 import com.nle.shared.service.item.ItemTypeService;
-import com.nle.ui.model.response.FleetResponse;
+import com.nle.ui.model.response.InswShippingResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
@@ -48,7 +48,7 @@ public class InswServiceImpl implements InswService{
     private final ItemTypeService itemTypeService;
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
-    private final FleetService fleetService;
+    private final InswShippingService inswShippingService;
 
     @Override
     public InswResponse getBolData(String bolNumber, Long depoId) {
@@ -74,8 +74,8 @@ public class InswServiceImpl implements InswService{
 
         inswResponse.setContainer(containerResponseList);
 
-        FleetResponse fleetResponse = fleetService.searchFleetCode(inswResponse.getShippingLine());
-        inswResponse.setShippingFleet(fleetResponse);
+        InswShippingResponse inswShippingResponse = inswShippingService.searchShippingCode(inswResponse.getShippingLine());
+        inswResponse.setShippingFleet(inswShippingResponse);
 
         return inswResponse;
     }

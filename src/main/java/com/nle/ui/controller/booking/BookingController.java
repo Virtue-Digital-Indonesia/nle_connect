@@ -156,4 +156,13 @@ public class BookingController {
         xenditService.CallbackInvoice(payload);
         return ResponseEntity.ok(payload);
     }
+
+    @Operation(description = "Cancel order xendit VA", operationId = "cancelOrder", summary = "Cancel order for xendit VA")
+    @SecurityRequirement(name = "nleapi")
+    @PutMapping(value = "/cancel")
+    public ResponseEntity<XenditResponse> cancelOrder(@RequestParam("booking_id") Long booking_id){
+        Optional<String> phone = SecurityUtils.getCurrentUserLogin();
+        bookingService.bookingValidate(phone, booking_id);
+        return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id));
+    }
 }
