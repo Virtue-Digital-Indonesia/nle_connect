@@ -8,9 +8,16 @@ import com.nle.constant.AppConstant;
 import com.nle.exception.BadRequestException;
 import com.nle.io.entity.*;
 import com.nle.io.repository.*;
-import com.nle.shared.service.fleet.FleetService;
+import com.nle.io.entity.DepoOwnerAccount;
+import com.nle.io.entity.InswToken;
+import com.nle.io.entity.Item;
+import com.nle.io.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.InswTokenRepository;
+import com.nle.io.repository.ItemRepository;
+
+import com.nle.shared.service.fleet.InswShippingService;
 import com.nle.shared.service.item.ItemTypeService;
-import com.nle.ui.model.response.FleetResponse;
+import com.nle.ui.model.response.InswShippingResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
@@ -44,7 +51,7 @@ public class InswServiceImpl implements InswService{
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final DepoFleetRepository depoFleetRepository;
-    private final FleetService fleetService;
+    private final InswShippingService inswShippingService;
 
     @Override
     public InswResponse getBolData(String bolNumber, Long depoId) {
@@ -71,8 +78,8 @@ public class InswServiceImpl implements InswService{
 
         inswResponse.setContainer(containerResponseList);
 
-        FleetResponse fleetResponse = fleetService.searchFleetCode(inswResponse.getShippingLine());
-        inswResponse.setShippingFleet(fleetResponse);
+        InswShippingResponse inswShippingResponse = inswShippingService.searchShippingCode(inswResponse.getShippingLine());
+        inswResponse.setShippingFleet(inswShippingResponse);
 
         return inswResponse;
     }
@@ -85,11 +92,10 @@ public class InswServiceImpl implements InswService{
         //Get fleet from shippingline code
         Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(doa.getCompanyEmail(), code);
 
-        Long fleetId = null;
-        if (!fleet.isEmpty()) {
-            DepoFleet getFleet = fleet.get();
-            fleetId = getFleet.getId();
+        if (fleet.isEmpty()) {
+            fleet = depoFleetRepository.getFleetInDepo(doa.getCompanyEmail(),"SSI");
         }
+        DepoFleet getFleet = fleet.get();
 
         //Get item type base on size and type
         List<ItemTypeResponse> itemTypeResponseList = itemTypeService.getFromIsoCode(containerResponse.getSize(), containerResponse.getType());
@@ -98,7 +104,7 @@ public class InswServiceImpl implements InswService{
 
         try {
             for (ItemTypeResponse getItemType: itemTypeResponseList) {
-                List<Item> getItemOfId = itemRepository.getItemOfShipping(depoId,getItemType.getId(),fleetId);
+                List<Item> getItemOfId = itemRepository.getItemOfShipping(depoId,getItemType.getId(),getFleet.getId());
                 if (getItemOfId.isEmpty()){
                     response.setItemResponse(null);
                 } else {
