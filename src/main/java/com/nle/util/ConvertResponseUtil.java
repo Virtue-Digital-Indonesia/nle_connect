@@ -12,6 +12,9 @@ public class ConvertResponseUtil {
         BeanUtils.copyProperties(depoFleet.getFleet(), depoFleetResponse);
         depoFleetResponse.setDepo_fleet_id(depoFleet.getId());
         depoFleetResponse.setName(depoFleet.getName());
+        depoFleetResponse.setFleet_manager_company(depoFleet.getFleet().getDescription());
+        depoFleetResponse.setCity(null);
+        depoFleetResponse.setCountry(null);
         return depoFleetResponse;
     }
 }
