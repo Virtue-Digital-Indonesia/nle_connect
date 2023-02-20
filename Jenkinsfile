@@ -88,6 +88,20 @@ pipeline {
             }
         }
 
+        stage('Database') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')])
+                    sh """
+                    cd src/main/docker/mysql
+                    export DB_PASSWORD=$DB_PASSWORD
+                    docker-compose-mysql up -d
+                    setup_db.sh
+                    """
+                }
+            }
+        }
+        
         stage('Packaging') {
             steps {
                 script {
