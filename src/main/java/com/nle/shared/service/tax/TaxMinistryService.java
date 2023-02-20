@@ -57,6 +57,9 @@ public class TaxMinistryService {
         if (taxMinistryResponseDTO.getStatus()) {
             gateMoveRepository.updateGateMoveStatusById(AppConstant.Status.SUBMITTED, LocalDateTime.now(), taxMinistryRequestDTO.getId());
         } else {
+            if (taxMinistryResponseDTO.getStatus() == false && taxMinistryResponseDTO.getData().getMessage().equalsIgnoreCase("Data Sudah Ada")) {
+                gateMoveRepository.updateGateMoveStatusById(AppConstant.Status.ALREADY, null, taxMinistryRequestDTO.getId());
+            }
             LOGGER.error("Error while syncing data to tax ministry {}", taxMinistryResponseDTO.getData().getMessage());
         }
     }
