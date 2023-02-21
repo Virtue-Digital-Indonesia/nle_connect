@@ -20,4 +20,7 @@ public interface BookingDetailUnloadingRepository extends JpaRepository<BookingD
     List<BookingDetailUnloading> getValidateContainer(@Param("noContainer") String noContainer,
                                                       @Param("idItem") Long idItem,
                                                       @Param("depoId") Long depoId);
+
+    @Query(value = "UPDATE BookingDetailUnloading bdu SET bdu.paymentStatus = 'PAID' WHERE bdu.id = :bookingHeaderId")
+    void updatePaymentStatus(@Param("bookingHeaderId") Long id);
 }
