@@ -14,7 +14,7 @@ services:
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
-    mysql-master:
+  mysql-master:
     image: mysql:8.0.28
     container_name: mysql-master
     restart: unless-stopped
