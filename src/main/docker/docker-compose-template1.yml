@@ -2,6 +2,8 @@ version: '3.8'
 volumes:
   elasticsearch_data:
     driver: local
+  mysql_nle_data:
+    driver: local
 services:
   nle-backend:
     image: 'nlebackend:${VERSION}'
@@ -12,6 +14,38 @@ services:
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
+    mysql-master:
+    image: mysql:8.0.28
+    container_name: mysql-master
+    restart: unless-stopped
+    command: mysqld --lower_case_table_names=1
+    ports:
+      - '3309:3306'
+    environment:
+      - MYSQL_DATABASE=nlebackend
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - /opt/mysql/master/mysql_nle_data:/var/lib/mysql/
+      - /opt/mysql/master/my.cnf:/etc/my.cnf
+    cap_add:
+      - all
+    networks:
+      - mysql
+  mysql-slave:
+    image: mysql:8.0.28
+    container_name: mysql-slave
+    restart: unless-stopped
+    command: mysqld --lower_case_table_names=1
+    ports:
+      - '4000:3306'
+    environment:
+      - MYSQL_DATABASE=nlebackend
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - /opt/mysql/slave/mysql_nle_data:/var/lib/mysql/
+      - /opt/mysql/slave/my.cnf:/etc/my.cnf
+    cap_add:
+      - all
     networks:
       - mysql
   elasticsearch:
