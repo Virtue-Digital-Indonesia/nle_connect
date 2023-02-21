@@ -16,7 +16,6 @@ services:
       decode_log_event_to_json_object: 'true'
   mysql-master:
     image: mysql:8.0.28
-    container_name: mysql-master
     restart: unless-stopped
     command: mysqld --lower_case_table_names=1
     ports:
@@ -33,7 +32,6 @@ services:
       - mysql
   mysql-slave:
     image: mysql:8.0.28
-    container_name: mysql-slave
     restart: unless-stopped
     command: mysqld --lower_case_table_names=1
     ports:
