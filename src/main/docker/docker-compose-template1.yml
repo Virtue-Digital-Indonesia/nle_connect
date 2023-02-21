@@ -12,6 +12,8 @@ services:
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
+    networks:
+      - mysql
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
@@ -54,3 +56,5 @@ services:
       - '--strict.perms=false'
     depends_on:
       - logstash
+networks:
+  mysql:
