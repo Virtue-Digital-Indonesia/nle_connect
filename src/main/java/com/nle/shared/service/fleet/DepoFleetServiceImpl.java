@@ -4,10 +4,11 @@ import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.DepoOwnerAccount;
-import com.nle.io.entity.Fleet;
+import com.nle.io.entity.InswShipping;
 import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.FleetRepository;
+import com.nle.io.repository.InswShippingRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoFleetRegisterRequest;
@@ -35,15 +36,13 @@ public class DepoFleetServiceImpl implements DepoFleetService{
     private final DepoFleetRepository depoFleetRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final FleetRepository fleetRepository;
-
     private final static Map<String,String> mapOfSortField= Map.ofEntries(
-            Map.entry("code","fleet.code"),
-            Map.entry("fleet_manager_company","fleet.fleet_manager_company"),
-            Map.entry("city", "fleet.city"),
-            Map.entry("country","fleet.country"),
+            Map.entry("code","insw_shipping.code"),
+            Map.entry("fleet_manager_company","insw_shipping.shipping_description"),
             Map.entry("id","id"),
             Map.entry("name","name")
     );
+    private final InswShippingRepository inswShippingRepository;
 
     @Override
     public PagingResponseModel<DepoFleetResponse> getAllFleetsDepo (Pageable pageable){
@@ -64,8 +63,8 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             if (depoOwnerAccount.isEmpty())
                 throw new CommonException("Cannot find Depo Owner Account!");
 
-            Optional<Fleet> fleet = fleetRepository.getByCode(request.getFleet_code());
-            if (fleet.isEmpty())
+            Optional<InswShipping> inswShippingOpt = inswShippingRepository.findByCode(request.getFleet_code());
+            if (inswShippingOpt.isEmpty())
                 throw new CommonException("Cannot find fleet code");
 
             Optional<DepoFleet> flagFleet = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleet_code());
@@ -74,10 +73,10 @@ public class DepoFleetServiceImpl implements DepoFleetService{
 
             DepoFleet depoFleet = new DepoFleet();
             depoFleet.setDepoOwnerAccount(depoOwnerAccount.get());
-            depoFleet.setFleet(fleet.get());
+            depoFleet.setFleet(inswShippingOpt.get());
 
             if(request.getName() == null || request.getName().trim().isEmpty()) {
-                depoFleet.setName(fleet.get().getFleet_manager_company());
+                depoFleet.setName(inswShippingOpt.get().getDescription());
             }
             else {
                 depoFleet.setName(request.getName());
@@ -103,8 +102,8 @@ public class DepoFleetServiceImpl implements DepoFleetService{
         if (optionalDepoFleet.isEmpty())
             throw new CommonException("Cannot find depo-fleet in this depo");
 
-        Optional<Fleet> fleet = fleetRepository.getByCode(request.getFleet_code());
-        if (fleet.isEmpty())
+        Optional<InswShipping> inswShippingOpt = inswShippingRepository.findByCode(request.getFleet_code());
+        if (inswShippingOpt.isEmpty())
             throw new CommonException("Cannot find fleet code");
 
         Optional<DepoFleet> flagSame = depoFleetRepository.getFleetInDepo(currentUserLogin.get(), request.getFleet_code());
@@ -112,10 +111,10 @@ public class DepoFleetServiceImpl implements DepoFleetService{
             throw new BadRequestException("Fleet is already registered in different name");
 
         DepoFleet depoFleet = optionalDepoFleet.get();
-        depoFleet.setFleet(fleet.get());
+        depoFleet.setFleet(inswShippingOpt.get());
 
         if(request.getName() == null || request.getName().trim().isEmpty()) {
-            depoFleet.setName(fleet.get().getFleet_manager_company());
+            depoFleet.setName(inswShippingOpt.get().getDescription());
         }
         else {
             depoFleet.setName(request.getName());
@@ -156,8 +155,6 @@ public class DepoFleetServiceImpl implements DepoFleetService{
                     depoFleetSearchRequest.getId(),
                     depoFleetSearchRequest.getCode(),
                     depoFleetSearchRequest.getFleetManagerCompany(),
-                    depoFleetSearchRequest.getCity(),
-                    depoFleetSearchRequest.getCountry(),
                     depoFleetSearchRequest.getGlobalSearch(),
                     customPageable);
             return new PagingResponseModel<>(listFleet.map(ConvertResponseUtil::convertDepoFleetToResponse));
