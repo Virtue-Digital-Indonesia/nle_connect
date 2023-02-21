@@ -9,6 +9,7 @@ import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.FleetRepository;
 import com.nle.security.SecurityUtils;
+import com.nle.shared.service.item.ItemService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.DepoFleetRegisterRequest;
 import com.nle.ui.model.request.DepoFleetUpdateRequest;
@@ -35,6 +36,7 @@ public class DepoFleetServiceImpl implements DepoFleetService{
     private final DepoFleetRepository depoFleetRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final FleetRepository fleetRepository;
+    private final ItemService itemService;
 
     private final static Map<String,String> mapOfSortField= Map.ofEntries(
             Map.entry("code","fleet.code"),
@@ -83,8 +85,14 @@ public class DepoFleetServiceImpl implements DepoFleetService{
                 depoFleet.setName(request.getName());
             }
             depoFleet.setDeleted(false);
+            //Save data depof_leet
             DepoFleet entity = depoFleetRepository.save(depoFleet);
-            return ConvertResponseUtil.convertDepoFleetToResponse(entity);
+
+            //Create multiple item
+            DepoFleetResponse depoFleetResponse = ConvertResponseUtil.convertDepoFleetToResponse(entity);
+            depoFleetResponse.setItemInfo(itemService.createMultipleItem(depoFleet));
+
+            return depoFleetResponse;
         }
 
         return null;
