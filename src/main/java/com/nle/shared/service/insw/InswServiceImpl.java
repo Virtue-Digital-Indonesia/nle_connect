@@ -9,10 +9,12 @@ import com.nle.exception.BadRequestException;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.InswToken;
 import com.nle.io.entity.Item;
+import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.InswTokenRepository;
 import com.nle.io.repository.ItemRepository;
 
+import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.shared.service.fleet.InswShippingService;
 import com.nle.shared.service.item.ItemTypeService;
 import com.nle.ui.model.response.InswShippingResponse;
@@ -49,6 +51,7 @@ public class InswServiceImpl implements InswService{
     private final ItemRepository itemRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final InswShippingService inswShippingService;
+    private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
 
     @Override
     public InswResponse getBolData(String bolNumber, Long depoId) {
@@ -114,6 +117,15 @@ public class InswServiceImpl implements InswService{
             }
         } catch (Exception e){
             e.printStackTrace();
+        }
+        List<BookingDetailUnloading> bookingDetailUnloadings = bookingDetailUnloadingRepository.getValidateContainer(
+                                                                containerResponse.getNoContainer(),
+                                                                response.getItemResponse().getId(),
+                                                                depoId);
+        if (bookingDetailUnloadings.isEmpty()){
+            response.setActiveStatus(true);
+        } else {
+            response.setActiveStatus(false);
         }
 
         return response;

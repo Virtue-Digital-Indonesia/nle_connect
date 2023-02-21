@@ -2,6 +2,7 @@ package com.nle.shared.service.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
+import com.nle.constant.enums.PaymentStatusEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -125,6 +126,7 @@ public class BookingServiceImpl implements BookingService {
             bookingDetailUnloading.setBookingHeader(savedHeader);
             bookingDetailUnloading.setItem(item.get());
             bookingDetailUnloading.setContainer_number(detailRequest.getContainer_number());
+            bookingDetailUnloading.setPaymentStatus(PaymentStatusEnum.UNPAID);
 
             if (detailRequest.getPrice() != -1)
                 bookingDetailUnloading.setPrice(detailRequest.getPrice());
