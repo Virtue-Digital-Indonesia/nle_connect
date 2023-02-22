@@ -69,6 +69,28 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public String createMultipleItem(DepoFleet depoFleet) {
+        List<ItemType> itemTypeList = itemTypeRepository.findAll();
+        List<Item> itemList = new ArrayList<>();
+        for (ItemType itemType: itemTypeList) {
+            Item item = new Item();
+            item.setItem_name(itemType);
+            item.setDepoFleet(depoFleet);
+            item.setDepoOwnerAccount(depoFleet.getDepoOwnerAccount());
+            item.setSku("tes-"+depoFleet.getName());
+            item.setDescription("tes-"+depoFleet.getName());
+            item.setPrice(500000);
+            item.setStatus(true);
+            item.setType(ItemTypeEnum.UNLOADING);
+            itemList.add(item);
+        }
+        itemRepository.saveAll(itemList);
+        String countItem = itemTypeList.size()+" Item Created";
+
+        return countItem;
+    }
+
+    @Override
     public ItemResponse createItem(CreateItemRequest request) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty()) {
