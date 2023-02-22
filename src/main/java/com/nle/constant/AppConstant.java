@@ -38,6 +38,8 @@ public class AppConstant {
     public static class Status {
         public static final String WAITING = "WAITING";
         public static final String SUBMITTED = "SUBMITTED";
+
+        public static final String ALREADY = "ALREADY";
     }
 
     public static class VerificationStatus {

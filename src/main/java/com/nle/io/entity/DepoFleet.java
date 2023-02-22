@@ -25,7 +25,7 @@ public class DepoFleet implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "fleet_id", referencedColumnName = "id")
-    private Fleet fleet;
+    private InswShipping fleet;
 
     @Column(name = "custom_name")
     private String name;

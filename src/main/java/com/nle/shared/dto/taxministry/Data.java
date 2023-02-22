@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class Data {
     private String message;
+    private String IdTraffic;
 }
