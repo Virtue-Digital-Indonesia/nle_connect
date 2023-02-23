@@ -92,7 +92,6 @@ public class InswServiceImpl implements InswService{
         //Get fleet from shippingline code
         Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(doa.getCompanyEmail(), code);
 
-        DepoFleet getFleet = null;
         if (!fleet.isPresent() || fleet.isEmpty()) {
             fleet = depoFleetRepository.getFleetInDepo(doa.getCompanyEmail(),"SSI");
             if (!fleet.isPresent() || fleet.isEmpty()){
@@ -100,7 +99,7 @@ public class InswServiceImpl implements InswService{
                 return response;
             }
         }
-        getFleet = fleet.get();
+        DepoFleet getFleet = fleet.get();
 
         //Get item type base on size and type
         List<ItemTypeResponse> itemTypeResponseList = itemTypeService.getFromIsoCode(containerResponse.getSize(), containerResponse.getType());
