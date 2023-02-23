@@ -16,7 +16,7 @@ public interface DepoFleetRepository extends JpaRepository<DepoFleet, Long> {
     @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail and df.deleted = false")
     Page<DepoFleet> getAllDepoFleet(@Param("companyEmail") String companyEmail, Pageable pageable);
 
-    @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail AND df.fleet.code = :fleetCode")
+    @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail AND df.fleet.code = :fleetCode AND df.deleted = false")
     Optional<DepoFleet> getFleetInDepo(@Param("companyEmail") String companyEmail, @Param("fleetCode") String fleetCode);
 
     @Query(value = "SELECT df FROM DepoFleet df " +
