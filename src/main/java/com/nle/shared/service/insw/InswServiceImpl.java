@@ -92,8 +92,12 @@ public class InswServiceImpl implements InswService{
         //Get fleet from shippingline code
         Optional<DepoFleet> fleet = depoFleetRepository.getFleetInDepo(doa.getCompanyEmail(), code);
 
-        if (fleet.isEmpty()) {
+        if (!fleet.isPresent() || fleet.isEmpty()) {
             fleet = depoFleetRepository.getFleetInDepo(doa.getCompanyEmail(),"SSI");
+            if (!fleet.isPresent() || fleet.isEmpty()){
+                response.setItemResponse(null);
+                return response;
+            }
         }
         DepoFleet getFleet = fleet.get();
 
