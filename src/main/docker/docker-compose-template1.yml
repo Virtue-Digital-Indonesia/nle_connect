@@ -14,7 +14,7 @@ services:
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
-      
+
   mysql-master:
     image: mysql:8.0.28
     restart: unless-stopped
@@ -27,8 +27,6 @@ services:
     volumes:
       - /opt/mysql/master/mysql_nle_data:/var/lib/mysql/
       - /opt/mysql/master/my.cnf:/etc/my.cnf
-    cap_add:
-      - all
     networks:
       - mysql
 
@@ -44,8 +42,6 @@ services:
     volumes:
       - /opt/mysql/slave/mysql_nle_data:/var/lib/mysql/
       - /opt/mysql/slave/my.cnf:/etc/my.cnf
-    cap_add:
-      - all
     networks:
       - mysql
 
