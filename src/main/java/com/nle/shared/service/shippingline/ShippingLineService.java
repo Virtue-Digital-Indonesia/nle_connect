@@ -7,5 +7,7 @@ import java.util.List;
 public interface ShippingLineService {
     ShippingLineDTO findByCode(String code);
 
+    ShippingLineDTO findByCodeValidate(String code);
+
     List<ShippingLineDTO> findAll();
 }
