@@ -25,14 +25,16 @@ services:
       - MYSQL_DATABASE=nlebackend
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     volumes:
-      - /opt/mysql/master/mysql_nle_data:/var/lib/mysql/
-      - /opt/mysql/master/my.cnf:/etc/my.cnf
+      - /opt/db/master/mysql_nle_data:/var/lib/mysql/
+      - /opt/db/master/master.cnf:/etc/my.cnf
     networks:
       - mysql
 
   mysql-slave:
     image: mysql:8.0.28
     restart: unless-stopped
+    depends_on:
+      - mysql-master
     command: mysqld --lower_case_table_names=1
     ports:
       - '4000:3306'
@@ -40,8 +42,8 @@ services:
       - MYSQL_DATABASE=nlebackend
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     volumes:
-      - /opt/mysql/slave/mysql_nle_data:/var/lib/mysql/
-      - /opt/mysql/slave/my.cnf:/etc/my.cnf
+      - /opt/db/slave/mysql_nle_data:/var/lib/mysql/
+      - /opt/db/slave/slave.cnf:/etc/my.cnf
     networks:
       - mysql
 
