@@ -306,7 +306,7 @@ public class FormServiceImpl implements FormService {
                     String container = unloading.getContainer_number();
                     String item = unloading.getItem().getItem_name().getItemCode() + " "
                             + unloading.getItem().getItem_name().getItemType();
-                    String fleet = unloading.getItem().getDepoFleet().getFleet().getFleet_manager_company();
+                    String fleet = unloading.getItem().getDepoFleet().getFleet().getDescription();
                     String deliveryNo = "";
                     String qty = "";
                     String shipper = "";
@@ -337,7 +337,7 @@ public class FormServiceImpl implements FormService {
                     String container = "";
                     String item = loading.getItem().getItem_name().getItemCode() + " "
                             + loading.getItem().getItem_name().getItemType();
-                    String fleet = loading.getItem().getDepoFleet().getFleet().getFleet_manager_company();
+                    String fleet = loading.getItem().getDepoFleet().getFleet().getDescription();
                     String qty = String.valueOf(loading.getQuantity());
 
                     byte[] qrByte = new byte[0];

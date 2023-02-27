@@ -30,6 +30,15 @@ public class ShippingLineServiceImpl implements ShippingLineService {
     }
 
     @Override
+    public ShippingLineDTO findByCodeValidate(String code) {
+        Optional<ShippingLine> shippingLineOptional = shippingLineRepository.findByCode(code);
+        if (shippingLineOptional.isEmpty()) {
+            shippingLineOptional = null;
+        }
+        return shippingLineMapper.toDto(shippingLineOptional.get());
+    }
+
+    @Override
     public List<ShippingLineDTO> findAll() {
         List<ShippingLine> shippingLineList = shippingLineRepository.findAll();
         return shippingLineList.stream().map(shippingLineMapper::toDto)
