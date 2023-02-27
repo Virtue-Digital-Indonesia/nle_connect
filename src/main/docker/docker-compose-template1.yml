@@ -10,13 +10,14 @@ services:
     ports:
       - '8082:8080'
     depends_on:
-      - mysql-master
+      - stage-mysql-master
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
 
   mysql-master:
     image: mysql:8.0.28
+    container_name: stage-mysql-master
     restart: unless-stopped
     command: mysqld --lower_case_table_names=1
     ports:
@@ -32,9 +33,10 @@ services:
 
   mysql-slave:
     image: mysql:8.0.28
+    container_name: stage-mysql-slave
     restart: unless-stopped
     depends_on:
-      - mysql-master
+      - stage-mysql-master
     command: mysqld --lower_case_table_names=1
     ports:
       - '4000:3306'
