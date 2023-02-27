@@ -26,8 +26,8 @@ services:
       - MYSQL_DATABASE=nlebackend
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     volumes:
-      - /opt/db/master/mysql_nle_data:/var/lib/mysql/
-      - /opt/db/master/master.cnf:/etc/my.cnf
+      - /opt/nledb/master/mysql_nle_data:/var/lib/mysql/
+      - /opt/nledb/master/master.cnf:/etc/my.cnf
     networks:
       - mysql
 
@@ -44,8 +44,8 @@ services:
       - MYSQL_DATABASE=nlebackend
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     volumes:
-      - /opt/db/slave/mysql_nle_data:/var/lib/mysql/
-      - /opt/db/slave/slave.cnf:/etc/my.cnf
+      - /opt/nledb/slave/mysql_nle_data:/var/lib/mysql/
+      - /opt/nledb/slave/slave.cnf:/etc/my.cnf
     networks:
       - mysql
 
