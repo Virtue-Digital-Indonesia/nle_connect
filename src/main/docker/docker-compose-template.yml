@@ -1,21 +1,58 @@
 version: '3.8'
 volumes:
+  mysql_nle_data:
+    driver: local
   elasticsearch_data:
     driver: local
 services:
+  mysql-master:
+    image: mysql:8.0.28
+    container_name: prod-mysql-master
+    restart: unless-stopped
+    command: mysqld --lower_case_table_names=1
+    ports:
+      - '3309:3306'
+    environment:
+      - MYSQL_DATABASE=nlebackend
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - /opt/nledb/master/mysql_nle_data:/var/lib/mysql/
+      - /opt/nledb/master/master.cnf:/etc/my.cnf
+    networks:
+      - mysql
+
+  mysql-slave:
+    image: mysql:8.0.28
+    container_name: prod-mysql-slave
+    restart: unless-stopped
+    depends_on:
+      - mysql-master
+    command: mysqld --lower_case_table_names=1
+    ports:
+      - '4000:3306'
+    environment:
+      - MYSQL_DATABASE=nlebackend
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - /opt/nledb/slave/mysql_nle_data:/var/lib/mysql/
+      - /opt/nledb/slave/slave.cnf:/etc/my.cnf
+    networks:
+      - mysql
+
   nle-backend:
     image: 'nlebackend:${VERSION}'
     ports:
-      - '8081:8080'
+      - '8082:8080'
     depends_on:
       - mysql-master
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
-      - '9200:9200'
+      - '9201:9200'
     environment:
       - 'discovery.type=single-node'
     volumes:
@@ -24,8 +61,8 @@ services:
   logstash:
     image: docker.elastic.co/logstash/logstash:7.2.0
     ports:
-      - '25826:25826'
-      - '5044:5044'
+      - '25827:25826'
+      - '5045:5044'
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro # Pipeline configuration
     restart: on-failure
@@ -35,7 +72,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.2.0
     ports:
-      - '5601:5601'
+      - '5602:5601'
     restart: on-failure
     depends_on:
       - elasticsearch
@@ -54,3 +91,5 @@ services:
       - '--strict.perms=false'
     depends_on:
       - logstash
+networks:
+  mysql:
