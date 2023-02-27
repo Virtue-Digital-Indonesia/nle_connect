@@ -5,6 +5,16 @@ volumes:
   mysql_nle_data:
     driver: local
 services:
+  nle-backend:
+    image: 'nlebackend:${VERSION}'
+    ports:
+      - '8082:8080'
+    depends_on:
+      - mysql-master
+    labels:
+      collect_logs_with_filebeat: 'true'
+      decode_log_event_to_json_object: 'true'
+
   mysql-master:
     image: mysql:8.0.28
     container_name: stage-mysql-master
@@ -26,7 +36,7 @@ services:
     container_name: stage-mysql-slave
     restart: unless-stopped
     depends_on:
-      - stage-mysql-master
+      - mysql-master
     command: mysqld --lower_case_table_names=1
     ports:
       - '4000:3306'
@@ -38,16 +48,6 @@ services:
       - /opt/db/slave/slave.cnf:/etc/my.cnf
     networks:
       - mysql
-
-  nle-backend:
-    image: 'nlebackend:${VERSION}'
-    ports:
-      - '8082:8080'
-    depends_on:
-      - stage-mysql-master
-    labels:
-      collect_logs_with_filebeat: 'true'
-      decode_log_event_to_json_object: 'true'
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
