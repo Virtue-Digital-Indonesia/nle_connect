@@ -80,79 +80,90 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                         "OR LOWER(gm.source) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
                         ") ";
 
-        Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(String depoOwnerAccount,
-                        LocalDateTime from, LocalDateTime to, Pageable pageable);
+    Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(String depoOwnerAccount,
+                                                                                   LocalDateTime from,
+                                                                                   LocalDateTime to,
+                                                                                   Pageable pageable);
 
-        Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(String depoOwnerAccount,
-                        String gateMoveType,
-                        Pageable pageable);
+    @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.fleet_manager)) " +
+            "from GateMove gm " +
+            "where gm.depoOwnerAccount.companyEmail =:companyEmail " +
+            "group by gm.fleet_manager")
+    List<ShippingLineStatistic> countTotalGateMoveByShippingLine(@Param("companyEmail") String companyEmail);
 
-        @Query("select new com.nle.io.repository.dto.MoveStatistic(gm.gateMoveType, count (gm.gateMoveType)) " +
-                        "from GateMove gm " +
-                        "where gm.depoOwnerAccount.companyEmail =:companyEmail " +
-                        "group by gm.gateMoveType")
-        List<MoveStatistic> countTotalGateMoveByType(@Param("companyEmail") String companyEmail);
+    List<GateMove> findAllByStatus(String status);
 
-        @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.fleet_manager)) "
-                        +
-                        "from GateMove gm " +
-                        "where gm.depoOwnerAccount.companyEmail =:companyEmail " +
-                        "group by gm.fleet_manager")
-        List<ShippingLineStatistic> countTotalGateMoveByShippingLine(@Param("companyEmail") String companyEmail);
+    @Modifying
+    @Query("update GateMove gm set gm.status =:status, " +
+            "gm.syncToTaxMinistryDate =:syncToTaxMinistryDate, " +
+            "gm.nleId = :IdTraffic " +
+            "where gm.id =:id")
+    int updateGateMoveStatusById(@Param("status") String status,
+                                 @Param("syncToTaxMinistryDate") LocalDateTime syncToTaxMinistryDate,
+                                 @Param("IdTraffic") String IdTraffic,
+                                 @Param("id") Long id);
 
-        List<GateMove> findAllByStatus(String status);
+    @Query(value = SEARCH_GATEMOVE_QUERY)
+    Page<GateMove>searchByCondition(@Param("companyEmail") String companyEmail,
+                                    Pageable pageable,
+                                    @Param("request") GateMoveSearchRequest request);
 
-        @Modifying
-        @Query("update GateMove gm set gm.status =:status, gm.syncToTaxMinistryDate =:syncToTaxMinistryDate where gm.id =:id")
-        int updateGateMoveStatusById(@Param("status") String status,
-                        @Param("syncToTaxMinistryDate") LocalDateTime syncToTaxMinistryDate,
-                        @Param("id") Long id);
+    @Query(value = "SELECT gm FROM GateMove gm WHERE gm.depoOwnerAccount.companyEmail = :companyEmail " +
+            "AND (gm.tx_date BETWEEN :from AND :to)  ORDER BY gm.tx_date")
+    List<GateMove> countTotalGateMoveByDuration(@Param("companyEmail") String companyEmail,
+                                                @Param("from") String from,
+                                                @Param("to") String to);
 
-        @Query(value = SEARCH_GATEMOVE_QUERY)
-        Page<GateMove> searchByCondition(@Param("companyEmail") String companyEmail,
-                        Pageable pageable,
-                        @Param("request") GateMoveSearchRequest request);
+    Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndGateMoveType(String depoOwnerAccount,
+                    String gateMoveType,
+                    Pageable pageable);
 
-        @Query(value = "SELECT gm FROM GateMove gm WHERE gm.depoOwnerAccount.companyEmail = :companyEmail " +
-                        "AND (gm.tx_date BETWEEN :from AND :to)  ORDER BY gm.tx_date")
-        List<GateMove> countTotalGateMoveByDuration(@Param("companyEmail") String companyEmail,
-                        @Param("from") String from,
-                        @Param("to") String to);
+    @Query("select new com.nle.io.repository.dto.MoveStatistic(gm.gateMoveType, count (gm.gateMoveType)) " +
+                    "from GateMove gm " +
+                    "where gm.depoOwnerAccount.companyEmail =:companyEmail " +
+                    "group by gm.gateMoveType")
+    List<MoveStatistic> countTotalGateMoveByType(@Param("companyEmail") String companyEmail);
 
-        @Query("select new com.nle.io.repository.dto.LocationStatistic(gm.depot, count (gm.depot)) " +
-                        "from GateMove gm " +
-                        "group by gm.depot " +
-                        "order by count(gm.depot) desc")
-        List<LocationStatistic> countLocation();
+    @Modifying
+    @Query("update GateMove gm set gm.status =:status, gm.syncToTaxMinistryDate =:syncToTaxMinistryDate where gm.id =:id")
+    int updateGateMoveStatusById(@Param("status") String status,
+                    @Param("syncToTaxMinistryDate") LocalDateTime syncToTaxMinistryDate,
+                    @Param("id") Long id);
 
-        @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.id)) "
-                        +
-                        "from GateMove gm " +
-                        "where (gm.tx_date >= :from and gm.tx_date < :to) " +
-                        "group by gm.fleet_manager " +
-                        "order by count(gm.id) desc")
-        List<ShippingLineStatistic> countFleetManagerByDate(@Param("from") String from, @Param("to") String to);
+    @Query("select new com.nle.io.repository.dto.LocationStatistic(gm.depot, count (gm.depot)) " +
+                    "from GateMove gm " +
+                    "group by gm.depot " +
+                    "order by count(gm.depot) desc")
+    List<LocationStatistic> countLocation();
 
-        @Query("select count(gm.id) "
-                        +
-                        "from GateMove gm " +
-                        "where (gm.tx_date >= :from and gm.tx_date < :to)")
-        Long countTotalFleetManagerByDate(@Param("from") String from,
-                        @Param("to") String to);
+    @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.id)) "
+                    +
+                    "from GateMove gm " +
+                    "where (gm.tx_date >= :from and gm.tx_date < :to) " +
+                    "group by gm.fleet_manager " +
+                    "order by count(gm.id) desc")
+    List<ShippingLineStatistic> countFleetManagerByDate(@Param("from") String from, @Param("to") String to);
 
-        @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.id)) " +
-                        "from GateMove gm " +
-                        "group by gm.fleet_manager " +
-                        "order by count(gm.id) desc")
-        List<ShippingLineStatistic> countFleetManager();
+    @Query("select count(gm.id) "
+                    +
+                    "from GateMove gm " +
+                    "where (gm.tx_date >= :from and gm.tx_date < :to)")
+    Long countTotalFleetManagerByDate(@Param("from") String from,
+                    @Param("to") String to);
 
-        @Query("select new com.nle.io.repository.dto.GateMovesStatistic(gm.depot, " +
-                        "sum(case when gm.gateMoveType='gate_in' then 1 when gm.gateMoveType='gate_out' then 0 end), " +
-                        "sum(case when gm.gateMoveType='gate_in' then 0 when gm.gateMoveType='gate_out' then 1 end), " +
-                        "count (gm.id)) "
-                        +
-                        "from GateMove gm " +
-                        "where (gm.tx_date >= :from and gm.tx_date < :to) " +
-                        "group by gm.depot")
-        List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to);
+    @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.id)) " +
+                    "from GateMove gm " +
+                    "group by gm.fleet_manager " +
+                    "order by count(gm.id) desc")
+    List<ShippingLineStatistic> countFleetManager();
+
+    @Query("select new com.nle.io.repository.dto.GateMovesStatistic(gm.depot, " +
+                    "sum(case when gm.gateMoveType='gate_in' then 1 when gm.gateMoveType='gate_out' then 0 end), " +
+                    "sum(case when gm.gateMoveType='gate_in' then 0 when gm.gateMoveType='gate_out' then 1 end), " +
+                    "count (gm.id)) "
+                    +
+                    "from GateMove gm " +
+                    "where (gm.tx_date >= :from and gm.tx_date < :to) " +
+                    "group by gm.depot")
+    List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to);
 }

@@ -28,4 +28,7 @@ public interface XenditService {
     void CreateDisbursements(String xendit_id, XenditVA xenditVA);
 
     String CallbackDisbursements(XenditDisCallbackPayload payload);
+
+    XenditResponse cancelOrderXendit(Long bookingId);
+
 }

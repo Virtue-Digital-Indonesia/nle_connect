@@ -2,6 +2,7 @@ package com.nle.shared.service.booking;
 
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
+import com.nle.constant.enums.PaymentStatusEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -125,6 +126,7 @@ public class BookingServiceImpl implements BookingService {
             bookingDetailUnloading.setBookingHeader(savedHeader);
             bookingDetailUnloading.setItem(item.get());
             bookingDetailUnloading.setContainer_number(detailRequest.getContainer_number());
+            bookingDetailUnloading.setPaymentStatus(PaymentStatusEnum.UNPAID);
 
             if (detailRequest.getPrice() != -1)
                 bookingDetailUnloading.setPrice(detailRequest.getPrice());
@@ -183,6 +185,28 @@ public class BookingServiceImpl implements BookingService {
         request.setPhone_number(phone.get());
         Page<BookingHeader> headerPage = bookingHeaderRepository.searchBooking(request, pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
+    }
+
+    @Override
+    public void bookingValidate(Optional<String> phone, Long booking_id) {
+        if (phone.isEmpty())
+            throw new BadRequestException("You must login!");
+
+        if (!phone.get().startsWith("+62") && !phone.get().startsWith("62") &&
+                !phone.get().startsWith("0"))
+            throw new BadRequestException("not token from phone!");
+
+        Optional<BookingHeader> bookingHeaderOptional = bookingHeaderRepository.findById(booking_id);
+        BookingHeader bookingHeader = bookingHeaderOptional.get();
+
+        String phone_number = phone.get();
+        if (!bookingHeader.getPhone_number().equals(phone_number))
+            throw new BadRequestException("this booking is not belong to phone number: "
+                    + phone_number);
+
+        DepoOwnerAccount doa = bookingHeader.getDepoOwnerAccount();
+        if (doa.getXenditVaId() == null)
+            throw new BadRequestException("This depo is not active!");
     }
 
     private BookingHeader saveBookingHeader(BookingHeaderRequest request, ItemTypeEnum booking_type) {

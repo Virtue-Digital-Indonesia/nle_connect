@@ -1,10 +1,12 @@
 package com.nle.io.repository.booking;
 
+import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.ui.model.request.search.BookingSearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -47,5 +49,9 @@ public interface BookingHeaderRepository extends JpaRepository<BookingHeader, Lo
 
     @Query(value = "SELECT bh FROM BookingHeader bh WHERE bh.depoOwnerAccount.companyEmail = :companyEmail")
     Page<BookingHeader> getOrderDepo(@Param("companyEmail") String companyEmail, Pageable pageable);
+
+    @Modifying
+    @Query(value = "update BookingHeader bh set bh.booking_status =:status where bh.id =:id")
+    void cancelStatus(@Param("status") BookingStatusEnum statusEnum, @Param("id") Long bookingId);
 
 }

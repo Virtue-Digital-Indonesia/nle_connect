@@ -1,5 +1,6 @@
 package com.nle.io.entity.booking;
 
+import com.nle.constant.enums.PaymentStatusEnum;
 import com.nle.io.entity.Item;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,4 +33,8 @@ public class BookingDetailUnloading {
 
     @Column(name = "container_number")
     private String container_number;
+
+    @Column(name = "payment_status")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatusEnum paymentStatus;
 }

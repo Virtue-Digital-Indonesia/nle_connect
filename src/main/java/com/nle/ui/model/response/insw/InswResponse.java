@@ -1,7 +1,7 @@
 package com.nle.ui.model.response.insw;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nle.ui.model.response.FleetResponse;
+import com.nle.ui.model.response.InswShippingResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 public class InswResponse {
     private String shippingLine;
-    private FleetResponse shippingFleet;
+    private InswShippingResponse shippingFleet;
     private String noBL;
     private String dateBL;
     private String doReleaseDate;
