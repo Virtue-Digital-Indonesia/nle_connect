@@ -76,7 +76,7 @@ public class InswServiceImpl implements InswService{
         List<ContainerResponse> containerResponseList = new ArrayList<>();
         List<ContainerResponse> containerResponse = dataResponse.getContainer();
         for (ContainerResponse container: containerResponse) {
-            containerResponseList.add(this.convertContainerToResponse(container, doa, inswResponse.getShippingLine()));
+            containerResponseList.add(this.convertContainerToResponse(container, doa, inswResponse.getNoBL(), inswResponse.getShippingLine()));
         }
 
         inswResponse.setContainer(containerResponseList);
@@ -87,7 +87,7 @@ public class InswServiceImpl implements InswService{
         return inswResponse;
     }
 
-    private ContainerResponse convertContainerToResponse(ContainerResponse containerResponse, DepoOwnerAccount doa, String code) {
+    private ContainerResponse convertContainerToResponse(ContainerResponse containerResponse, DepoOwnerAccount doa, String noBl, String code) {
         ContainerResponse response = new ContainerResponse();
         BeanUtils.copyProperties(containerResponse, response);
         Long depoId = doa.getId();
@@ -135,14 +135,19 @@ public class InswServiceImpl implements InswService{
         } catch (Exception e){
             e.printStackTrace();
         }
-        List<BookingDetailUnloading> bookingDetailUnloadings = bookingDetailUnloadingRepository.getValidateContainer(
-                                                                containerResponse.getNoContainer(),
-                                                                response.getItemResponse().getId(),
-                                                                depoId);
-        if (bookingDetailUnloadings.isEmpty()){
-            response.setActiveStatus(true);
-        } else {
-            response.setActiveStatus(false);
+
+        //get status container
+        if (response.getItemResponse() != null){
+            List<BookingDetailUnloading> bookingDetailUnloadings = bookingDetailUnloadingRepository.getValidateContainer(
+                                                                    noBl,
+                                                                    containerResponse.getNoContainer(),
+                                                                    response.getItemResponse().getId(),
+                                                                    depoId);
+            if (bookingDetailUnloadings.isEmpty()){
+                response.setActiveStatus(true);
+            } else {
+                response.setActiveStatus(false);
+            }
         }
 
         return response;
