@@ -68,7 +68,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: ${DB}
+    url: ${URL_DB}
     username: root
     password: ${DB_PASSWORD}
     hikari:

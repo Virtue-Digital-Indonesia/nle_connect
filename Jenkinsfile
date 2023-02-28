@@ -52,7 +52,7 @@ pipeline {
                         sh """
                             cd src/main/resources
                             export DB_PASSWORD=$DB_PASSWORD
-                            export DB=$DB_URL1
+                            export URL_DB=$DB_URL1
                             export TRIGGER_URL=$TRIGGER_URL
                             export TRIGGER_TOKEN=$TRIGGER_TOKEN
                             export TAX_MINISTRY_API_KEY=$TAX_MINISTRY_API_KEY
@@ -69,7 +69,7 @@ pipeline {
                         sh """
                             cd src/main/resources
                             export DB_PASSWORD=$DB_PASSWORD
-                            export DB=$DB_URL
+                            export URL_DB=$DB_URL
                             export TRIGGER_URL=$TRIGGER_URL
                             export TRIGGER_TOKEN=$TRIGGER_TOKEN
                             export TAX_MINISTRY_API_KEY=$TAX_MINISTRY_API_KEY
