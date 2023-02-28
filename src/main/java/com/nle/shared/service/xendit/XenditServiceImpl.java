@@ -12,10 +12,12 @@ import com.nle.exception.CommonException;
 import com.nle.io.entity.BankDepo;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
+import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.BankDepoRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.XenditRepository;
+import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.request.xendit.XenditCallbackPayload;
@@ -62,6 +64,9 @@ public class XenditServiceImpl implements XenditService {
     private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
+
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
 
@@ -220,6 +225,11 @@ public class XenditServiceImpl implements XenditService {
                 bookingHeader.setPayment_method(PaymentMethodEnum.BANK);
                 bookingHeader.setBooking_status(BookingStatusEnum.SUCCESS);
                 bookingHeaderRepository.save(bookingHeader);
+
+                if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                    bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId());
+                }
+
                 CreateDisbursements(payload.getUser_id(), entity);
             } else if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 entity.setPayment_status(XenditEnum.EXPIRED);

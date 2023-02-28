@@ -1,6 +1,7 @@
 package com.nle.io.repository;
 
 import com.nle.constant.enums.ItemTypeEnum;
+import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.Item;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

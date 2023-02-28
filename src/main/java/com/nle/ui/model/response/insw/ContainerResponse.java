@@ -4,6 +4,8 @@ import com.nle.ui.model.response.ItemResponse;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -15,4 +17,5 @@ public class ContainerResponse {
     private double quantity;
     private String quantityUnit;
     private ItemResponse itemResponse;
+    private boolean activeStatus;
 }

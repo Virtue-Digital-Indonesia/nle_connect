@@ -11,10 +11,12 @@ import com.nle.io.repository.*;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.InswToken;
 import com.nle.io.entity.Item;
+import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.InswTokenRepository;
 import com.nle.io.repository.ItemRepository;
 
+import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.shared.service.fleet.InswShippingService;
 import com.nle.shared.service.item.ItemTypeService;
 import com.nle.ui.model.response.InswShippingResponse;
@@ -52,6 +54,7 @@ public class InswServiceImpl implements InswService{
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final DepoFleetRepository depoFleetRepository;
     private final InswShippingService inswShippingService;
+    private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
 
     @Override
     public InswResponse getBolData(String bolNumber, Long depoId) {
@@ -73,7 +76,7 @@ public class InswServiceImpl implements InswService{
         List<ContainerResponse> containerResponseList = new ArrayList<>();
         List<ContainerResponse> containerResponse = dataResponse.getContainer();
         for (ContainerResponse container: containerResponse) {
-            containerResponseList.add(this.convertContainerToResponse(container, doa, inswResponse.getShippingLine()));
+            containerResponseList.add(this.convertContainerToResponse(container, doa, inswResponse.getNoBL(), inswResponse.getShippingLine()));
         }
 
         inswResponse.setContainer(containerResponseList);
@@ -84,7 +87,7 @@ public class InswServiceImpl implements InswService{
         return inswResponse;
     }
 
-    private ContainerResponse convertContainerToResponse(ContainerResponse containerResponse, DepoOwnerAccount doa, String code) {
+    private ContainerResponse convertContainerToResponse(ContainerResponse containerResponse, DepoOwnerAccount doa, String noBl, String code) {
         ContainerResponse response = new ContainerResponse();
         BeanUtils.copyProperties(containerResponse, response);
         Long depoId = doa.getId();
@@ -131,6 +134,20 @@ public class InswServiceImpl implements InswService{
             }
         } catch (Exception e){
             e.printStackTrace();
+        }
+
+        //get status container
+        if (response.getItemResponse() != null){
+            List<BookingDetailUnloading> bookingDetailUnloadings = bookingDetailUnloadingRepository.getValidateContainer(
+                                                                    noBl,
+                                                                    containerResponse.getNoContainer(),
+                                                                    response.getItemResponse().getId(),
+                                                                    depoId);
+            if (bookingDetailUnloadings.isEmpty()){
+                response.setActiveStatus(true);
+            } else {
+                response.setActiveStatus(false);
+            }
         }
 
         return response;
