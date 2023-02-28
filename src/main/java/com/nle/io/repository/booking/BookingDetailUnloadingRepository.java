@@ -17,7 +17,7 @@ public interface BookingDetailUnloadingRepository extends JpaRepository<BookingD
             "AND bdu.paymentStatus = 'UNPAID' " +
             "AND bdu.bookingHeader.depoOwnerAccount.id = :depoId " +
             "AND bdu.bookingHeader.bill_landing = :noBl " +
-            "AND bdu.bookingHeader.booking_status = 'WAITING'")
+            "AND bdu.bookingHeader.booking_status IN ('WAITING' , 'SUCCESS')")
     List<BookingDetailUnloading> getValidateContainer(@Param("noBl") String noBl,
                                                       @Param("noContainer") String noContainer,
                                                       @Param("idItem") Long idItem,
