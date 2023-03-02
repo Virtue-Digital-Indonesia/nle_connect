@@ -1,5 +1,6 @@
 package com.nle.io.repository;
 
+import com.nle.io.entity.report.ReportParameter;
 import com.nle.ui.model.request.search.GateMoveSearchRequest;
 import com.nle.io.entity.GateMove;
 import com.nle.io.repository.dto.GateMovesStatistic;
@@ -79,6 +80,10 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                         "OR LOWER(gm.status) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
                         "OR LOWER(gm.source) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
                         ") ";
+        static final String SEARCH_GATEMOVE_BETWEEN = "SELECT * FROM gate_move WHERE DEPO_OWNER_ACCOUNT_ID = :#{#parameter.depoOwnerId.id} " +
+                "AND TX_DATE_FORMATTED BETWEEN " +
+                ":#{#parameter.startDate} AND :#{#parameter.endDate} " +
+                "AND CAST(TX_DATE_FORMATTED AS TIME) BETWEEN :#{#parameter.startTime} and :#{#parameter.endTime}";
 
     Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(String depoOwnerAccount,
                                                                                    LocalDateTime from,
@@ -166,4 +171,6 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                     "where (gm.tx_date >= :from and gm.tx_date < :to) " +
                     "group by gm.depot")
     List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to);
+    @Query(value = SEARCH_GATEMOVE_BETWEEN, nativeQuery = true)
+    List<GateMove> getReportGateMove(@Param("parameter") ReportParameter parameter);
 }

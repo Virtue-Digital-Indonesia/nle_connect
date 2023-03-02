@@ -1,17 +1,17 @@
-package com.nle.ui.model.request.report;
+package com.nle.ui.model.response.report;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.nle.constant.enums.ReportType;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-@Getter
-@Setter
-@ToString
-public class CreateReportGateMoveRequest {
+
+@Data
+public class CreateReportPaymentDTO {
+    private Long id;
     private String labelReport;
-    private String fleetCode;
+    private ReportType reportType;
+    private String bankCode;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalTime startTime;

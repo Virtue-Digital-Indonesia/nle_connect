@@ -37,4 +37,5 @@ public interface GateMoveService {
 
     CountResponse countTotalGateMoveByDuration(Long duration);
     CountResponse countTotalGateMoveByDurationWithFleetManager(Long duration);
+    List<GateMoveResponseDTO> buildReportFromParameter(Long reportId);
 }

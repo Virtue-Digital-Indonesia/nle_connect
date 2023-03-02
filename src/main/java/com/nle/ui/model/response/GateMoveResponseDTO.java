@@ -10,4 +10,5 @@ public class GateMoveResponseDTO extends MoveDTO {
     private Long id;
     private LocalDateTime txDateFormatted;
     private String gateMoveType;
+    private String cekHari;
 }
