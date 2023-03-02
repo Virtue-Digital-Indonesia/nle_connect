@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
-import com.nle.constant.enums.BookingStatusEnum;
-import com.nle.constant.enums.PaymentMethodEnum;
-import com.nle.constant.enums.PaymentStatusEnum;
-import com.nle.constant.enums.XenditEnum;
+import com.nle.constant.enums.*;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.BankDepo;
@@ -103,7 +100,7 @@ public class XenditServiceImpl implements XenditService {
                 bookingHeader.setBooking_status(BookingStatusEnum.EXPIRED);
                 bookingHeaderRepository.save(bookingHeader);
                     //For change expired to booking detail unloading
-                    if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                    if (bookingHeader.getBooking_type().equals(ItemTypeEnum.UNLOADING)){
                         bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.EXPIRED);
                     }
             } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
@@ -236,7 +233,7 @@ public class XenditServiceImpl implements XenditService {
                 bookingHeader.setBooking_status(BookingStatusEnum.SUCCESS);
                 bookingHeaderRepository.save(bookingHeader);
 
-                if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                if (bookingHeader.getBooking_type().equals(ItemTypeEnum.UNLOADING)){
                     bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.PAID);
                 }
 
@@ -247,7 +244,7 @@ public class XenditServiceImpl implements XenditService {
                 bookingHeader.setBooking_status(BookingStatusEnum.EXPIRED);
                 bookingHeaderRepository.save(bookingHeader);
 
-                if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                if (bookingHeader.getBooking_type().equals(ItemTypeEnum.UNLOADING)){
                     bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.EXPIRED);
                 }
             }
@@ -365,7 +362,7 @@ public class XenditServiceImpl implements XenditService {
                 bookingHeader.setBooking_status(BookingStatusEnum.EXPIRED);
                 bookingHeaderRepository.save(bookingHeader);
                 //For change expired to booking detail unloading
-                if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                if (bookingHeader.getBooking_type().equals(ItemTypeEnum.UNLOADING)){
                     bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.EXPIRED);
                 }
             } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
@@ -507,8 +504,14 @@ public class XenditServiceImpl implements XenditService {
         if (!bookingHeaderOptional.get().getBooking_status().equals(BookingStatusEnum.WAITING))
             throw new BadRequestException("The booking status is "+bookingHeaderOptional.get().getBooking_status());
 
+
         //For set booking status at booking header
         bookingHeaderRepository.cancelStatus(BookingStatusEnum.CANCEL, bookingId);
+
+        //For change expired to booking detail unloading
+        if (bookingHeaderOptional.get().getBooking_type().equals(ItemTypeEnum.UNLOADING)) {
+            bookingDetailUnloadingRepository.updatePaymentStatus(bookingId, PaymentStatusEnum.CANCEL);
+        }
 
         //Validate if payment no exist
         Optional<XenditVA> xenditVAOptional = xenditRepository.findWithBookingID(bookingId);
