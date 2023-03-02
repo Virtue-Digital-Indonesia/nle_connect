@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
+import com.nle.constant.enums.PaymentStatusEnum;
 import com.nle.constant.enums.XenditEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
@@ -96,6 +97,15 @@ public class XenditServiceImpl implements XenditService {
             if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 xenditVA.setPayment_status(XenditEnum.EXPIRED);
                 xenditRepository.save(xenditVA);
+
+                //For change expired to booking
+                BookingHeader bookingHeader = xenditVA.getBooking_header_id();
+                bookingHeader.setBooking_status(BookingStatusEnum.EXPIRED);
+                bookingHeaderRepository.save(bookingHeader);
+                    //For change expired to booking detail unloading
+                    if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                        bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.EXPIRED);
+                    }
             } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
                 FixedVirtualAccount fvAccount = XenditUtil.getVA(doa.getXenditVaId(), xenditVA.getXendit_id());
                 BeanUtils.copyProperties(fvAccount, response);
@@ -121,7 +131,7 @@ public class XenditServiceImpl implements XenditService {
         if (optionalBookingHeader.isEmpty())
             throw new CommonException("not found booking id");
         if (optionalBookingHeader.get().getBooking_status() != BookingStatusEnum.WAITING)
-            throw new BadRequestException("this booking already paid");
+            throw new BadRequestException("this booking status is "+optionalBookingHeader.get().getBooking_status());
         if (optionalBookingHeader.get().getDepoOwnerAccount().getId() != depo.getId())
             throw new BadRequestException("this booking not for this depo");
 
@@ -227,12 +237,19 @@ public class XenditServiceImpl implements XenditService {
                 bookingHeaderRepository.save(bookingHeader);
 
                 if (bookingHeader.getBooking_type().equals("UNLOADING")){
-                    bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId());
+                    bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.PAID);
                 }
 
                 CreateDisbursements(payload.getUser_id(), entity);
             } else if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 entity.setPayment_status(XenditEnum.EXPIRED);
+                BookingHeader bookingHeader = xenditVA.get().getBooking_header_id();
+                bookingHeader.setBooking_status(BookingStatusEnum.EXPIRED);
+                bookingHeaderRepository.save(bookingHeader);
+
+                if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                    bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.EXPIRED);
+                }
             }
 
             xenditRepository.save(entity);
@@ -342,6 +359,15 @@ public class XenditServiceImpl implements XenditService {
             if (invoice.getStatus().equalsIgnoreCase("EXPIRED")) {
                 xenditVA.setPayment_status(XenditEnum.EXPIRED);
                 xenditRepository.save(xenditVA);
+
+                //For change expired to booking
+                BookingHeader bookingHeader = xenditVA.getBooking_header_id();
+                bookingHeader.setBooking_status(BookingStatusEnum.EXPIRED);
+                bookingHeaderRepository.save(bookingHeader);
+                //For change expired to booking detail unloading
+                if (bookingHeader.getBooking_type().equals("UNLOADING")){
+                    bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.EXPIRED);
+                }
             } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
                 FixedVirtualAccount fixedVirtualAccount = XenditUtil.getVA(doa.getXenditVaId(), xenditVA.getXendit_id());
                 BeanUtils.copyProperties(fixedVirtualAccount, xenditResponse);
@@ -477,6 +503,9 @@ public class XenditServiceImpl implements XenditService {
         Optional<BookingHeader> bookingHeaderOptional = bookingHeaderRepository.findById(bookingId);
         if (bookingHeaderOptional.isEmpty())
             throw new BadRequestException("Cannot find booking!");
+
+        if (!bookingHeaderOptional.get().getBooking_status().equals(BookingStatusEnum.WAITING))
+            throw new BadRequestException("The booking status is "+bookingHeaderOptional.get().getBooking_status());
 
         //For set booking status at booking header
         bookingHeaderRepository.cancelStatus(BookingStatusEnum.CANCEL, bookingId);
