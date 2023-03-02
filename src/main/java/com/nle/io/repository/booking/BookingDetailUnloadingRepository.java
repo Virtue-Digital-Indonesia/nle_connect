@@ -1,5 +1,6 @@
 package com.nle.io.repository.booking;
 
+import com.nle.constant.enums.PaymentStatusEnum;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +24,6 @@ public interface BookingDetailUnloadingRepository extends JpaRepository<BookingD
                                                       @Param("idItem") Long idItem,
                                                       @Param("depoId") Long depoId);
 
-    @Query(value = "UPDATE BookingDetailUnloading bdu SET bdu.paymentStatus = 'PAID' WHERE bdu.id = :bookingHeaderId")
-    void updatePaymentStatus(@Param("bookingHeaderId") Long id);
+    @Query(value = "UPDATE BookingDetailUnloading bdu SET bdu.paymentStatus = :status WHERE bdu.id = :bookingHeaderId")
+    void updatePaymentStatus(@Param("bookingHeaderId") Long id, @Param("status") PaymentStatusEnum paymentStatusEnum);
 }
