@@ -5,8 +5,10 @@ import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.GateMoveSource;
 import com.nle.constant.enums.ReportType;
 import com.nle.exception.BadRequestException;
+import com.nle.io.entity.InswShipping;
 import com.nle.io.entity.report.ReportParameter;
 import com.nle.io.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.InswShippingRepository;
 import com.nle.io.repository.report.ReportParameterRepository;
 import com.nle.shared.service.inventory.InventoryService;
 import com.nle.ui.model.pageable.PagingResponseModel;
@@ -72,6 +74,7 @@ public class GateMoveServiceImpl implements GateMoveService {
     private final InventoryService inventoryService;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ReportParameterRepository reportParameterRepository;
+    private final InswShippingRepository inswShippingRepository;
 
     @Override
     public CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO, GateMoveSource source) {
@@ -251,23 +254,6 @@ public class GateMoveServiceImpl implements GateMoveService {
         return gateMoveResponseDTO;
     }
 
-    private GateMoveResponseDTO convertToReportGateMoveResponseDTO(GateMove gateMove) {
-        GateMoveResponseDTO gateMoveResponseDTO = new GateMoveResponseDTO();
-        BeanUtils.copyProperties(gateMove, gateMoveResponseDTO);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE", Locale.ENGLISH);
-        String cek = formatter.format(gateMove.getTxDateFormatted());
-
-
-        gateMoveResponseDTO.setCekHari(cek);
-
-        if (gateMove.getClean()) {
-            gateMoveResponseDTO.setClean("yes");
-        } else {
-            gateMoveResponseDTO.setClean("no");
-        }
-        return gateMoveResponseDTO;
-    }
-
     public CountResponse countTotalGateMoveByDuration(Long duration) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         Double totalAll = 0.0;
@@ -387,6 +373,13 @@ public class GateMoveServiceImpl implements GateMoveService {
         if (!reportParameter.getReportType().equals(ReportType.GATE_MOVE))
             throw new BadRequestException("Report Id Not For GateMove!");
 
+        String fleetManager = null;
+        Optional<InswShipping> getFleet = inswShippingRepository.findByCode(reportParameter.getFleet().getCode());
+        if (!getFleet.isEmpty()){
+            fleetManager = getFleet.get().getDescription();
+        }
+
+
         String days = reportParameter.getDays();
         String[] daysArr = days.split(",");
 
@@ -400,8 +393,7 @@ public class GateMoveServiceImpl implements GateMoveService {
                  ) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE", Locale.ENGLISH);
                 String cekDay = formatter.format(gateMove.getTxDateFormatted());
-                if (day.equalsIgnoreCase(cekDay)){
-                    gateMoveResponseDTO.setCekHari(cekDay);
+                if (day.equalsIgnoreCase(cekDay) && validateFleet(fleetManager, gateMoveResponseDTO.getFleet_manager())){
                     gateMoveResponseDTOList.add(gateMoveResponseDTO);
                     break;
                 }
@@ -412,7 +404,15 @@ public class GateMoveServiceImpl implements GateMoveService {
         return gateMoveResponseDTOList;
     }
 
-    ;
+    private Boolean validateFleet(String fleetReportParam, String fleetResponse){
+        String fleetReportTrim = fleetReportParam.trim();
+        String fleetResponseTrim = fleetResponse.trim();
+
+        if (fleetReportTrim.equalsIgnoreCase(fleetResponseTrim)) {
+            return true;
+        }
+        return false;
+    }
 
     private List<GateMove> getListGateMoveByDuration (Long duration, String email) {
         LocalDateTime now = LocalDateTime.now();
