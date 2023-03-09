@@ -17,12 +17,14 @@ import com.nle.io.repository.InswTokenRepository;
 import com.nle.io.repository.ItemRepository;
 
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
+import com.nle.shared.dto.insw.InswSyncDataDTO;
 import com.nle.shared.service.fleet.InswShippingService;
 import com.nle.shared.service.item.ItemTypeService;
 import com.nle.ui.model.response.InswShippingResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
+import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +32,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
@@ -55,6 +58,7 @@ public class InswServiceImpl implements InswService{
     private final DepoFleetRepository depoFleetRepository;
     private final InswShippingService inswShippingService;
     private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
+    private final GateMoveRepository gateMoveRepository;
 
     @Override
     public InswResponse getBolData(String bolNumber, Long depoId) {
@@ -85,6 +89,41 @@ public class InswServiceImpl implements InswService{
         inswResponse.setShippingFleet(inswShippingResponse);
 
         return inswResponse;
+    }
+
+    @Override
+//    @Scheduled(cron = "${app.scheduler.insw-sync-cron}")
+    public List<InswSyncDataDTO> syncInsw() {
+
+        List<GateMove> gateMoveList = gateMoveRepository.findAllByStatusInsw(AppConstant.Status.SUBMITTED);
+        List<InswSyncDataDTO> listResponse = new ArrayList<>();
+        for (GateMove gateMove : gateMoveList) {
+            InswSyncDataDTO inswDTO = new InswSyncDataDTO();
+
+            // TODO untuk sekarang, nanti dihapus, agar tidak terlalu banyak
+            if (gateMove.getDepoOwnerAccount().getId() != 45) {
+                continue;
+            }
+
+            if (gateMove.getGateMoveType().equalsIgnoreCase(NleUtil.GATE_IN)) {
+                inswDTO.setActivity("GI");
+                inswDTO.setBlDate(gateMove.getTx_date());
+                inswDTO.setBlNumber(gateMove.getOrder_number());
+            }
+            else if (gateMove.getGateMoveType().equalsIgnoreCase(NleUtil.GATE_OUT)) {
+                inswDTO.setActivity("GO");
+                inswDTO.setDoDate(gateMove.getTx_date());
+                inswDTO.setDoNumber(gateMove.getOrder_number());
+            }
+
+            inswDTO.setDepoId(gateMove.getDepoOwnerAccount().getId());
+            inswDTO.setTaxMinistryRequestDTO(NleUtil.convertFromGateMove(gateMove));
+            listResponse.add(inswDTO);
+
+            // TODO gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
+//            gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
+        }
+        return listResponse;
     }
 
     private ContainerResponse convertContainerToResponse(ContainerResponse containerResponse, DepoOwnerAccount doa, String noBl, String code) {

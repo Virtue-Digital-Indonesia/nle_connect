@@ -40,6 +40,7 @@ app:
     enabled: true
     ftp-sync-cron: 59 59 17 * * *
     tax-ministry-sync-cron: 59 59 23 * * *
+    insw-sync-cron: 59 59 02 ***
   contact-us-destination-email: ${EMAIL_CONTACT_US}
   verihubs:
     App-ID: ${APP_ID}
@@ -68,7 +69,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://210.247.245.143:3308/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://210.247.245.143:3308/nletes?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: ${DB_PASSWORD}
     hikari:

@@ -4,6 +4,7 @@ import com.nle.constant.AppConstant;
 import com.nle.constant.enums.GateMoveSource;
 import com.nle.io.entity.GateMove;
 import com.nle.shared.dto.ftp.MoveDTO;
+import com.nle.shared.dto.taxministry.TaxMinistryRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -95,5 +96,27 @@ public class NleUtil {
             log.error("Can not format transaction date {}", txDate);
             return null;
         }
+    }
+
+    public static TaxMinistryRequestDTO convertFromGateMove(GateMove gateMove) {
+        TaxMinistryRequestDTO taxMinistryRequestDTO = new TaxMinistryRequestDTO();
+        BeanUtils.copyProperties(gateMove, taxMinistryRequestDTO);
+        taxMinistryRequestDTO.setClean(gateMove.getClean() ? "yes" : "no");
+        taxMinistryRequestDTO.setDateManufacturing(gateMove.getDate_manufacturer());
+        taxMinistryRequestDTO.setContainerNumber(gateMove.getContainer_number());
+        taxMinistryRequestDTO.setDeliveryPort(gateMove.getDelivery_port());
+        taxMinistryRequestDTO.setDiscargePort(gateMove.getDischarge_port());
+        taxMinistryRequestDTO.setDriveName(gateMove.getDriver_name());
+        taxMinistryRequestDTO.setFleetManager(gateMove.getFleet_manager());
+        taxMinistryRequestDTO.setIsoCode(gateMove.getIso_code());
+        taxMinistryRequestDTO.setMaxGross(gateMove.getMax_gross());
+        taxMinistryRequestDTO.setOrderNumber(gateMove.getOrder_number());
+        taxMinistryRequestDTO.setProcessType(gateMove.getProcess_type().toLowerCase());
+        taxMinistryRequestDTO.setRemark(gateMove.getRemarks());
+        taxMinistryRequestDTO.setTransportNumber(gateMove.getTransport_number());
+        taxMinistryRequestDTO.setTxDate(gateMove.getTx_date());
+        taxMinistryRequestDTO.setVessel(gateMove.getVessel());
+        taxMinistryRequestDTO.setAmount(gateMove.getAmount());
+        return taxMinistryRequestDTO;
     }
 }

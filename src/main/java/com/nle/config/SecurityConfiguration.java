@@ -87,6 +87,7 @@ public class SecurityConfiguration {
                         , "/api/item-type"
                         , "/api/item-type/iso"
                         , "/api/insw-shipping"
+                        , "/api/insw/sync-data-to-insw"
                 ).permitAll()
             .antMatchers("/impersonate"
                     , "/api/admins/profile"

@@ -93,6 +93,9 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
 
     List<GateMove> findAllByStatus(String status);
 
+    @Query("SELECT gm FROM GateMove gm WHERE gm.status = :status AND gm.syncToInsw = null")
+    List<GateMove> findAllByStatusInsw(String status);
+
     @Modifying
     @Query("update GateMove gm set gm.status =:status, " +
             "gm.syncToTaxMinistryDate =:syncToTaxMinistryDate, " +
@@ -102,6 +105,10 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                                  @Param("syncToTaxMinistryDate") LocalDateTime syncToTaxMinistryDate,
                                  @Param("IdTraffic") String IdTraffic,
                                  @Param("id") Long id);
+
+    @Modifying
+    @Query("update GateMove gm set gm.syncToInsw =:syncToInsw where gm.id =:id ")
+    int updateGateMoveStatusByInsw(@Param("id") Long id, @Param("syncToInsw") LocalDateTime syncToInsw);
 
     @Query(value = SEARCH_GATEMOVE_QUERY)
     Page<GateMove>searchByCondition(@Param("companyEmail") String companyEmail,
