@@ -117,7 +117,7 @@ public class InswServiceImpl implements InswService{
             }
 
             inswDTO.setDepoId(gateMove.getDepoOwnerAccount().getId());
-            inswDTO.setTaxMinistryRequestDTO(NleUtil.convertFromGateMove(gateMove));
+            inswDTO.setGateMoveData(NleUtil.convertFromGateMove(gateMove));
             listResponse.add(inswDTO);
 
             // TODO gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya

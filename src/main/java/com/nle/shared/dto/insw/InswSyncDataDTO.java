@@ -15,5 +15,5 @@ public class InswSyncDataDTO {
 
     //TODO diperbaiki struktur data sesuai dengan permintaan INSW
     private Long depoId;
-    private TaxMinistryRequestDTO taxMinistryRequestDTO;
+    private TaxMinistryRequestDTO gateMoveData;
 }
