@@ -98,32 +98,52 @@ public class InswServiceImpl implements InswService{
         List<GateMove> gateMoveList = gateMoveRepository.findAllByStatusInsw(AppConstant.Status.SUBMITTED);
         List<InswSyncDataDTO> listResponse = new ArrayList<>();
         for (GateMove gateMove : gateMoveList) {
-            InswSyncDataDTO inswDTO = new InswSyncDataDTO();
 
             // TODO untuk sekarang, nanti dihapus, agar tidak terlalu banyak
             if (gateMove.getDepoOwnerAccount().getId() != 45) {
                 continue;
             }
 
-            if (gateMove.getGateMoveType().equalsIgnoreCase(NleUtil.GATE_IN)) {
-                inswDTO.setActivity("GI");
-                inswDTO.setBlDate(gateMove.getTx_date());
-                inswDTO.setBlNumber(gateMove.getOrder_number());
-            }
-            else if (gateMove.getGateMoveType().equalsIgnoreCase(NleUtil.GATE_OUT)) {
-                inswDTO.setActivity("GO");
-                inswDTO.setDoDate(gateMove.getTx_date());
-                inswDTO.setDoNumber(gateMove.getOrder_number());
-            }
-
-            inswDTO.setDepoId(gateMove.getDepoOwnerAccount().getId());
-            inswDTO.setGateMoveData(NleUtil.convertFromGateMove(gateMove));
+            //Get data from method convertToInswSyncDataDto
+            InswSyncDataDTO inswDTO = this.convertToInswSyncDataDto(gateMove);
             listResponse.add(inswDTO);
 
             // TODO gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
 //            gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
         }
         return listResponse;
+    }
+
+    private InswSyncDataDTO convertToInswSyncDataDto(GateMove gateMove) {
+        InswSyncDataDTO inswSyncDataDTO = new InswSyncDataDTO();
+        BeanUtils.copyProperties(gateMove, inswSyncDataDTO);
+        inswSyncDataDTO.setContainerNumber(gateMove.getContainer_number());
+        inswSyncDataDTO.setDateManufacturing(gateMove.getDate_manufacturer());
+        inswSyncDataDTO.setDeliveryPort(gateMove.getDelivery_port());
+        inswSyncDataDTO.setDischargePort(gateMove.getDischarge_port());
+        inswSyncDataDTO.setDriverName(gateMove.getDriver_name());
+        inswSyncDataDTO.setFleetManager(gateMove.getFleet_manager());
+        inswSyncDataDTO.setIsoCode(gateMove.getIso_code());
+        inswSyncDataDTO.setMaxGross(gateMove.getMax_gross());
+        inswSyncDataDTO.setProcessType(gateMove.getProcess_type());
+        inswSyncDataDTO.setTransportNumber(gateMove.getTransport_number());
+        inswSyncDataDTO.setTxDate(gateMove.getTx_date());
+
+        if (gateMove.getGateMoveType().equalsIgnoreCase(NleUtil.GATE_IN)) {
+            inswSyncDataDTO.setActivity("GI");
+            inswSyncDataDTO.setBlDate(gateMove.getTx_date());
+            inswSyncDataDTO.setBlNumber(gateMove.getOrder_number());
+        }
+        else if (gateMove.getGateMoveType().equalsIgnoreCase(NleUtil.GATE_OUT)) {
+            inswSyncDataDTO.setActivity("GO");
+            inswSyncDataDTO.setDoDate(gateMove.getTx_date());
+            inswSyncDataDTO.setDoNumber(gateMove.getOrder_number());
+        }
+
+        inswSyncDataDTO.setDepoId(gateMove.getDepoOwnerAccount().getId());
+        inswSyncDataDTO.setGateMoveData(NleUtil.convertFromGateMove(gateMove));
+
+        return inswSyncDataDTO;
     }
 
     private ContainerResponse convertContainerToResponse(ContainerResponse containerResponse, DepoOwnerAccount doa, String noBl, String code) {
