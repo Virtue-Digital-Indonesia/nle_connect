@@ -40,6 +40,7 @@ public class InswSyncDataDTO {
     private String vessel;
     private String voyage;
     private Long amount;
+    private String statusFeedback;
     private Long depoId;
     private TaxMinistryRequestDTO gateMoveData;
 }

@@ -26,6 +26,7 @@ import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
@@ -41,6 +42,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,6 +108,9 @@ public class InswServiceImpl implements InswService{
 
             //Get data from method convertToInswSyncDataDto
             InswSyncDataDTO inswDTO = this.convertToInswSyncDataDto(gateMove);
+
+            //Todo : actived after get endpoint of insw
+//            inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
             listResponse.add(inswDTO);
 
             // TODO gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
@@ -210,6 +215,71 @@ public class InswServiceImpl implements InswService{
         }
 
         return response;
+    }
+
+    public String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
+        //Todo : change url insw endpoint
+        String inswUrl = "https://";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        //Todo : set autentication if needed
+        String username = "user";
+        String auth = username + ":";
+        String encodeAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+
+        httpHeaders.add("Authorization", "Basic " + encodeAuth);
+        httpHeaders.add("Content-Type", "application/json");
+
+        JSONObject sendParam = new JSONObject();
+        try {
+            sendParam.put("activity", inswSyncDataDTO.getActivity());
+            sendParam.put("idPlatform", inswSyncDataDTO.getIdPlatform());
+            sendParam.put("carrier", inswSyncDataDTO.getCarrier());
+            sendParam.put("clean", inswSyncDataDTO.getClean());
+            sendParam.put("condition", inswSyncDataDTO.getCondition());
+            sendParam.put("containerNumber", inswSyncDataDTO.getContainerNumber());
+            sendParam.put("customer", inswSyncDataDTO.getCustomer());
+            sendParam.put("dateManufacturing", inswSyncDataDTO.getDateManufacturing());
+            sendParam.put("deliveryPort", inswSyncDataDTO.getDeliveryPort());
+            sendParam.put("depot", inswSyncDataDTO.getDepot());
+            sendParam.put("discargePort", inswSyncDataDTO.getDischargePort());
+            sendParam.put("driveName", inswSyncDataDTO.getDriverName());
+            sendParam.put("fleetManager", inswSyncDataDTO.getFleetManager());
+            sendParam.put("grade", inswSyncDataDTO.getGrade());
+            sendParam.put("isoCode", inswSyncDataDTO.getIsoCode());
+            sendParam.put("maxGross", inswSyncDataDTO.getMaxGross());
+            sendParam.put("blNumber", inswSyncDataDTO.getBlNumber());
+            sendParam.put("blDate", inswSyncDataDTO.getBlDate());
+            sendParam.put("doNumber", inswSyncDataDTO.getDoNumber());
+            sendParam.put("doDate", inswSyncDataDTO.getDoDate());
+            sendParam.put("payload", inswSyncDataDTO.getPayload());
+            sendParam.put("processTyper", inswSyncDataDTO.getProcessType());
+            sendParam.put("remark", inswSyncDataDTO.getRemarks());
+            sendParam.put("tare", inswSyncDataDTO.getTare());
+            sendParam.put("transportNumber", inswSyncDataDTO.getTransportNumber());
+            sendParam.put("txDate", inswSyncDataDTO.getTxDate());
+            sendParam.put("vessel", inswSyncDataDTO.getVessel());
+            sendParam.put("voyage", inswSyncDataDTO.getVoyage());
+            sendParam.put("amount", inswSyncDataDTO.getAmount());
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+        HttpEntity<String> request = new HttpEntity<String>(sendParam.toString(), httpHeaders);
+        String result = restTemplate.postForObject(inswUrl, request, String.class);
+
+        //Todo : change response from insw status
+        try {
+            JsonNode root = objectMapper.readTree(result);
+            return root.path("statusMessage").asText();
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+
+        return "Failed";
     }
 
 
