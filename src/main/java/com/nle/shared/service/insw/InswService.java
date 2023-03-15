@@ -10,4 +10,7 @@ public interface InswService {
     InswResponse getBolData(String bolNumber, Long depoId);
 
     List<InswSyncDataDTO> syncInsw();
+
+    //Todo : Hanya untuk tes hapus jika sudah fix ke insw
+    String tesSendCon(Long id);
 }

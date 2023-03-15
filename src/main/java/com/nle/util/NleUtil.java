@@ -119,4 +119,32 @@ public class NleUtil {
         taxMinistryRequestDTO.setAmount(gateMove.getAmount());
         return taxMinistryRequestDTO;
     }
+
+    public static String convertProcessType(String processType){
+        String getProcessNo = null;
+        switch (processType){
+            case GATE_IN:
+                getProcessNo = "1";
+                break;
+            case GATE_OUT:
+                getProcessNo = "2";
+                break;
+            case GATE_IN_EMPTY:
+                getProcessNo = "3";
+                break;
+            case GATE_OUT_EMPTY:
+                getProcessNo = "4";
+                break;
+            case GATE_IN_REPO:
+                getProcessNo = "5";
+                break;
+            case GATE_OUT_REPO:
+                getProcessNo = "6";
+                break;
+            default:
+                getProcessNo = null;
+        }
+
+        return getProcessNo;
+    }
 }

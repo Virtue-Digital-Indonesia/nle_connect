@@ -1,6 +1,7 @@
 package com.nle.util;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -45,5 +46,14 @@ public class DateUtil {
                 withZoneSameInstant(ZoneId.of(timeZone)).toLocalDateTime();
 
         return newDateTime;
+    }
+
+    public static String getDateOfPattern(String date){
+        String pattern = "yyyy-MM-dd";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        OffsetDateTime parseDateTime = OffsetDateTime.parse(date);
+        String getDate = formatter.format(parseDateTime);
+
+        return getDate;
     }
 }

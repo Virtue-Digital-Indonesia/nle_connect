@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,5 +31,13 @@ public class InswController {
     public List<InswSyncDataDTO> syncInsw() {
         return inswService.syncInsw();
     }
+
+    @Operation(description = "sync data with insw", operationId = "syncInsw", summary = "sync data with insw")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/tesapi/{id}")
+    public ResponseEntity<String> syncInsw(@PathVariable Long id) {
+        return ResponseEntity.ok(inswService.tesSendCon(id));
+    }
+
 
 }

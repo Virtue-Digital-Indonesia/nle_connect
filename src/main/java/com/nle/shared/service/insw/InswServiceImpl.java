@@ -24,6 +24,7 @@ import com.nle.ui.model.response.InswShippingResponse;
 import com.nle.ui.model.response.ItemResponse;
 import com.nle.ui.model.response.ItemTypeResponse;
 import com.nle.ui.model.response.insw.*;
+import com.nle.util.DateUtil;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
@@ -117,6 +118,16 @@ public class InswServiceImpl implements InswService{
 //            gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
         }
         return listResponse;
+    }
+
+    //Todo : Hanya untuk tes hapus jika sudah fix ke insw
+    @Override
+    public String tesSendCon(Long id) {
+        Optional<GateMove> gateMoveOpt = gateMoveRepository.findById(id);
+        GateMove gateMove = gateMoveOpt.get();
+
+        InswSyncDataDTO inswDTO = this.convertToInswSyncDataDto(gateMove);
+        return this.sendToInsw(inswDTO);
     }
 
     private InswSyncDataDTO convertToInswSyncDataDto(GateMove gateMove) {
@@ -219,67 +230,88 @@ public class InswServiceImpl implements InswService{
 
     public String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
         //Todo : change url insw endpoint
-        String inswUrl = "https://";
+        String inswUrl = "https://api-test.insw.go.id/api/v1/services/transaksi/dosp2/send-container-status";
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
+        String bearerToken        = null;
+        Optional<InswToken> inswToken = Optional.ofNullable(inswTokenRepository.findByActiveStatus(AppConstant.VerificationStatus.ACTIVE));
 
-        //Todo : set autentication if needed
-        String username = "user";
-        String auth = username + ":";
-        String encodeAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+        //Validate if token expired
+        if (inswToken.isEmpty()){
+            bearerToken = this.createToken();
+        } else {
+            InswToken getInswToken = inswToken.get();
+            if (checkToken(getInswToken.getExpiryDate())){
+                bearerToken = getInswToken.getAccessToken();
+            } else {
+                inswTokenRepository.updateStatus(AppConstant.VerificationStatus.INACTIVE, getInswToken.getId());
+                bearerToken = this.createToken();
+            }
+        }
 
-        httpHeaders.add("Authorization", "Basic " + encodeAuth);
+        httpHeaders.add("Authorization", "Bearer " + bearerToken);
         httpHeaders.add("Content-Type", "application/json");
 
+        //Todo : change to fix parameter request if fix from insw
         JSONObject sendParam = new JSONObject();
         try {
             sendParam.put("activity", inswSyncDataDTO.getActivity());
             sendParam.put("idPlatform", inswSyncDataDTO.getIdPlatform());
             sendParam.put("carrier", inswSyncDataDTO.getCarrier());
-            sendParam.put("clean", inswSyncDataDTO.getClean());
-            sendParam.put("condition", inswSyncDataDTO.getCondition());
-            sendParam.put("containerNumber", inswSyncDataDTO.getContainerNumber());
-            sendParam.put("customer", inswSyncDataDTO.getCustomer());
-            sendParam.put("dateManufacturing", inswSyncDataDTO.getDateManufacturing());
-            sendParam.put("deliveryPort", inswSyncDataDTO.getDeliveryPort());
+            sendParam.put("clean", (inswSyncDataDTO.getClean() == "1")?"Yes":"No");
+            sendParam.put("condition", (inswSyncDataDTO.getCondition().equalsIgnoreCase("AV")?"1":"2"));
+            sendParam.put("containerNumber", (inswSyncDataDTO.getContainerNumber() != null)?inswSyncDataDTO.getContainerNumber():"");
+            sendParam.put("customer", (inswSyncDataDTO.getCustomer() != null)?inswSyncDataDTO.getCustomer():"");
+            //Todo: Change datemanufacturing to fix from insw
+//            sendParam.put("dateManufacturing", inswSyncDataDTO.getDateManufacturing());
+            sendParam.put("dateManufacturing", DateUtil.getDateOfPattern(inswSyncDataDTO.getTxDate()));
+            //ketentuan dari insw tipe data Length an5 ref kode pelabuhan
+            sendParam.put("deliveryPort", inswSyncDataDTO.getDeliveryPort().substring(0,5));
+            //ketentuan dari insw tipe data Length an20 ref kode depo
             sendParam.put("depot", inswSyncDataDTO.getDepot());
-            sendParam.put("discargePort", inswSyncDataDTO.getDischargePort());
-            sendParam.put("driveName", inswSyncDataDTO.getDriverName());
+            //ketentuan dari insw tipe data Length an5 ref kode pelabuhan
+            sendParam.put("dischargePort", (inswSyncDataDTO.getDischargePort() != null)?inswSyncDataDTO.getDischargePort().substring(0,5):"");
+            sendParam.put("driverName", inswSyncDataDTO.getDriverName());
             sendParam.put("fleetManager", inswSyncDataDTO.getFleetManager());
             sendParam.put("grade", inswSyncDataDTO.getGrade());
             sendParam.put("isoCode", inswSyncDataDTO.getIsoCode());
             sendParam.put("maxGross", inswSyncDataDTO.getMaxGross());
-            sendParam.put("blNumber", inswSyncDataDTO.getBlNumber());
-            sendParam.put("blDate", inswSyncDataDTO.getBlDate());
-            sendParam.put("doNumber", inswSyncDataDTO.getDoNumber());
-            sendParam.put("doDate", inswSyncDataDTO.getDoDate());
+            sendParam.put("blNumber", (inswSyncDataDTO.getBlNumber() != null)?inswSyncDataDTO.getBlNumber():"");
+            sendParam.put("doNumber", (inswSyncDataDTO.getDoNumber() != null)?inswSyncDataDTO.getDoNumber():"");
             sendParam.put("payload", inswSyncDataDTO.getPayload());
-            sendParam.put("processTyper", inswSyncDataDTO.getProcessType());
-            sendParam.put("remark", inswSyncDataDTO.getRemarks());
+            sendParam.put("processType", NleUtil.convertProcessType(inswSyncDataDTO.getProcessType()));
+            sendParam.put("remark", (inswSyncDataDTO.getRemarks() != null)?inswSyncDataDTO.getRemarks():"");
             sendParam.put("tare", inswSyncDataDTO.getTare());
             sendParam.put("transportNumber", inswSyncDataDTO.getTransportNumber());
-            sendParam.put("txDate", inswSyncDataDTO.getTxDate());
+            sendParam.put("txDate", DateUtil.getDateOfPattern(inswSyncDataDTO.getTxDate()));
             sendParam.put("vessel", inswSyncDataDTO.getVessel());
             sendParam.put("voyage", inswSyncDataDTO.getVoyage());
-            sendParam.put("amount", inswSyncDataDTO.getAmount());
+            sendParam.put("amount", (inswSyncDataDTO.getAmount() != null)?inswSyncDataDTO.getAmount():0);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        JSONObject sendData = new JSONObject();
+        try {
+            sendData.put("data", sendParam);
         } catch (JSONException e){
             e.printStackTrace();
         }
 
         final ObjectMapper objectMapper = new ObjectMapper();
-        HttpEntity<String> request = new HttpEntity<String>(sendParam.toString(), httpHeaders);
+        HttpEntity<String> request = new HttpEntity<String>(sendData.toString(), httpHeaders);
         String result = restTemplate.postForObject(inswUrl, request, String.class);
 
         //Todo : change response from insw status
         try {
             JsonNode root = objectMapper.readTree(result);
-            return root.path("statusMessage").asText();
+            return root.path("message").asText();
         } catch (JsonProcessingException e){
             e.printStackTrace();
         }
 
-        return "Failed";
+        return "failed";
     }
 
 
