@@ -2,11 +2,14 @@ package com.nle.shared.service.applicant;
 
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
+import com.nle.io.entity.InswShipping;
+import com.nle.io.repository.InswShippingRepository;
 import com.nle.security.SecurityUtils;
 import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.GenerealResponse;
 import com.nle.ui.model.response.count.TotalMoves;
 import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 import com.nle.io.entity.DepoOwnerAccount;
@@ -40,6 +43,7 @@ import java.util.Optional;
 public class ApplicantServiceImpl implements ApplicantService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final GateMoveRepository gateMoveRepository;
+    private final InswShippingRepository inswShippingRepository;
 
     private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
@@ -214,5 +218,26 @@ public class ApplicantServiceImpl implements ApplicantService {
             throw new BadRequestException("Invalid token");
 
         return gateMoveRepository.countTotalFleetManagerByDate(from, to);
+    }
+
+    @Override
+    public GenerealResponse<List<ApplicantResponse>> getDepoFromPortal(String location, String shippingLIne) {
+        GenerealResponse<List<ApplicantResponse>> response = null;
+        if (location == "" || shippingLIne == "")
+            throw new BadRequestException("Please completed parameter!");
+
+        List<DepoOwnerAccount> depoOwnerAccountList = depoOwnerAccountRepository.getFromPortal(location);
+        Optional<InswShipping> inswShipping = inswShippingRepository.findByCode(shippingLIne);
+        List<ApplicantResponse> applicantResponseList = new ArrayList<>();
+        if (inswShipping.isEmpty() || depoOwnerAccountList.isEmpty()){
+            response = new  GenerealResponse<>("FAILED", "No data showed", null);
+        } else {
+            for (DepoOwnerAccount entity : depoOwnerAccountList) {
+                applicantResponseList.add(this.convertFromEntity(entity));
+            }
+            response = new GenerealResponse<>("SUCCESS", "Success showing data", applicantResponseList);
+        }
+
+        return response;
     }
 }

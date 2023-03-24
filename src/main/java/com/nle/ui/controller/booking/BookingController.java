@@ -165,4 +165,11 @@ public class BookingController {
         bookingService.bookingValidate(phone, booking_id);
         return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id));
     }
+
+    @Operation(description = "Get data depo from portal", operationId = "getDepoFromPortal", summary = "Get depo from portal")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/portal/get-depo")
+    public Object getDepoFromPortal(@RequestParam("loc") String location, @RequestParam("shippingLine") String shippingLIne){
+        return applicantService.getDepoFromPortal(location,shippingLIne);
+    }
 }

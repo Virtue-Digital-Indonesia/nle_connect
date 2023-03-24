@@ -55,4 +55,6 @@ public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccou
                                              Pageable pageable);
 
     Optional<DepoOwnerAccount> findByXenditVaId(String xendit_id);
+    @Query("select d from DepoOwnerAccount d where address like %:location%")
+    List<DepoOwnerAccount> getFromPortal(@Param("location") String location);
 }

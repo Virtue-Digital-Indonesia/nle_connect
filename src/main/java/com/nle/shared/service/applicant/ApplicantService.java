@@ -9,6 +9,7 @@ import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.GenerealResponse;
 import com.nle.ui.model.response.count.TotalMoves;
 import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 
@@ -40,4 +41,6 @@ public interface ApplicantService {
     List<GateMovesStatistic> countGateMovesByDepot(String from, String to);
 
     List<CountMovesByDepotResponse> countGateMovesByDepotPerDay(int duration);
+
+    GenerealResponse<List<ApplicantResponse>> getDepoFromPortal(String location, String shippingLine);
 }
