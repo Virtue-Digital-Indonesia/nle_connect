@@ -11,6 +11,4 @@ public interface InswService {
 
     List<InswSyncDataDTO> syncInsw();
 
-    //Todo : Hanya untuk tes hapus jika sudah fix ke insw
-    String tesSendCon(Long id);
 }

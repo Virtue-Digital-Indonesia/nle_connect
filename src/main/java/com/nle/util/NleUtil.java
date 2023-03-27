@@ -122,27 +122,20 @@ public class NleUtil {
 
     public static String convertProcessType(String processType){
         String getProcessNo = null;
-        switch (processType){
-            case GATE_IN:
-                getProcessNo = "1";
-                break;
-            case GATE_OUT:
-                getProcessNo = "2";
-                break;
-            case GATE_IN_EMPTY:
-                getProcessNo = "3";
-                break;
-            case GATE_OUT_EMPTY:
-                getProcessNo = "4";
-                break;
-            case GATE_IN_REPO:
-                getProcessNo = "5";
-                break;
-            case GATE_OUT_REPO:
-                getProcessNo = "6";
-                break;
-            default:
-                getProcessNo = null;
+        if (processType.equalsIgnoreCase("GATE_IN")) {
+            getProcessNo = "Gate in";
+        } else if (processType.equalsIgnoreCase("GATE_OUT")) {
+            getProcessNo = "Gate out";
+        } else if (processType.equalsIgnoreCase("GATE_IN_EMPTY")) {
+            getProcessNo = "Gate in empty";
+        } else if (processType.equalsIgnoreCase("GATE_OUT_EMPTY")) {
+            getProcessNo = "Gate out empty";
+        } else if (processType.equalsIgnoreCase("GATE_IN_REPO")) {
+            getProcessNo = "Gate in repo";
+        } else if (processType.equalsIgnoreCase("GATE_OUT_REPO")) {
+            getProcessNo = "Gate out repo";
+        } else {
+            getProcessNo = null;
         }
 
         return getProcessNo;

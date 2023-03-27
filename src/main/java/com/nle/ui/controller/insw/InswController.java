@@ -32,12 +32,4 @@ public class InswController {
         return inswService.syncInsw();
     }
 
-    @Operation(description = "sync data with insw", operationId = "syncInsw", summary = "sync data with insw")
-    @SecurityRequirement(name = "nleapi")
-    @PostMapping(value = "/tesapi/{id}")
-    public ResponseEntity<String> syncInsw(@PathVariable Long id) {
-        return ResponseEntity.ok(inswService.tesSendCon(id));
-    }
-
-
 }
