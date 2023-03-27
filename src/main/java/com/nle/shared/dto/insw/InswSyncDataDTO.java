@@ -1,6 +1,5 @@
 package com.nle.shared.dto.insw;
 
-import com.nle.constant.enums.GateMoveSource;
 import com.nle.shared.dto.taxministry.TaxMinistryRequestDTO;
 import lombok.Getter;
 import lombok.Setter;
