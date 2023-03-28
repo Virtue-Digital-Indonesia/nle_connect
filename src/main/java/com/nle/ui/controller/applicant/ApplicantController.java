@@ -117,4 +117,11 @@ public class ApplicantController {
     public ResponseEntity<List<CountMovesByDepotResponse>> countGateMovesByDepotPerDay(@RequestParam int duration) {
         return ResponseEntity.ok(applicantService.countGateMovesByDepotPerDay(duration));
     }
+
+    @Operation(description = "Get data depo from portal", operationId = "getDepoFromPortal", summary = "Get depo from portal")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/applicants/portal/getdepo-byloc-shippingline")
+    public Object getDepoFromPortal(@RequestParam("loc") String location, @RequestParam("shippingLine") String shippingLine){
+        return applicantService.getDepoFromPortal(location,shippingLine);
+    }
 }
