@@ -1,6 +1,6 @@
 package com.nle.shared.service.nlekemenkeu;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.exception.BadRequestException;
@@ -9,7 +9,10 @@ import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.UserInfoNleKemenkeuDTO;
 import com.nle.ui.model.JWTToken;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -25,8 +28,8 @@ public class NleKemenkeuServiceImpl implements NleKemenkeuService{
 
         UserInfoNleKemenkeuDTO userInfoNleKemenkeuDTO = this.getUserInfo(token);
         //TODO : Change type data of phone number verified when fixed
-        if (userInfoNleKemenkeuDTO.getPhoneNumberVerified().equalsIgnoreCase("true")){
-            String convertToken = tokenProvider.generateManualToken(userInfoNleKemenkeuDTO.getPhoneNumber(), AuthoritiesConstants.BOOKING_CUSTOMER);
+        if (userInfoNleKemenkeuDTO.getEmailVerified().equalsIgnoreCase("true")){
+            String convertToken = tokenProvider.generateManualToken(userInfoNleKemenkeuDTO.getEmail(), AuthoritiesConstants.BOOKING_CUSTOMER);
             return new JWTToken(convertToken);
         }
 
@@ -45,12 +48,14 @@ public class NleKemenkeuServiceImpl implements NleKemenkeuService{
 
         final ObjectMapper objectMapper = new ObjectMapper();
 
-        String result = restTemplate.getForObject(urlEndPoint, String.class);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(httpHeaders);
+        ResponseEntity<String> response = null;
         try {
-            JsonNode root = objectMapper.readTree(result);
-            userInfoNleKemenkeuDTO.setPhoneNumber(root.path("phone_number").asText());
-            userInfoNleKemenkeuDTO.setPhoneNumberVerified(root.path("phone_number_verified").asText());
-        } catch (JsonProcessingException e){
+        response = restTemplate.exchange(urlEndPoint, HttpMethod.GET, requestEntity, String.class);
+        JsonNode root = objectMapper.readTree(response.getBody());
+        userInfoNleKemenkeuDTO.setEmail(root.path("email").asText());
+        userInfoNleKemenkeuDTO.setEmailVerified(root.path("email_verified").asText());
+        } catch (Exception e){
             e.printStackTrace();
         }
         return userInfoNleKemenkeuDTO;

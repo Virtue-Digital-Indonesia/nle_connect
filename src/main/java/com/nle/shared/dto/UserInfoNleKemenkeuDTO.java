@@ -6,6 +6,6 @@ import lombok.ToString;
 @Data
 @ToString
 public class UserInfoNleKemenkeuDTO {
-    private String phoneNumber;
-    private String phoneNumberVerified;
+    private String email;
+    private String emailVerified;
 }
