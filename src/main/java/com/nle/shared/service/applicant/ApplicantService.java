@@ -15,7 +15,6 @@ import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.List;
 
 public interface ApplicantService {
