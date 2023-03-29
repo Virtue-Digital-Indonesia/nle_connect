@@ -21,10 +21,14 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -107,14 +111,26 @@ public class ApplicantController {
     @Operation(description = "Count total moves per day", operationId = "totalMovesPerDay", summary = "Count total moves per day")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "/applicants/count-total-moves")
-    public ResponseEntity<List<TotalMoves>> totalMovesPerDay(@RequestParam int duration) {
-        return ResponseEntity.ok(applicantService.totalMovesPerDay(duration));
+    public ResponseEntity<List<TotalMoves>> totalMovesPerDay(@RequestParam int duration, @RequestParam String location) {
+        return ResponseEntity.ok(applicantService.totalMovesPerDay(duration, location));
     }
 
     @Operation(description = "Count gate moves by depot", operationId = "countGateMovesByDepotPerDay", summary = "Count gate moves by depot")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "/applicants/count-gate-moves-by-depot")
-    public ResponseEntity<List<CountMovesByDepotResponse>> countGateMovesByDepotPerDay(@RequestParam int duration) {
-        return ResponseEntity.ok(applicantService.countGateMovesByDepotPerDay(duration));
+    public ResponseEntity<List<CountMovesByDepotResponse>> countGateMovesByDepotPerDay(@RequestParam int duration, @RequestParam String location) {
+        return ResponseEntity.ok(applicantService.countGateMovesByDepotPerDay(duration, location));
+    }
+
+    @Operation(description = "Download excel count gate moves by depot", operationId = "downloadGateMovesByDepotPerDay", summary = "Download excel count gate moves by depot")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/applicants/count-gate-moves-by-depot/download")
+    public ResponseEntity<Resource> getFile(@RequestParam int duration, @RequestParam String location) {
+        String fileName = "gatemove.xlsx";
+        InputStreamResource file = new InputStreamResource(applicantService.downloadCountGateMovesByDepot(duration, location));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(file);
     }
 }
