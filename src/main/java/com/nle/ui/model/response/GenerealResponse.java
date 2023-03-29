@@ -9,11 +9,11 @@ import lombok.RequiredArgsConstructor;
 public class GenerealResponse<T> {
     private String status;
     private String message;
-    private T payload;
+    private T data;
 
-    public GenerealResponse(String status, String message, T payload) {
+    public GenerealResponse(String status, String message, T data) {
         this.status = status;
         this.message = message;
-        this.payload = payload;
+        this.data = data;
     }
 }
