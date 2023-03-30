@@ -1,5 +1,6 @@
 package com.nle.shared.service.email;
 
+import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.shared.dto.EmailDTO;
 import com.nle.shared.dto.ftp.FtpMoveDTOError;
@@ -20,6 +21,7 @@ public interface EmailService {
     void sendFTPSynErrorEmail(DepoOwnerAccount depoOwnerAccount, List<FtpMoveDTOError> errors);
 
     void sendResetPassword(DepoOwnerAccount depoOwnerAccount, String token);
+    void sendResetPasswordCustomer(BookingCustomer bookingCustomer, String token);
 
     void sendMessageForContactUs(ContactUsFormRequest contactUsFormRequest);
 }

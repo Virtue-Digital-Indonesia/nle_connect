@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -24,4 +25,6 @@ public class BookingCustomer extends AbstractAuditingEntity implements Serializa
 
     @Column(name = "email")
     private String email;
+    @Column(name = "password")
+    private String password;
 }
