@@ -3,6 +3,7 @@ package com.nle.ui.controller.booking;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.bookingCustomer.BookingCustomerService;
 import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,8 @@ public class BookingCustomerController {
     @Operation(description = "verif OTP", operationId = "verifOTP", summary = "verif OTP")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/otp/verif")
-    public ResponseEntity<JWTToken> verifOTP (@RequestParam("otp") String otp,
-                                              @RequestParam("phone_number") String phone_number) {
+    public ResponseEntity<BookingCustomerResponse> verifOTP (@RequestParam("otp") String otp,
+                                                             @RequestParam("phone_number") String phone_number) {
         return ResponseEntity.ok(customerService.verifOTP(otp, phone_number));
     }
 
