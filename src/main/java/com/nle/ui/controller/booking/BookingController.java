@@ -70,21 +70,6 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.SearchByPhone(pageable));
     }
 
-    @Operation(description = "send OTP via mobile", operationId = "sendOtpMobile", summary = "send OTP via mobile")
-    @SecurityRequirement(name = "nleapi")
-    @PostMapping(value = "/otp/send")
-    public ResponseEntity<VerihubsResponseDTO> sendOtpMobile (@RequestParam String phoneNumber) {
-        return ResponseEntity.ok(bookingService.sendOtpMobile(phoneNumber));
-    }
-
-    @Operation(description = "verif OTP", operationId = "verifOTP", summary = "verif OTP")
-    @SecurityRequirement(name = "nleapi")
-    @PostMapping(value = "/otp/verif")
-    public ResponseEntity<JWTToken> verifOTP (@RequestParam("otp") String otp,
-                                              @RequestParam("phone_number") String phone_number) {
-        return ResponseEntity.ok(bookingService.verifOTP(otp, phone_number));
-    }
-
     @Operation(description = "create Unloading Booking", operationId = "createBookingUnloading", summary = "create unloading booking with details")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "unloading")

@@ -80,7 +80,7 @@ public class SecurityConfiguration {
                         , "/api/fleets"
                         , "/api/contact-us"
                         , "/api/booking/depo/**"
-                        , "/api/booking/otp/**"
+                        , "/api/customer/otp/**"
                         , "/api/booking/payment/callback"
                         , "/api/booking/payment/callback/invoice"
                         , "/api/payment/callback/disbursement"

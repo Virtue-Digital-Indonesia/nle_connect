@@ -51,9 +51,6 @@ public class BookingServiceImpl implements BookingService {
     private final BookingLoadingRepository bookingLoadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
-    private final OtpLogRepository otpLogRepository;
-    private final OTPService otpService;
-    private final TokenProvider tokenProvider;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
@@ -83,25 +80,6 @@ public class BookingServiceImpl implements BookingService {
         Optional<String> phoneNumber = SecurityUtils.getCurrentUserLogin();
         Page<BookingHeader> headerPage = bookingHeaderRepository.getOrderByPhoneNumber(phoneNumber.get(), pageable);
         return new PagingResponseModel<>(headerPage.map(ConvertBookingUtil::convertBookingHeaderToResponse));
-    }
-
-    @Override
-    public VerihubsResponseDTO sendOtpMobile(String phoneNumber) {
-        VerihubsResponseDTO response = otpService.sendOTP(phoneNumber);
-        return response;
-    }
-
-    @Override
-    public JWTToken verifOTP(String otp, String phone_number) {
-        ResponseEntity<String> verify = otpService.verifOTP(otp, phone_number);
-
-        if (verify.getStatusCodeValue() != 200)
-            return null;
-
-        String token = tokenProvider.generateManualToken(phone_number, AuthoritiesConstants.BOOKING_CUSTOMER);
-
-        saveOtpLog(otp, phone_number);
-        return new JWTToken(token);
     }
 
     @Override
@@ -226,13 +204,6 @@ public class BookingServiceImpl implements BookingService {
         BookingHeader savedHeader = bookingHeaderRepository.save(entity);
 
         return savedHeader;
-    }
-
-    private void saveOtpLog(String otp, String phone_number) {
-        OtpLog otpLog = new OtpLog();
-        otpLog.setOtp(otp);
-        otpLog.setPhoneNumber(phone_number);
-        otpLogRepository.save(otpLog);
     }
 
 }
