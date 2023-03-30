@@ -1,14 +1,15 @@
 package com.nle.shared.service.bookingCustomer;
 
+import com.nle.exception.CommonException;
 import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.OtpLog;
 import com.nle.io.repository.BookingCustomerRepository;
 import com.nle.io.repository.OtpLogRepository;
 import com.nle.security.AuthoritiesConstants;
+import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
-import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -65,6 +66,22 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
         bookingCustomer.setPhone_number(phone_number);
         BookingCustomer saved = customerRepository.save(bookingCustomer);
         return saved;
+    }
+
+    @Override
+    public BookingCustomerResponse registerEmail (String email) {
+        Optional<String> optional = SecurityUtils.getCurrentUserLogin();
+        String phoneNumber = optional.get();
+
+        Optional<BookingCustomer> bookingCustomer = customerRepository.findByPhoneNumber(phoneNumber);
+        if (bookingCustomer.isEmpty())
+            throw new CommonException("Not found booking customer with phone: " + phoneNumber);
+
+        BookingCustomer customer = bookingCustomer.get();
+        customer.setEmail(email);
+        BookingCustomer saved = customerRepository.save(customer);
+        Optional<String> token = SecurityUtils.getCurrentUserJWT();
+        return convertToResponse(saved, token.get());
     }
 
     private BookingCustomerResponse convertToResponse (BookingCustomer entity, String token) {

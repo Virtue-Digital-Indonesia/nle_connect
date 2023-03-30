@@ -2,7 +2,6 @@ package com.nle.ui.controller.booking;
 
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.bookingCustomer.BookingCustomerService;
-import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,6 +34,11 @@ public class BookingCustomerController {
         return ResponseEntity.ok(customerService.verifOTP(otp, phone_number));
     }
 
-
+    @Operation(description = "register email customer", operationId = "registerEmail", summary = "register emil customer, need token")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/email")
+    public ResponseEntity<BookingCustomerResponse> verifOTP (@RequestParam("email") String email) {
+        return ResponseEntity.ok(customerService.registerEmail(email));
+    }
 
 }
