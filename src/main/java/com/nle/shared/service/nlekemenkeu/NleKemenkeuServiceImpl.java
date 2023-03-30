@@ -4,6 +4,8 @@ package com.nle.shared.service.nlekemenkeu;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.exception.BadRequestException;
+import com.nle.io.entity.BookingCustomer;
+import com.nle.io.repository.BookingCustomerRepository;
 import com.nle.security.AuthoritiesConstants;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.UserInfoNleKemenkeuDTO;
@@ -16,20 +18,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
 public class NleKemenkeuServiceImpl implements NleKemenkeuService{
     private final TokenProvider tokenProvider;
+    private final BookingCustomerRepository bookingCustomerRepository;
     @Override
     public JWTToken getConvertUserToken(String token) {
         if (token.isEmpty())
             throw new BadRequestException("Token not found!");
 
         UserInfoNleKemenkeuDTO userInfoNleKemenkeuDTO = this.getUserInfo(token);
-        //TODO : Change type data of phone number verified when fixed
+
         if (userInfoNleKemenkeuDTO.getEmailVerified().equalsIgnoreCase("true")){
-            String convertToken = tokenProvider.generateManualToken(userInfoNleKemenkeuDTO.getEmail(), AuthoritiesConstants.BOOKING_CUSTOMER);
+            Optional<BookingCustomer> bookingCustomer = bookingCustomerRepository.findByEmail(userInfoNleKemenkeuDTO.getEmail());
+            if (bookingCustomer.isEmpty())
+                throw new BadRequestException("Please register!");
+
+            BookingCustomer getBookingCustomer = bookingCustomer.get();
+            if (getBookingCustomer.getPhone_number().isEmpty())
+                throw new BadRequestException("Not found phone number!");
+
+            String convertToken = tokenProvider.generateManualToken(getBookingCustomer.getPhone_number(), AuthoritiesConstants.BOOKING_CUSTOMER);
             return new JWTToken(convertToken);
         }
 
