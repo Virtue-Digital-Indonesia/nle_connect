@@ -3,12 +3,10 @@ package com.nle.ui.controller.booking;
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.security.SecurityUtils;
-import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
 import com.nle.shared.service.item.ItemService;
 import com.nle.shared.service.xendit.XenditService;
-import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
@@ -68,21 +66,6 @@ public class BookingController {
             })
             @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.ok(bookingService.SearchByPhone(pageable));
-    }
-
-    @Operation(description = "send OTP via mobile", operationId = "sendOtpMobile", summary = "send OTP via mobile")
-    @SecurityRequirement(name = "nleapi")
-    @PostMapping(value = "/otp/send")
-    public ResponseEntity<VerihubsResponseDTO> sendOtpMobile (@RequestParam String phoneNumber) {
-        return ResponseEntity.ok(bookingService.sendOtpMobile(phoneNumber));
-    }
-
-    @Operation(description = "verif OTP", operationId = "verifOTP", summary = "verif OTP")
-    @SecurityRequirement(name = "nleapi")
-    @PostMapping(value = "/otp/verif")
-    public ResponseEntity<JWTToken> verifOTP (@RequestParam("otp") String otp,
-                                              @RequestParam("phone_number") String phone_number) {
-        return ResponseEntity.ok(bookingService.verifOTP(otp, phone_number));
     }
 
     @Operation(description = "create Unloading Booking", operationId = "createBookingUnloading", summary = "create unloading booking with details")
