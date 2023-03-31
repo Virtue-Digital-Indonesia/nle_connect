@@ -111,20 +111,20 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
             throw new BadRequestException("This is not token for reset phone number!");
 
         if (request.getPhone_number().isEmpty() || request.getConfirm_phone_number().isEmpty())
-            throw new BadRequestException("Password cannot be empty!");
+            throw new BadRequestException("Phone number cannot be empty!");
 
         if (!request.getPhone_number().equals(request.getConfirm_phone_number()))
-            throw new BadRequestException("Invalid confirm password!");
+            throw new BadRequestException("Invalid confirm email!");
 
-        String phoneNumber = authBody.get("sub");
-        Optional<BookingCustomer> foundEntity = customerRepository.findByPhoneNumber(phoneNumber);
+        String email = authBody.get("sub");
+        Optional<BookingCustomer> foundEntity = customerRepository.findByEmail(email);
         if (foundEntity.isEmpty())
-            throw new BadRequestException("Not found customer with this phone number!");
+            throw new BadRequestException("Not found customer with this email!");
 
         BookingCustomer entity = foundEntity.get();
         entity.setPhone_number(request.getPhone_number());
         customerRepository.save(entity);
-        return "Success to reset phone number with user phone number : " + phoneNumber + "!";
+        return "Success to reset phone number with user email : " + email + "!";
     }
 
     @Override
