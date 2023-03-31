@@ -1,5 +1,6 @@
 package com.nle.shared.service.bookingCustomer;
 
+import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.OtpLog;
@@ -10,13 +11,19 @@ import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
+import com.nle.shared.service.email.EmailService;
+import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.request.ChangePhoneNumberRequest;
+import com.nle.ui.model.request.ForgotPhoneNumberRequest;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
+import com.nle.util.DecodeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,6 +35,7 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
     private final TokenProvider tokenProvider;
     private final OtpLogRepository otpLogRepository;
     private final BookingCustomerRepository customerRepository;
+    private final EmailService emailService;
 
     @Override
     public VerihubsResponseDTO sendOtpMobile(String phoneNumber) {
@@ -82,6 +90,66 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
         BookingCustomer saved = customerRepository.save(customer);
         Optional<String> token = SecurityUtils.getCurrentUserJWT();
         return convertToResponse(saved, token.get());
+    }
+
+    @Override
+    public JWTToken resetPhoneNumberToken(String email) {
+        Optional<BookingCustomer> bookingCustomer = customerRepository.findByEmail(email);
+        String token = null;
+        if (!bookingCustomer.isEmpty()) {
+            token = tokenProvider.generateManualToken(bookingCustomer.get().getEmail(),
+                    AuthoritiesConstants.RESET_PHONE_NUMBER);
+            emailService.sendResetPhoneNumber(bookingCustomer.get(), token);
+        } else
+            throw new BadRequestException("Email is not register!");
+        return new JWTToken(token);
+    }
+
+    @Override
+    public String changeForgotPhoneNumber(ForgotPhoneNumberRequest request, Map<String, String> authBody) {
+        if (!authBody.get("auth").equals("RESET_PHONE_NUMBER"))
+            throw new BadRequestException("This is not token for reset phone number!");
+
+        if (request.getPhone_number().isEmpty() || request.getConfirm_phone_number().isEmpty())
+            throw new BadRequestException("Password cannot be empty!");
+
+        if (!request.getPhone_number().equals(request.getConfirm_phone_number()))
+            throw new BadRequestException("Invalid confirm password!");
+
+        String phoneNumber = authBody.get("sub");
+        Optional<BookingCustomer> foundEntity = customerRepository.findByPhoneNumber(phoneNumber);
+        if (foundEntity.isEmpty())
+            throw new BadRequestException("Not found customer with this phone number!");
+
+        BookingCustomer entity = foundEntity.get();
+        entity.setPhone_number(request.getPhone_number());
+        customerRepository.save(entity);
+        return "Success to reset phone number with user phone number : " + phoneNumber + "!";
+    }
+
+    @Override
+    public String changePhoneNumber(ChangePhoneNumberRequest request) {
+        Optional<String> getCurrentJwt = SecurityUtils.getCurrentUserJWT();
+        if (getCurrentJwt.isEmpty())
+            throw new BadRequestException("Token not found");
+
+        Map<String, String> token = DecodeUtil.decodeToken(getCurrentJwt.get());
+        if (!token.get("auth").equalsIgnoreCase(AuthoritiesConstants.BOOKING_CUSTOMER))
+            throw new BadRequestException("Different authorization");
+
+        BookingCustomer bookingCustomer = customerRepository.findByEmail(
+            token.get("sub")).orElseThrow(() -> new BadRequestException("Invalid account"));
+
+        if (!bookingCustomer.getPhone_number().equalsIgnoreCase(request.getOldPhoneNumber()))
+            throw new BadRequestException("Invalid old_phone_number");
+
+        if (!request.getNewPhoneNumber().equals(request.getConfirmPhoneNumber()))
+            throw new BadRequestException("Invalid confirm_new_phone_number");
+
+        bookingCustomer.setPhone_number(request.getNewPhoneNumber());
+        customerRepository.save(bookingCustomer);
+
+        return "success phone number changed";
     }
 
     private BookingCustomerResponse convertToResponse (BookingCustomer entity, String token) {

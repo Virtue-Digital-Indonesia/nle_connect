@@ -87,6 +87,7 @@ public class SecurityConfiguration {
                         , "/api/item-type"
                         , "/api/item-type/iso"
                         , "/api/insw-shipping"
+                        , "/api/customer/reset/**"
                 ).permitAll()
             .antMatchers("/impersonate"
                     , "/api/admins/profile"

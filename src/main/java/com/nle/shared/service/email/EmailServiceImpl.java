@@ -2,6 +2,7 @@ package com.nle.shared.service.email;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.EmailType;
+import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.shared.dto.EmailDTO;
 import com.nle.shared.dto.EmailTemplateDto;
@@ -128,6 +129,21 @@ public class EmailServiceImpl implements EmailService {
         params.put("message",contactUsFormRequest.getMessage());
         EmailTemplateDto activeEmailTemplate= emailTemplateService.findByType(EmailType.USER_FEEDBACK);
         sendSimpleEmail(buildEmailDTO(activeEmailTemplate,params,appProperties.getContactUsDestinationEmail()));
+    }
+
+    @Override
+    public void sendResetPhoneNumber(BookingCustomer bookingCustomer, String token) {
+        //Todo : Change name if use fullname from db
+        int indeks = bookingCustomer.getEmail().indexOf('@');
+        String name = bookingCustomer.getEmail().substring(0, indeks);
+        Map<String, String> params = new HashMap<>();
+        params.put("fullname", name);
+        //Todo : Change url if get url from FE
+        params.put("activeUrl", "https://nle-connect.id/reset-password?token=" + token);
+        // get email template content from DB
+        EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.RESET_PHONE_NUMBER);
+        EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, bookingCustomer.getEmail());
+        sendSimpleEmail(emailDTO);
     }
 
     private EmailDTO buildEmailDTO(EmailTemplateDto activeEmailTemplate, Map<String, String> params, String email) {
