@@ -17,6 +17,7 @@ import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.request.ChangeAdminPasswordRequest;
 import com.nle.ui.model.request.ForgotPasswordRequest;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
+import com.nle.util.DecodeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
@@ -134,13 +135,16 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
     }
     @Override
     public String changePassword(ChangeAdminPasswordRequest request) {
+        Optional<String> getCurrentJwt = SecurityUtils.getCurrentUserJWT();
+        if (getCurrentJwt.isEmpty())
+            throw new BadRequestException("Token not found");
 
-        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isEmpty())
-            throw new BadRequestException("Invalid token");
+        Map<String, String> token = DecodeUtil.decodeToken(getCurrentJwt.get());
+        if (!token.get("auth").equalsIgnoreCase(AuthoritiesConstants.BOOKING_CUSTOMER))
+            throw new BadRequestException("Different authorization");
 
         BookingCustomer bookingCustomer = customerRepository.findByEmail(
-                currentUserLogin.get()).orElseThrow(() -> new BadRequestException("Invalid account"));
+                token.get("sub")).orElseThrow(() -> new BadRequestException("Invalid account"));
 
         if (!passwordEncoder.matches(request.getOldPassword(), bookingCustomer.getPassword()))
             throw new BadRequestException("Invalid old_password");
