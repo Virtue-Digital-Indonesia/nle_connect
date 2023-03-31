@@ -10,7 +10,9 @@ import com.nle.security.AuthoritiesConstants;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.UserInfoNleKemenkeuDTO;
 import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,26 +30,33 @@ public class NleKemenkeuServiceImpl implements NleKemenkeuService{
     private final TokenProvider tokenProvider;
     private final BookingCustomerRepository bookingCustomerRepository;
     @Override
-    public JWTToken getConvertUserToken(String token) {
+    public BookingCustomerResponse getConvertUserToken(String token) {
         if (token.isEmpty())
             throw new BadRequestException("Token not found!");
 
         UserInfoNleKemenkeuDTO userInfoNleKemenkeuDTO = this.getUserInfo(token);
 
-        if (userInfoNleKemenkeuDTO.getEmailVerified().equalsIgnoreCase("true")){
-            Optional<BookingCustomer> bookingCustomer = bookingCustomerRepository.findByEmail(userInfoNleKemenkeuDTO.getEmail());
-            if (bookingCustomer.isEmpty())
-                throw new BadRequestException("Please register!");
+        if (userInfoNleKemenkeuDTO.getEmailVerified().equalsIgnoreCase("false"))
+            return new BookingCustomerResponse(null);
 
-            BookingCustomer getBookingCustomer = bookingCustomer.get();
-            if (getBookingCustomer.getPhone_number().isEmpty())
-                throw new BadRequestException("Not found phone number!");
+        Optional<BookingCustomer> bookingCustomer = bookingCustomerRepository.findByEmail(userInfoNleKemenkeuDTO.getEmail());
+        if (bookingCustomer.isEmpty())
+            throw new BadRequestException("Please register!");
 
-            String convertToken = tokenProvider.generateManualToken(getBookingCustomer.getPhone_number(), AuthoritiesConstants.BOOKING_CUSTOMER);
-            return new JWTToken(convertToken);
-        }
+        BookingCustomer getBookingCustomer = bookingCustomer.get();
+        if (getBookingCustomer.getPhone_number().isEmpty())
+            throw new BadRequestException("Not found phone number!");
 
-        return new JWTToken(null);
+        String convertToken = tokenProvider.generateManualToken(getBookingCustomer.getPhone_number(), AuthoritiesConstants.BOOKING_CUSTOMER);
+
+        return convertToResponse(bookingCustomer.get(), convertToken);
+
+    }
+
+    private BookingCustomerResponse convertToResponse (BookingCustomer entity, String token) {
+        BookingCustomerResponse response = new BookingCustomerResponse(token);
+        BeanUtils.copyProperties(entity, response);
+        return response;
     }
 
     public UserInfoNleKemenkeuDTO getUserInfo(String token){
