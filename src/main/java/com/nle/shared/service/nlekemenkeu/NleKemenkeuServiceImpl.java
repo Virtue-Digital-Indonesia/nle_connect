@@ -1,8 +1,11 @@
 package com.nle.shared.service.nlekemenkeu;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nle.constant.enums.ApprovalStatus;
 import com.nle.exception.BadRequestException;
 import com.nle.io.entity.BookingCustomer;
 import com.nle.io.repository.BookingCustomerRepository;
@@ -12,6 +15,7 @@ import com.nle.shared.dto.UserInfoNleKemenkeuDTO;
 import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -49,7 +53,7 @@ public class NleKemenkeuServiceImpl implements NleKemenkeuService{
 
         String convertToken = tokenProvider.generateManualToken(getBookingCustomer.getPhone_number(), AuthoritiesConstants.BOOKING_CUSTOMER);
 
-        return convertToResponse(bookingCustomer.get(), convertToken);
+        return convertToResponse(getBookingCustomer, convertToken);
 
     }
 
@@ -78,8 +82,8 @@ public class NleKemenkeuServiceImpl implements NleKemenkeuService{
         JsonNode root = objectMapper.readTree(response.getBody());
         userInfoNleKemenkeuDTO.setEmail(root.path("email").asText());
         userInfoNleKemenkeuDTO.setEmailVerified(root.path("email_verified").asText());
-        } catch (Exception e){
-            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
         return userInfoNleKemenkeuDTO;
     }
