@@ -24,4 +24,6 @@ public class BookingCustomer extends AbstractAuditingEntity implements Serializa
 
     @Column(name = "email")
     private String email;
+    @Column(name = "full_name")
+    private String full_name;
 }
