@@ -32,7 +32,7 @@ public class BookingCustomerController {
         return ResponseEntity.ok(customerService.verifOTP(otp, phone_number));
     }
 
-    @Operation(description = "register email customer", operationId = "registerEmail", summary = "register emil customer, need token")
+    @Operation(description = "register email customer", operationId = "registerEmail", summary = "register email customer, need token")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/email")
     public ResponseEntity<BookingCustomerResponse> registerEmail (@RequestBody BookingCustomerRegisterEmail registerEmail) {
