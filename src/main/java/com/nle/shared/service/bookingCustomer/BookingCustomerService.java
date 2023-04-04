@@ -8,5 +8,5 @@ public interface BookingCustomerService {
 
     VerihubsResponseDTO sendOtpMobile (String phoneNumber);
     BookingCustomerResponse verifOTP(String otp, String phone_number);
-    BookingCustomerResponse registerEmail (BookingCustomerRegisterEmail registerEmail);
+    BookingCustomerResponse updateCustomer (BookingCustomerRegisterEmail registerEmail);
 }

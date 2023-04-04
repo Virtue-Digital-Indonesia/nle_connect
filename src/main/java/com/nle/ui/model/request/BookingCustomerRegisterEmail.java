@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class BookingCustomerRegisterEmail {
-    private String fullName;
+    private String full_name;
     private String email;
 }
