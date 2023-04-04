@@ -1,5 +1,6 @@
 package com.nle.shared.service.bookingCustomer;
 
+import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.OtpLog;
@@ -10,6 +11,8 @@ import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
+import com.nle.ui.model.request.booking.UpdateProfileCustomerRequest;
+import com.nle.ui.model.response.booking.BookingCustomerProfileResponse;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -82,6 +85,64 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
         BookingCustomer saved = customerRepository.save(customer);
         Optional<String> token = SecurityUtils.getCurrentUserJWT();
         return convertToResponse(saved, token.get());
+    }
+
+    @Override
+    public BookingCustomerProfileResponse getProfile() {
+        Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
+        if (userLogin.isEmpty())
+            throw new BadRequestException("Invalid token!");
+        String userName = userLogin.get();
+        Optional<BookingCustomer> bookingCustomer;
+
+        //Todo : Makesure lagi loginnya pakai no telfon atau dengan email juga
+        if (userName.startsWith("+62") || userName.startsWith("62") || userName.startsWith("0")) {
+           bookingCustomer = customerRepository.findByPhoneNumber(userName);
+        } else {
+            bookingCustomer = customerRepository.findByEmail(userName);
+        }
+
+        if (bookingCustomer.isEmpty())
+            throw new BadRequestException("Profile not found!");
+
+        BookingCustomer getBookingCustomer = bookingCustomer.get();
+
+        return convertToProfileResponse(getBookingCustomer);
+    }
+
+    @Override
+    public BookingCustomerProfileResponse updateProfile(UpdateProfileCustomerRequest request) {
+        Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
+        if (userLogin.isEmpty())
+            throw new BadRequestException("Invalid token");
+
+        String userName = userLogin.get();
+        Optional<BookingCustomer> bookingCustomer;
+
+        //Todo : Makesure lagi loginnya pakai no telfon atau dengan email juga
+        if (userName.startsWith("+62") || userName.startsWith("62") || userName.startsWith("0")) {
+            bookingCustomer = customerRepository.findByPhoneNumber(userName);
+        } else {
+            bookingCustomer = customerRepository.findByEmail(userName);
+        }
+
+        if (bookingCustomer.isEmpty())
+            throw new BadRequestException("Profile not found!");
+
+        BookingCustomer getBookingCustomer = bookingCustomer.get();
+        //Todo : Aktifkan ketika fullname sudah dideploy
+//        if (request.getFullName() != null)
+//            getBookingCustomer.setFullName(request.getFullName);
+        if (request.getEmail() != null)
+            getBookingCustomer.setEmail(request.getEmail());
+
+        return convertToProfileResponse(customerRepository.save(getBookingCustomer));
+    }
+
+    private BookingCustomerProfileResponse convertToProfileResponse(BookingCustomer bookingCustomer){
+        BookingCustomerProfileResponse profileResponse = new BookingCustomerProfileResponse();
+        BeanUtils.copyProperties(bookingCustomer, profileResponse);
+        return profileResponse;
     }
 
     private BookingCustomerResponse convertToResponse (BookingCustomer entity, String token) {
