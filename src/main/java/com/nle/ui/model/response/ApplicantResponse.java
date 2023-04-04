@@ -36,4 +36,6 @@ public class ApplicantResponse implements Serializable {
     private ApprovalStatus approvalStatus;
 
     private LocalDateTime createdDate;
+
+    private String xenditVaId;
 }

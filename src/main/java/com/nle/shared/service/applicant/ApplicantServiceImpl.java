@@ -3,6 +3,7 @@ package com.nle.shared.service.applicant;
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.security.SecurityUtils;
+import com.nle.shared.service.xendit.XenditService;
 import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
@@ -40,6 +41,7 @@ import java.util.Optional;
 public class ApplicantServiceImpl implements ApplicantService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final GateMoveRepository gateMoveRepository;
+    private final XenditService xenditService;
 
     private static final LocalDateTime EPOCH_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
@@ -102,8 +104,35 @@ public class ApplicantServiceImpl implements ApplicantService {
     public List<ApplicantResponse> getAllApplicant() {
         List<DepoOwnerAccount> accountList = depoOwnerAccountRepository.findAllByAccountStatus(AccountStatus.ACTIVE);
         List<ApplicantResponse> responseList = new ArrayList<>();
+
+        ArrayList<Long> arrayId = new ArrayList<>();
+        arrayId.add(3L);arrayId.add(4L);arrayId.add(5L);arrayId.add(8L);arrayId.add(13L);
+        arrayId.add(15L);arrayId.add(20L);arrayId.add(40L);arrayId.add(45L);arrayId.add(48L);
+        arrayId.add(54L);arrayId.add(74L);arrayId.add(84L);arrayId.add(85L);arrayId.add(96L);
+        arrayId.add(2L);arrayId.add(97L);arrayId.add(98L);
+
+        //error account
+        arrayId.add(22L);
+
         for (DepoOwnerAccount entity : accountList) {
-            responseList.add(this.convertFromEntity(entity));
+
+            //sekedar pembatas
+            if (entity.getId() > 40)
+                break;
+
+            //testing account
+            if (arrayId.contains(entity.getId()))
+                continue;
+
+            //yang sudah punya
+            if (entity.getXenditVaId() != null)
+                continue;
+
+            entity.setXenditVaId(xenditService.createXenditAccount(entity));
+            System.out.println("entity " + entity.getId() + " " + entity.getXenditVaId());
+            DepoOwnerAccount savedEntity = depoOwnerAccountRepository.save(entity);
+
+            responseList.add(this.convertFromEntity(savedEntity));
         }
         return responseList;
     }
