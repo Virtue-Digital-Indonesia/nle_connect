@@ -148,4 +148,5 @@ public class BookingController {
         bookingService.bookingValidate(phone, booking_id);
         return ResponseEntity.ok(xenditService.cancelOrderXendit(booking_id));
     }
+
 }
