@@ -10,6 +10,7 @@ import com.nle.security.SecurityUtils;
 import com.nle.security.jwt.TokenProvider;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.OTPService;
+import com.nle.ui.model.request.BookingCustomerRegisterEmail;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -69,7 +70,7 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
     }
 
     @Override
-    public BookingCustomerResponse registerEmail (String email) {
+    public BookingCustomerResponse updateCustomer (BookingCustomerRegisterEmail registerEmail) {
         Optional<String> optional = SecurityUtils.getCurrentUserLogin();
         String phoneNumber = optional.get();
 
@@ -78,8 +79,13 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
             throw new CommonException("Not found booking customer with phone: " + phoneNumber);
 
         BookingCustomer customer = bookingCustomer.get();
-        customer.setEmail(email);
+        if (registerEmail.getFull_name() != null)
+        customer.setFull_name(registerEmail.getFull_name());
+
+        if (registerEmail.getEmail() != null)
+        customer.setEmail(registerEmail.getEmail());
         BookingCustomer saved = customerRepository.save(customer);
+
         Optional<String> token = SecurityUtils.getCurrentUserJWT();
         return convertToResponse(saved, token.get());
     }
