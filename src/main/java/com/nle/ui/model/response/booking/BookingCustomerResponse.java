@@ -9,6 +9,7 @@ import lombok.Setter;
 public class BookingCustomerResponse extends JWTToken {
 
     private Long id;
+    private String full_name;
     private String phone_number;
     private String email;
 
