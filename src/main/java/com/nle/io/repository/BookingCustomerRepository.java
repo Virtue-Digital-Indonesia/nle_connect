@@ -12,4 +12,6 @@ public interface BookingCustomerRepository extends JpaRepository<BookingCustomer
 
     @Query(value = "SELECT bc FROM BookingCustomer bc WHERE bc.phone_number = :phone_number")
     Optional<BookingCustomer> findByPhoneNumber(String phone_number);
+
+    Optional<BookingCustomer> findByEmail(String email);
 }
