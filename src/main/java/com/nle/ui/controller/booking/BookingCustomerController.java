@@ -2,7 +2,6 @@ package com.nle.ui.controller.booking;
 
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.bookingCustomer.BookingCustomerService;
-import com.nle.ui.model.request.booking.UpdateProfileCustomerRequest;
 import com.nle.ui.model.response.booking.BookingCustomerProfileResponse;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,12 +44,6 @@ public class BookingCustomerController {
     @GetMapping(value = "/profile")
     public ResponseEntity<BookingCustomerProfileResponse> getProfile() {
         return ResponseEntity.ok(customerService.getProfile());
-    }
-    @Operation(description = "update profile customer", operationId = "idCustomerProfile", summary = "update profile customer")
-    @SecurityRequirement(name = "nleapi")
-    @PutMapping(value = "/profile/update")
-    public ResponseEntity<BookingCustomerProfileResponse> updateProfile(@RequestBody UpdateProfileCustomerRequest request) {
-        return ResponseEntity.ok(customerService.updateProfile(request));
     }
 
 }
