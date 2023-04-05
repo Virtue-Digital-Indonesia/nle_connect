@@ -11,6 +11,7 @@ import com.nle.ui.model.response.ApplicantResponse;
 import com.nle.ui.model.response.count.TotalMoves;
 import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 import com.nle.shared.service.applicant.ApplicantService;
+import com.nle.util.DateUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -124,9 +125,10 @@ public class ApplicantController {
 
     @Operation(description = "Download excel count gate moves by depot", operationId = "downloadGateMovesByDepotPerDay", summary = "Download excel count gate moves by depot")
     @SecurityRequirement(name = "nleapi")
-    @GetMapping(value = "/applicants/count-gate-moves-by-depot/download")
+    @GetMapping(value = "/applicants/count-total-moves/download")
     public ResponseEntity<Resource> getFile(@RequestParam int duration, @RequestParam String location) {
-        String fileName = "gatemove.xlsx";
+        String dateNow = DateUtil.getNowString("yyyy-MM-dd");
+        String fileName = "gatemove_"+ duration +"_since_"+ dateNow +".xlsx";
         InputStreamResource file = new InputStreamResource(applicantService.downloadCountGateMovesByDepot(duration, location));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
