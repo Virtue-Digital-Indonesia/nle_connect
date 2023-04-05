@@ -3,6 +3,13 @@ package com.nle.shared.service.gatemove;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.GateMoveSource;
+import com.nle.constant.enums.ReportType;
+import com.nle.exception.BadRequestException;
+import com.nle.io.entity.InswShipping;
+import com.nle.io.entity.report.ReportParameter;
+import com.nle.io.repository.DepoOwnerAccountRepository;
+import com.nle.io.repository.InswShippingRepository;
+import com.nle.io.repository.report.ReportParameterRepository;
 import com.nle.shared.service.inventory.InventoryService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateGateMoveReqDTO;
@@ -65,6 +72,9 @@ public class GateMoveServiceImpl implements GateMoveService {
     private final MediaRepository mediaRepository;
     private final DepoOwnerAccountService depoOwnerAccountService;
     private final InventoryService inventoryService;
+    private final DepoOwnerAccountRepository depoOwnerAccountRepository;
+    private final ReportParameterRepository reportParameterRepository;
+    private final InswShippingRepository inswShippingRepository;
 
     @Override
     public CreatedGateMoveResponseDTO createGateMove(CreateGateMoveReqDTO createGateMoveReqDTO, GateMoveSource source) {
@@ -342,7 +352,67 @@ public class GateMoveServiceImpl implements GateMoveService {
                 .total_moves(totalAll)
                 .list_moves(lists)
                 .build();
-    };
+    }
+
+    @Override
+    public List<GateMoveResponseDTO> buildReportFromParameter(Long reportId) {
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("Token Is Invalid!");
+
+        Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository
+                .findByCompanyEmail(currentUserLogin.get());
+        if (depoOwnerAccount.isEmpty())
+            throw new CommonException("Cannot find this depo owner ");
+
+        Optional<ReportParameter> reportParameterOpt = reportParameterRepository.findById(reportId);
+        if (reportParameterOpt.isEmpty())
+            throw new BadRequestException("Report parameter not found!");
+        ReportParameter reportParameter = reportParameterOpt.get();
+
+        if (!reportParameter.getReportType().equals(ReportType.GATE_MOVE))
+            throw new BadRequestException("Report Id Not For GateMove!");
+
+        String fleetManager = null;
+        Optional<InswShipping> getFleet = inswShippingRepository.findByCode(reportParameter.getFleet().getCode());
+        if (!getFleet.isEmpty()){
+            fleetManager = getFleet.get().getDescription();
+        }
+
+
+        String days = reportParameter.getDays();
+        String[] daysArr = days.split(",");
+
+        List<GateMoveResponseDTO> gateMoveResponseDTOList = new ArrayList<>();
+
+        List<GateMove> gateMovePage = gateMoveRepository.getReportGateMove(reportParameter);
+        for (GateMove gateMove: gateMovePage
+             ) {
+            GateMoveResponseDTO gateMoveResponseDTO = convertToGateMoveResponseDTO(gateMove);
+            for (String day: daysArr
+                 ) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE", Locale.ENGLISH);
+                String cekDay = formatter.format(gateMove.getTxDateFormatted());
+                if (day.equalsIgnoreCase(cekDay) && validateFleet(fleetManager, gateMoveResponseDTO.getFleet_manager())){
+                    gateMoveResponseDTOList.add(gateMoveResponseDTO);
+                    break;
+                }
+            }
+
+        }
+
+        return gateMoveResponseDTOList;
+    }
+
+    private Boolean validateFleet(String fleetReportParam, String fleetResponse){
+        String fleetReportTrim = fleetReportParam.trim();
+        String fleetResponseTrim = fleetResponse.trim();
+
+        if (fleetReportTrim.equalsIgnoreCase(fleetResponseTrim)) {
+            return true;
+        }
+        return false;
+    }
 
     private List<GateMove> getListGateMoveByDuration (Long duration, String email) {
         LocalDateTime now = LocalDateTime.now();
