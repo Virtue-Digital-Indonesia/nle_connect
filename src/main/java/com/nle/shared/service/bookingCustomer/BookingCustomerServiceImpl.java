@@ -1,5 +1,6 @@
 package com.nle.shared.service.bookingCustomer;
 
+import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
 import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.OtpLog;
@@ -88,6 +89,26 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
 
         Optional<String> token = SecurityUtils.getCurrentUserJWT();
         return convertToResponse(saved, token.get());
+    }
+
+    @Override
+    public BookingCustomer getProfile() {
+        Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
+        if (userLogin.isEmpty())
+            throw new BadRequestException("Invalid token!");
+        String userName = userLogin.get();
+
+        if (!userName.startsWith("+62") && !userName.startsWith("62") && !userName.startsWith("0"))
+            throw new BadRequestException("Please login with phone number!");
+
+        Optional<BookingCustomer> bookingCustomer = customerRepository.findByPhoneNumber(userName);
+
+        if (bookingCustomer.isEmpty())
+            throw new BadRequestException("Profile not found!");
+
+        BookingCustomer getBookingCustomer = bookingCustomer.get();
+
+        return getBookingCustomer;
     }
 
     private BookingCustomerResponse convertToResponse (BookingCustomer entity, String token) {
