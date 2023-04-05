@@ -87,6 +87,7 @@ public class SecurityConfiguration {
                         , "/api/item-type"
                         , "/api/item-type/iso"
                         , "/api/insw-shipping"
+                        , "/api/applicants/portal/getdepo-byloc-shippingline"
                         , "/api/nlekemenkeu/**"
                 ).permitAll()
             .antMatchers("/impersonate"
