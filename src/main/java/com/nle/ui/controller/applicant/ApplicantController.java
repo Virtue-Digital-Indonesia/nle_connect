@@ -8,6 +8,7 @@ import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.GenerealResponse;
 import com.nle.ui.model.response.count.TotalMoves;
 import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 import com.nle.shared.service.applicant.ApplicantService;
@@ -134,5 +135,12 @@ public class ApplicantController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
                 .body(file);
+    }
+
+    @Operation(description = "Get data depo from portal", operationId = "getDepoFromPortal", summary = "Get depo from portal")
+    @SecurityRequirement(name = "nleapi")
+    @GetMapping(value = "/applicants/portal/getdepo-byloc-shippingline")
+    public ResponseEntity<GenerealResponse<List<ApplicantResponse>>> getDepoFromPortal(@RequestParam("location") String location, @RequestParam("shippingLine") String shippingLine){
+        return ResponseEntity.ok(applicantService.getDepoFromPortal(location,shippingLine));
     }
 }
