@@ -129,7 +129,7 @@ public class ApplicantController {
     public ResponseEntity<Resource> getFile(@RequestParam int duration, @RequestParam String location) {
         String dateNow = DateUtil.getNowString("yyyy-MM-dd");
         String fileName = "gatemove_"+ duration +"_since_"+ dateNow +".xlsx";
-        InputStreamResource file = new InputStreamResource(applicantService.downloadCountGateMovesByDepot(duration, location));
+        InputStreamResource file = new InputStreamResource(applicantService.downloadCountTotalMoves(duration, location));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
                 .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))

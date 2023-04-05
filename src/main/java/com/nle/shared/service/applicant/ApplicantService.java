@@ -42,5 +42,5 @@ public interface ApplicantService {
 
     List<CountMovesByDepotResponse> countGateMovesByDepotPerDay(int duration, String loc);
 
-    ByteArrayInputStream downloadCountGateMovesByDepot(int duration, String location);
+    ByteArrayInputStream downloadCountTotalMoves(int duration, String location);
 }

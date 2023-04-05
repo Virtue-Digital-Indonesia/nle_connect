@@ -191,7 +191,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
 
     @Override
-    public ByteArrayInputStream downloadCountGateMovesByDepot(int duration, String location) {
+    public ByteArrayInputStream downloadCountTotalMoves(int duration, String location) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
