@@ -38,7 +38,7 @@ app:
     xendit-checkout: https://checkout.xendit.co/web/
   scheduler:
     enabled: true
-    ftp-sync-cron: 59 59 17 * * *
+    ftp-sync-cron: 59 59 17 * * ?
     tax-ministry-sync-cron: 59 59 23 * * *
   contact-us-destination-email: ${EMAIL_CONTACT_US}
   verihubs:
