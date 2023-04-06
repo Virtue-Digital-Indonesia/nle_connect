@@ -9,11 +9,13 @@ import com.nle.ui.model.ApplicantListReqDTO;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.search.ApplicantSearchRequest;
 import com.nle.ui.model.response.ApplicantResponse;
+import com.nle.ui.model.response.GenerealResponse;
 import com.nle.ui.model.response.count.TotalMoves;
 import com.nle.ui.model.response.count.CountMovesByDepotResponse;
 
 import org.springframework.data.domain.Pageable;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 public interface ApplicantService {
@@ -31,13 +33,17 @@ public interface ApplicantService {
 
     List<ShippingLineStatistic> countFleetManager();
 
-    List<TotalMoves> totalMovesPerDay(int duration);
+    List<TotalMoves> totalMovesPerDay(int duration, String location);
 
-    List<ShippingLineStatistic> countFleetManagerByDate(String from, String to);
+    List<ShippingLineStatistic> countFleetManagerByDate(String from, String to, String loc);
 
     Long countTotalFleetManagerByDate(String from, String to);
 
-    List<GateMovesStatistic> countGateMovesByDepot(String from, String to);
+    List<GateMovesStatistic> countGateMovesByDepot(String from, String to, String loc);
+    
+    List<CountMovesByDepotResponse> countGateMovesByDepotPerDay(int duration, String loc);
 
-    List<CountMovesByDepotResponse> countGateMovesByDepotPerDay(int duration);
+    ByteArrayInputStream downloadCountTotalMoves(int duration, String location);
+
+    GenerealResponse<List<ApplicantResponse>> getDepoFromPortal(String location, String shippingLine);
 }

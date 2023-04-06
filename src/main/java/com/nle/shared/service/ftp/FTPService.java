@@ -54,7 +54,7 @@ public class FTPService {
     private final Validator validator;
     private final InventoryService inventoryService;
 
-    @Scheduled(cron = "${app.scheduler.ftp-sync-cron}")
+    @Scheduled(cron = "${app.scheduler.ftp-sync-cron}", zone = "GMT+7")
     public void syncDataFromFtpServer() {
         // find all active depo owner account
         List<DepoOwnerAccount> activeDepoOwner = depoOwnerAccountService.findAllByStatus(AccountStatus.ACTIVE);

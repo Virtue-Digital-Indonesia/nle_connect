@@ -17,7 +17,7 @@ import java.util.List;
 public class InswController {
     private final InswService inswService;
 
-    @Operation(description = "Find Shipping Line with code", operationId = "findByCode", summary = "Find Shipping Line with code")
+    @Operation(description = "Find Insw record from nobl")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "/{nobl}")
     public InswResponse getInsw(@PathVariable String nobl, @Param(value = "depoId") Long depoId) {
