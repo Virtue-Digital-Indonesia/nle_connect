@@ -3,12 +3,18 @@ package com.nle.ui.controller.booking;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.shared.service.bookingCustomer.BookingCustomerService;
 import com.nle.ui.model.request.BookingCustomerRegisterEmail;
+import com.nle.ui.model.JWTToken;
+import com.nle.ui.model.request.ChangePhoneNumberRequest;
+import com.nle.ui.model.request.ForgotPhoneNumberRequest;
 import com.nle.ui.model.response.booking.BookingCustomerResponse;
+import com.nle.util.DecodeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/customer")
@@ -39,4 +45,25 @@ public class BookingCustomerController {
         return ResponseEntity.ok(customerService.updateCustomer(registerEmail));
     }
 
+    @Operation(description = "forgot phone number, send token to email", operationId = "forgotPhoneNumber", summary = "forgot phone number, send token to email")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/reset/forget-phone-number")
+    public ResponseEntity<JWTToken> generateResetToken(@RequestParam String email) {
+        return ResponseEntity.ok(customerService.resetPhoneNumberToken(email));
+    }
+
+    @Operation(description = "reset phone number for forgot phone number", operationId = "resetPhoneNumber", summary = "reset phone number for forgot phone number")
+    @SecurityRequirement(name = "nleapi")
+    @PostMapping(value = "/reset/reset-phone-number")
+    public ResponseEntity<String> forgotPhoneNumber(@RequestBody ForgotPhoneNumberRequest request) {
+        Map<String, String> authBody = DecodeUtil.decodeToken(request.getToken());
+        return ResponseEntity.ok(customerService.changeForgotPhoneNumber(request, authBody));
+    }
+
+    @Operation(description = "Change phone number booking customer", operationId = "changePhoneNumber", summary = "Change phone number booking customer")
+    @SecurityRequirement(name = "nleapi")
+    @PutMapping(value = "/reset/change-phone-number")
+    public ResponseEntity<String> changePhoneNumber(@RequestBody ChangePhoneNumberRequest request) {
+        return ResponseEntity.ok(customerService.changePhoneNumber(request));
+    }
 }
