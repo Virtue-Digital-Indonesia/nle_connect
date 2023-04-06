@@ -43,7 +43,7 @@ public class BookingCustomerController {
     @Operation(description = "get profile customer", operationId = "getBookingCustomerProfileId", summary = "get profile customer")
     @SecurityRequirement(name = "nleapi")
     @GetMapping(value = "/profile")
-    public ResponseEntity<BookingCustomer> getProfile() {
+    public ResponseEntity<BookingCustomerResponse> getProfile() {
         return ResponseEntity.ok(customerService.getProfile());
     }
 

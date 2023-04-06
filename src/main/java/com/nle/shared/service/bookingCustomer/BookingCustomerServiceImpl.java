@@ -92,7 +92,7 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
     }
 
     @Override
-    public BookingCustomer getProfile() {
+    public BookingCustomerResponse getProfile() {
         Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
         if (userLogin.isEmpty())
             throw new BadRequestException("Invalid token!");
@@ -108,7 +108,7 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
 
         BookingCustomer getBookingCustomer = bookingCustomer.get();
 
-        return getBookingCustomer;
+        return convertToResponse(getBookingCustomer, SecurityUtils.getCurrentUserJWT().get());
     }
 
     private BookingCustomerResponse convertToResponse (BookingCustomer entity, String token) {
