@@ -156,6 +156,25 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
         customerRepository.save(bookingCustomer);
 
         return "success phone number changed";
+     }
+       
+    public BookingCustomerResponse getProfile() {
+        Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
+        if (userLogin.isEmpty())
+            throw new BadRequestException("Invalid token!");
+        String userName = userLogin.get();
+
+        if (!userName.startsWith("+62") && !userName.startsWith("62") && !userName.startsWith("0"))
+            throw new BadRequestException("Please login with phone number!");
+
+        Optional<BookingCustomer> bookingCustomer = customerRepository.findByPhoneNumber(userName);
+
+        if (bookingCustomer.isEmpty())
+            throw new BadRequestException("Profile not found!");
+
+        BookingCustomer getBookingCustomer = bookingCustomer.get();
+
+        return convertToResponse(getBookingCustomer, SecurityUtils.getCurrentUserJWT().get());
     }
 
     private BookingCustomerResponse convertToResponse (BookingCustomer entity, String token) {
