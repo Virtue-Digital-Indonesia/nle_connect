@@ -3,6 +3,7 @@ package com.nle.io.entity.booking;
 import com.nle.constant.enums.BookingStatusEnum;
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.constant.enums.PaymentMethodEnum;
+import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
 import com.nle.io.entity.common.AbstractAuditingEntity;
@@ -71,6 +72,9 @@ public class BookingHeader extends AbstractAuditingEntity implements Serializabl
 
     @Column(name = "tx_date_formatted")
     private LocalDateTime txDateFormatted;
+    @ManyToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    private BookingCustomer bookingCustomer;
 
     @ManyToOne
     @JoinColumn(name = "depo_owner_account_id", referencedColumnName = "id")
