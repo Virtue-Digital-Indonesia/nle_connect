@@ -5,11 +5,13 @@ import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.constant.enums.PaymentStatusEnum;
 import com.nle.exception.BadRequestException;
 import com.nle.exception.CommonException;
+import com.nle.io.entity.BookingCustomer;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.Item;
 import com.nle.io.entity.booking.BookingDetailLoading;
 import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
+import com.nle.io.repository.BookingCustomerRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.ItemRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
@@ -43,6 +45,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingLoadingRepository bookingLoadingRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final ItemRepository itemRepository;
+    private final BookingCustomerRepository bookingCustomerRepository;
     private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
@@ -62,8 +65,9 @@ public class BookingServiceImpl implements BookingService {
             throw new CommonException("Cannot find booking");
 
         BookingHeader bookingHeader = optional.get();
-        if (!bookingHeader.getPhone_number().equals(phone_number))
+        if (!bookingHeader.getBookingCustomer().getPhone_number().equals(phone_number))
             throw new BadRequestException("this booking is not belong to phone number: " + phone_number);
+
         return ConvertBookingUtil.convertBookingHeaderToResponse(bookingHeader);
     }
 
@@ -170,7 +174,7 @@ public class BookingServiceImpl implements BookingService {
         BookingHeader bookingHeader = bookingHeaderOptional.get();
 
         String phone_number = phone.get();
-        if (!bookingHeader.getPhone_number().equals(phone_number))
+        if (!bookingHeader.getBookingCustomer().getPhone_number().equals(phone_number))
             throw new BadRequestException("this booking is not belong to phone number: "
                     + phone_number);
 
@@ -190,6 +194,12 @@ public class BookingServiceImpl implements BookingService {
         Optional<DepoOwnerAccount> depoOwnerAccount = depoOwnerAccountRepository.findById(request.getDepo_id());
         if (depoOwnerAccount.isEmpty())
             throw new BadRequestException("Depo Id cannot be find");
+
+        Optional<BookingCustomer> bookingCustomer = bookingCustomerRepository.findByPhoneNumber(request.getPhone_number());
+        if (bookingCustomer.isEmpty())
+            throw new BadRequestException("Customer id cannot find by phone number : "+request.getPhone_number());
+
+        entity.setBookingCustomer(bookingCustomer.get());
         entity.setDepoOwnerAccount(depoOwnerAccount.get());
         entity.setDisbursement_status(false);
         entity.setDisbursement_date(null);
