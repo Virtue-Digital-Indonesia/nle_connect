@@ -1,5 +1,6 @@
 package com.nle.shared.service.bookingCustomer;
 
+import com.nle.io.entity.BookingCustomer;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
 import com.nle.ui.model.request.BookingCustomerRegisterEmail;
 import com.nle.ui.model.JWTToken;
@@ -17,4 +18,5 @@ public interface BookingCustomerService {
     String resetPhoneNumberToken(String email);
     String changeForgotPhoneNumber(ForgotPhoneNumberRequest request, Map<String, String> authBody);
     String changePhoneNumber(ChangePhoneNumberRequest request);
+    BookingCustomerResponse getProfile();
 }
