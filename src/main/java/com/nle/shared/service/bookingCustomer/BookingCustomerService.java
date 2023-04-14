@@ -14,7 +14,7 @@ public interface BookingCustomerService {
     VerihubsResponseDTO sendOtpMobile (String phoneNumber);
     BookingCustomerResponse verifOTP(String otp, String phone_number);
     BookingCustomerResponse updateCustomer (BookingCustomerRegisterEmail registerEmail);
-    JWTToken resetPhoneNumberToken(String email);
+    String resetPhoneNumberToken(String email);
     String changeForgotPhoneNumber(ForgotPhoneNumberRequest request, Map<String, String> authBody);
     String changePhoneNumber(ChangePhoneNumberRequest request);
 }

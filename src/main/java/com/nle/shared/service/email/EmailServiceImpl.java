@@ -133,9 +133,10 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendResetPhoneNumber(BookingCustomer bookingCustomer, String token) {
-        //Todo : Change name if use fullname from db
-        int indeks = bookingCustomer.getEmail().indexOf('@');
-        String name = bookingCustomer.getEmail().substring(0, indeks);
+        String name = bookingCustomer.getFull_name();
+        if (name.isEmpty())
+            name = bookingCustomer.getEmail();
+
         Map<String, String> params = new HashMap<>();
         params.put("fullname", name);
         //Todo : Change url if get url from FE

@@ -99,7 +99,7 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
     }
 
     @Override
-    public JWTToken resetPhoneNumberToken(String email) {
+    public String resetPhoneNumberToken(String email) {
         Optional<BookingCustomer> bookingCustomer = customerRepository.findByEmail(email);
         String token = null;
         if (!bookingCustomer.isEmpty()) {
@@ -108,7 +108,7 @@ public class BookingCustomerServiceImpl implements BookingCustomerService{
             emailService.sendResetPhoneNumber(bookingCustomer.get(), token);
         } else
             throw new BadRequestException("Email is not register!");
-        return new JWTToken(token);
+        return "Email send to : "+email;
     }
 
     @Override

@@ -48,7 +48,7 @@ public class BookingCustomerController {
     @Operation(description = "forgot phone number, send token to email", operationId = "forgotPhoneNumber", summary = "forgot phone number, send token to email")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/reset/forget-phone-number")
-    public ResponseEntity<JWTToken> generateResetToken(@RequestParam String email) {
+    public ResponseEntity<String> generateResetToken(@RequestParam String email) {
         return ResponseEntity.ok(customerService.resetPhoneNumberToken(email));
     }
 

@@ -89,7 +89,8 @@ public class SecurityConfiguration {
                         , "/api/insw-shipping"
                         , "/api/applicants/portal/getdepo-byloc-shippingline"
                         , "/api/nlekemenkeu/**"
-                        , "/api/customer/reset/**"
+                        , "/api/customer/reset/forget-phone-number"
+                        , "/api/customer/reset/reset-phone-number"
                 ).permitAll()
             .antMatchers("/impersonate"
                     , "/api/admins/profile"
