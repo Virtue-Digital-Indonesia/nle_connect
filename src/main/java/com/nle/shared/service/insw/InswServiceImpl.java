@@ -111,7 +111,9 @@ public class InswServiceImpl implements InswService{
             listResponse.add(inswDTO);
 
             //gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
-            gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
+            if (inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
+                gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
+            }
         }
         return listResponse;
     }
@@ -291,6 +293,8 @@ public class InswServiceImpl implements InswService{
         } catch (JsonProcessingException e){
             e.printStackTrace();
         }
+
+        System.out.println(result);
         return feedBackMessage;
     }
 
