@@ -80,7 +80,7 @@ public class SecurityConfiguration {
                         , "/api/fleets"
                         , "/api/contact-us"
                         , "/api/booking/depo/**"
-                        , "/api/booking/otp/**"
+                        , "/api/customer/otp/**"
                         , "/api/booking/payment/callback"
                         , "/api/booking/payment/callback/invoice"
                         , "/api/payment/callback/disbursement"
@@ -88,6 +88,8 @@ public class SecurityConfiguration {
                         , "/api/item-type/iso"
                         , "/api/insw-shipping"
                         , "/api/insw/sync-data-to-insw"
+                        , "/api/applicants/portal/getdepo-byloc-shippingline"
+                        , "/api/nlekemenkeu/**"
                 ).permitAll()
             .antMatchers("/impersonate"
                     , "/api/admins/profile"

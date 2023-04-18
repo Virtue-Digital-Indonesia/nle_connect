@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -38,4 +39,9 @@ public interface DepoFleetRepository extends JpaRepository<DepoFleet, Long> {
                                     String fleetManagerCompany,
                                     String globalSearch,
                                     Pageable pageable);
+
+    @Query("SELECT df FROM DepoFleet df "+
+            "WHERE (:location IS NULL OR LOWER(df.depoOwnerAccount.address) LIKE LOWER(CONCAT('%', :location, '%'))) "+
+            "AND (:shippingLine IS NULL OR LOWER(df.fleet.code) LIKE LOWER(CONCAT('%', :shippingLine, '%')))")
+    List<DepoFleet> getFromPortal(@Param("location") String location,@Param("shippingLine") String shippingLine);
 }

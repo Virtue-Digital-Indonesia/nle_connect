@@ -147,9 +147,10 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                     +
                     "from GateMove gm " +
                     "where (gm.tx_date >= :from and gm.tx_date < :to) " +
+                    "and (:loc is null or lower(gm.depot) like lower(concat('%', :loc, '%'))) "+
                     "group by gm.fleet_manager " +
                     "order by count(gm.id) desc")
-    List<ShippingLineStatistic> countFleetManagerByDate(@Param("from") String from, @Param("to") String to);
+    List<ShippingLineStatistic> countFleetManagerByDate(@Param("from") String from, @Param("to") String to, @Param("loc") String loc);
 
     @Query("select count(gm.id) "
                     +
@@ -171,6 +172,7 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                     +
                     "from GateMove gm " +
                     "where (gm.tx_date >= :from and gm.tx_date < :to) " +
+                    "and (:loc is null or lower(gm.depot) like lower(concat('%', :loc, '%'))) "+
                     "group by gm.depot")
-    List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to);
+    List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to, @Param("loc") String loc);
 }

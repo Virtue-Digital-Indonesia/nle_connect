@@ -1,7 +1,5 @@
 package com.nle.shared.service.booking;
 
-import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
-import com.nle.ui.model.JWTToken;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
@@ -15,8 +13,6 @@ public interface BookingService {
 
     BookingResponse getBookingById(Long booking_id);
     PagingResponseModel<BookingResponse> SearchByPhone(Pageable pageable);
-    VerihubsResponseDTO sendOtpMobile (String phoneNumber);
-    JWTToken verifOTP(String otp, String phone_number);
     BookingResponse createBookingUnloading(CreateBookingUnloading request);
     BookingResponse createBookingLoading(CreateBookingLoading request);
     PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable);
