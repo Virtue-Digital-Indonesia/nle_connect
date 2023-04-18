@@ -139,6 +139,9 @@ public class GateMove extends AbstractAuditingEntity implements Serializable {
     @Column(name = "sync_to_tax_ministry_date")
     private LocalDateTime syncToTaxMinistryDate;
 
+    @Column(name = "sync_to_insw")
+    private LocalDateTime syncToInsw;
+
     @Column(name = "data_source")
     @Enumerated(EnumType.STRING)
     private GateMoveSource source;

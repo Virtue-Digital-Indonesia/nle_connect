@@ -4,13 +4,13 @@ import com.nle.constant.AppConstant;
 import com.nle.constant.enums.GateMoveSource;
 import com.nle.io.entity.GateMove;
 import com.nle.shared.dto.ftp.MoveDTO;
+import com.nle.shared.dto.taxministry.TaxMinistryRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 public class NleUtil {
 
@@ -95,5 +95,48 @@ public class NleUtil {
             log.error("Can not format transaction date {}", txDate);
             return null;
         }
+    }
+
+    public static TaxMinistryRequestDTO convertFromGateMove(GateMove gateMove) {
+        TaxMinistryRequestDTO taxMinistryRequestDTO = new TaxMinistryRequestDTO();
+        BeanUtils.copyProperties(gateMove, taxMinistryRequestDTO);
+        taxMinistryRequestDTO.setClean(gateMove.getClean() ? "yes" : "no");
+        taxMinistryRequestDTO.setDateManufacturing(gateMove.getDate_manufacturer());
+        taxMinistryRequestDTO.setContainerNumber(gateMove.getContainer_number());
+        taxMinistryRequestDTO.setDeliveryPort(gateMove.getDelivery_port());
+        taxMinistryRequestDTO.setDiscargePort(gateMove.getDischarge_port());
+        taxMinistryRequestDTO.setDriveName(gateMove.getDriver_name());
+        taxMinistryRequestDTO.setFleetManager(gateMove.getFleet_manager());
+        taxMinistryRequestDTO.setIsoCode(gateMove.getIso_code());
+        taxMinistryRequestDTO.setMaxGross(gateMove.getMax_gross());
+        taxMinistryRequestDTO.setOrderNumber(gateMove.getOrder_number());
+        taxMinistryRequestDTO.setProcessType(gateMove.getProcess_type().toLowerCase());
+        taxMinistryRequestDTO.setRemark(gateMove.getRemarks());
+        taxMinistryRequestDTO.setTransportNumber(gateMove.getTransport_number());
+        taxMinistryRequestDTO.setTxDate(gateMove.getTx_date());
+        taxMinistryRequestDTO.setVessel(gateMove.getVessel());
+        taxMinistryRequestDTO.setAmount(gateMove.getAmount());
+        return taxMinistryRequestDTO;
+    }
+
+    public static String convertProcessType(String processType){
+        String getProcessNo = null;
+        if (processType.equalsIgnoreCase("GATE_IN")) {
+            getProcessNo = "Gate in";
+        } else if (processType.equalsIgnoreCase("GATE_OUT")) {
+            getProcessNo = "Gate out";
+        } else if (processType.equalsIgnoreCase("GATE_IN_EMPTY")) {
+            getProcessNo = "Gate in empty";
+        } else if (processType.equalsIgnoreCase("GATE_OUT_EMPTY")) {
+            getProcessNo = "Gate out empty";
+        } else if (processType.equalsIgnoreCase("GATE_IN_REPO")) {
+            getProcessNo = "Gate in repo";
+        } else if (processType.equalsIgnoreCase("GATE_OUT_REPO")) {
+            getProcessNo = "Gate out repo";
+        } else {
+            getProcessNo = null;
+        }
+
+        return getProcessNo;
     }
 }

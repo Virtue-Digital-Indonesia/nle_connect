@@ -8,6 +8,7 @@ import com.nle.io.entity.GateMove;
 import com.nle.io.repository.GateMoveRepository;
 import com.nle.shared.dto.taxministry.TaxMinistryRequestDTO;
 import com.nle.shared.dto.taxministry.TaxMinistryResponseDTO;
+import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class TaxMinistryService {
                     continue;
                 }
 
-                TaxMinistryRequestDTO taxMinistryRequestDTO = convertFromGateMove(gateMove);
+                TaxMinistryRequestDTO taxMinistryRequestDTO = NleUtil.convertFromGateMove(gateMove);
                 try {
                     syncDataToTaxMinistry(taxMinistryRequestDTO);
                 } catch (Exception exception) {
@@ -65,27 +66,5 @@ public class TaxMinistryService {
             }
             LOGGER.error("Error while syncing data to tax ministry {}", taxMinistryResponseDTO.getData().getMessage());
         }
-    }
-
-    private TaxMinistryRequestDTO convertFromGateMove(GateMove gateMove) {
-        TaxMinistryRequestDTO taxMinistryRequestDTO = new TaxMinistryRequestDTO();
-        BeanUtils.copyProperties(gateMove, taxMinistryRequestDTO);
-        taxMinistryRequestDTO.setClean(gateMove.getClean() ? "yes" : "no");
-        taxMinistryRequestDTO.setDateManufacturing(gateMove.getDate_manufacturer());
-        taxMinistryRequestDTO.setContainerNumber(gateMove.getContainer_number());
-        taxMinistryRequestDTO.setDeliveryPort(gateMove.getDelivery_port());
-        taxMinistryRequestDTO.setDiscargePort(gateMove.getDischarge_port());
-        taxMinistryRequestDTO.setDriveName(gateMove.getDriver_name());
-        taxMinistryRequestDTO.setFleetManager(gateMove.getFleet_manager());
-        taxMinistryRequestDTO.setIsoCode(gateMove.getIso_code());
-        taxMinistryRequestDTO.setMaxGross(gateMove.getMax_gross());
-        taxMinistryRequestDTO.setOrderNumber(gateMove.getOrder_number());
-        taxMinistryRequestDTO.setProcessType(gateMove.getProcess_type().toLowerCase());
-        taxMinistryRequestDTO.setRemark(gateMove.getRemarks());
-        taxMinistryRequestDTO.setTransportNumber(gateMove.getTransport_number());
-        taxMinistryRequestDTO.setTxDate(gateMove.getTx_date());
-        taxMinistryRequestDTO.setVessel(gateMove.getVessel());
-        taxMinistryRequestDTO.setAmount(gateMove.getAmount());
-        return taxMinistryRequestDTO;
     }
 }
