@@ -139,8 +139,8 @@ public class EmailServiceImpl implements EmailService {
 
         Map<String, String> params = new HashMap<>();
         params.put("fullname", name);
-        //Todo : Change url if get url from FE
-        params.put("activeUrl", "https://nle-connect.id/reset-password?token=" + token);
+        params.put("activeUrl", "https://nle-connect.id/reset-phone-number?token=" + token);
+
         // get email template content from DB
         EmailTemplateDto activeEmailTemplate = emailTemplateService.findByType(EmailType.RESET_PHONE_NUMBER);
         EmailDTO emailDTO = buildEmailDTO(activeEmailTemplate, params, bookingCustomer.getEmail());
