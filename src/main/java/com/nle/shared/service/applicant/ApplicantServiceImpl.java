@@ -3,8 +3,6 @@ package com.nle.shared.service.applicant;
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.io.entity.DepoFleet;
-import com.nle.io.entity.GateMove;
-import com.nle.io.entity.InswShipping;
 import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.InswShippingRepository;
 import com.nle.security.SecurityUtils;
@@ -212,9 +210,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter formatterWithoutTime = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        Long totalGateMove = 0L;
-        Long totalGateIn = 0L;
-        Long totalGateOut = 0L;
+
 
         for (int i = 0; i < duration; i++) {
             LocalDateTime fromDate = LocalDateTime.now().minus(i, ChronoUnit.DAYS).with(LocalTime.of(0, 0, 0));
@@ -223,26 +219,24 @@ public class ApplicantServiceImpl implements ApplicantService {
             List<GateMovesStatistic> gateMovesStatistics = countGateMovesByDepot(fromDate.format(formatterWithTime),
                     toDate.format(formatterWithTime), location);
 
+            Long totalGateMove = (long) 0;
+            Long totalGateIn = (long) 0;
+            Long totalGateOut = (long) 0;
+
             MovesDownload movesDownload = new MovesDownload();
             //Set data to send to excell
             if (!gateMovesStatistics.isEmpty()){
                 for (GateMovesStatistic gateMovesStatitic : gateMovesStatistics) {
-                            totalGateMove = totalGateMove + gateMovesStatitic.getGate_moves();
-                            totalGateIn = totalGateIn + gateMovesStatitic.getGate_in();
-                            totalGateOut = totalGateOut + gateMovesStatitic.getGate_out();
-                            movesDownload.setGate_in(totalGateIn);
-                            movesDownload.setGate_out(totalGateOut);
-                            movesDownload.setTotal(totalGateMove);
-                            movesDownload.setTx_date(fromDate.format(formatterWithoutTime));
+                    totalGateMove += gateMovesStatitic.getGate_moves();
+                    totalGateIn += gateMovesStatitic.getGate_in();
+                    totalGateOut += gateMovesStatitic.getGate_out();
                 }
-            } else {
-                movesDownload.setGate_in(0L);
-                movesDownload.setGate_out(0L);
-                movesDownload.setTotal(0L);
-                movesDownload.setTx_date(fromDate.format(formatterWithoutTime));
             }
-
-                movesDownloads.add(movesDownload);
+            movesDownload.setGate_in(totalGateIn);
+            movesDownload.setGate_out(totalGateOut);
+            movesDownload.setTotal(totalGateMove);
+            movesDownload.setTx_date(fromDate.format(formatterWithoutTime));
+            movesDownloads.add(movesDownload);
         }
 
         //Method for input data to excell
@@ -294,7 +288,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
-        String location = null;
+        String location;
         if (loc.equalsIgnoreCase("all")){
             location = null;
         } else {
@@ -309,7 +303,7 @@ public class ApplicantServiceImpl implements ApplicantService {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("Invalid token");
-        String location = null;
+        String location;
         if (loc.equalsIgnoreCase("all")){
             location = null;
         } else {
