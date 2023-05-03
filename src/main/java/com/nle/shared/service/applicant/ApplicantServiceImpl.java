@@ -3,6 +3,7 @@ package com.nle.shared.service.applicant;
 import com.nle.constant.enums.AccountStatus;
 import com.nle.constant.enums.ApprovalStatus;
 import com.nle.io.entity.DepoFleet;
+import com.nle.io.entity.GateMove;
 import com.nle.io.entity.InswShipping;
 import com.nle.io.repository.DepoFleetRepository;
 import com.nle.io.repository.InswShippingRepository;
@@ -158,10 +159,14 @@ public class ApplicantServiceImpl implements ApplicantService {
                     toDate.format(formatterWithTime), location);
 
             Long total = (long) 0;
+            for (ShippingLineStatistic shippingLineStatistic : lineStatisticsByDate ) {
+               total += shippingLineStatistic.getCount();
+            }
 
-            if (!lineStatisticsByDate.isEmpty())
-                total = countTotalFleetManagerByDate(fromDate.format(formatterWithTime),
-                        toDate.format(formatterWithTime));
+            //Todo : delete after approved
+//            if (!lineStatisticsByDate.isEmpty())
+//                total = countTotalFleetManagerByDate(fromDate.format(formatterWithTime),
+//                        toDate.format(formatterWithTime));
 
             TotalMoves tMoves = new TotalMoves(fromDate.format(formatterWithoutTime),
                     total,
