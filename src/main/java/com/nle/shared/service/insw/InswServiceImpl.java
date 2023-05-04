@@ -96,7 +96,7 @@ public class InswServiceImpl implements InswService{
     }
 
     @Override
-    @Scheduled(cron = "${app.scheduler.insw-sync-cron}")
+    @Scheduled(cron = "${app.scheduler.insw-sync-cron}", zone = "GMT+7")
     public List<InswSyncDataDTO> syncInsw() {
 
         List<GateMove> gateMoveList = gateMoveRepository.findAllByStatusInsw(AppConstant.Status.SUBMITTED);
