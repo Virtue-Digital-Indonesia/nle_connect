@@ -217,7 +217,8 @@ public class InswServiceImpl implements InswService{
     }
 
     public String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
-        String inswUrl = "https://api-test.insw.go.id/api/v1/services/transaksi/dosp2/send-container-status";
+        String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/dosb2/send-container-status";
+
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -335,7 +336,7 @@ public class InswServiceImpl implements InswService{
 
 
     public DataResponse getBolDataInsw(String bolNumber) {
-        String curlLocUrl = "https://api-test.insw.go.id/api/v2/services/transaksi/do-sp2/container-asdeki?nomor_bl="+bolNumber;
+        String curlLocUrl = "https://api-platform.insw.go.id/api/v2/services/transaksi/do-sp2/container-asdeki?nomor_bl="+bolNumber;
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders   = new HttpHeaders();
@@ -381,7 +382,7 @@ public class InswServiceImpl implements InswService{
     }
 
     public String createToken(){
-        String curlLocUrl = "https://api-test.insw.go.id/login-svc/oauth2/token";
+        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/token";
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -425,7 +426,7 @@ public class InswServiceImpl implements InswService{
     }
 
     public String getNewCode(){
-        String curlLocUrl = "https://api-test.insw.go.id/login-svc/oauth2/authorize";
+        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/authorize";
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
