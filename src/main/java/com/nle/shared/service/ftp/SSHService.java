@@ -22,7 +22,7 @@ public class SSHService {
     public String createFtpUser(String username, String password) {
         try {
             StringBuilder triggerURL = new StringBuilder();
-            triggerURL.append(appProperties.getSecurity().getFtp().getTriggerUrl());
+            triggerURL.append("http://210.247.245.144:8080/job/Update-FTP-User/buildWithParameters?");
             triggerURL.append("&token=");
             triggerURL.append(appProperties.getSecurity().getFtp().getTriggerToken());
             triggerURL.append("&username=");
