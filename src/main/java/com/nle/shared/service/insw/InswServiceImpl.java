@@ -107,11 +107,15 @@ public class InswServiceImpl implements InswService{
             InswSyncDataDTO inswDTO = this.convertToInswSyncDataDto(gateMove);
 
             //method for Send data to insw
-            inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
-            listResponse.add(inswDTO);
+            try {
+                inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
+                listResponse.add(inswDTO);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
 
             //gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
-            if (inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
+            if (inswDTO.getStatusFeedback() != null && inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
                 gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
             }
         }
