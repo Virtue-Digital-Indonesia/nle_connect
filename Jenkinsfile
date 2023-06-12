@@ -23,6 +23,14 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv() {
+                    sh "./mvnw clean verify sonar:sonar -Dsonar.projectKey=nle_connect"
+                }
+            }
+        }
+
         stage('clean') {
             steps {
                 script {
