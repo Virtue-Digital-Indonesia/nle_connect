@@ -340,7 +340,7 @@ public class InswServiceImpl implements InswService{
 
 
     public DataResponse getBolDataInsw(String bolNumber) {
-        String curlLocUrl = "https://api-platform.insw.go.id/api/v2/services/transaksi/do-sp2/container-asdeki?nomor_bl="+bolNumber;
+        String curlLocUrl = "https://api-platform.insw.go.id/api/v2/services/transaksi/do-sp2/container-depo?nomor_bl="+bolNumber;
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders   = new HttpHeaders();
