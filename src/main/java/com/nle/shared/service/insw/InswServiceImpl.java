@@ -106,10 +106,6 @@ public class InswServiceImpl implements InswService{
             //Get data from method convertToInswSyncDataDto
             InswSyncDataDTO inswDTO = this.convertToInswSyncDataDto(gateMove);
 
-            if (gateMove.getId() != 104367) {
-                continue;
-            }
-
             //method for Send data to insw
             try {
                 inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
