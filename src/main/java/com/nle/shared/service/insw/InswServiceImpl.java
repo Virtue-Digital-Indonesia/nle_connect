@@ -99,7 +99,7 @@ public class InswServiceImpl implements InswService{
     @Scheduled(cron = "${app.scheduler.insw-sync-cron}", zone = "GMT+7")
     public List<InswSyncDataDTO> syncInsw() {
 
-        List<GateMove> gateMoveList = gateMoveRepository.findAllByStatusInsw(AppConstant.Status.SUBMITTED);
+        List<GateMove> gateMoveList = gateMoveRepository.findAllBySyncToInswNull();
         List<InswSyncDataDTO> listResponse = new ArrayList<>();
         for (GateMove gateMove : gateMoveList) {
 
@@ -221,8 +221,7 @@ public class InswServiceImpl implements InswService{
     }
 
     public String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
-        String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/dosb2/send-container-status";
-
+        String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/do-sp2/container-status";
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
