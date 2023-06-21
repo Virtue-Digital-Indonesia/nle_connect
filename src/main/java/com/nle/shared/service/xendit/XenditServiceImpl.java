@@ -10,7 +10,6 @@ import com.nle.exception.CommonException;
 import com.nle.io.entity.BankDepo;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
-import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.BankDepoRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
@@ -36,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -60,10 +58,7 @@ public class XenditServiceImpl implements XenditService {
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
     private final BankDepoRepository bankDepoRepository;
     private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
+    private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
 
     @Override
     public XenditResponse CreateVirtualAccount(XenditRequest request) {
@@ -581,6 +576,7 @@ public class XenditServiceImpl implements XenditService {
         final ObjectMapper objectMapper = new ObjectMapper();
 
         HttpEntity<String> request = new HttpEntity<String>(paramBody.toString(), httpHeaders);
+        RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.patchForObject(updateVa, request, String.class);
 
         try {

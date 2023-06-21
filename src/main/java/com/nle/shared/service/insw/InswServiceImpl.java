@@ -50,7 +50,6 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class InswServiceImpl implements InswService{
 
     private final AppProperties appProperties;

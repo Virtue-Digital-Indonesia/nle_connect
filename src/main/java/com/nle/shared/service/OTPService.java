@@ -1,6 +1,5 @@
 package com.nle.shared.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nle.config.prop.AppProperties;
 import com.nle.exception.CommonException;
 import com.nle.shared.dto.verihubs.VerihubsResponseDTO;
