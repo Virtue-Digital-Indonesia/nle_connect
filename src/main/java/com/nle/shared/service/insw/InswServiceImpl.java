@@ -221,7 +221,8 @@ public class InswServiceImpl implements InswService{
     }
 
     public String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
-        String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/do-sp2/container-status";
+//        String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/do-sp2/container-status"; //Production api
+        String inswUrl = "https://api-test.insw.go.id/api/v1/services/transaksi/do-sp2/container-status"; //Sandbox api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -339,7 +340,8 @@ public class InswServiceImpl implements InswService{
 
 
     public DataResponse getBolDataInsw(String bolNumber) {
-        String curlLocUrl = "https://api-platform.insw.go.id/api/v2/services/transaksi/do-sp2/container-depo?nomor_bl="+bolNumber;
+//        String curlLocUrl = "https://api-platform.insw.go.id/api/v2/services/transaksi/do-sp2/container-depo?nomor_bl="+bolNumber; //Production Api
+        String curlLocUrl = "https://api-test.insw.go.id/api/v2/services/transaksi/do-sp2/container-depo?nomor_bl="+bolNumber; //Sandbox Api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders   = new HttpHeaders();
@@ -385,7 +387,8 @@ public class InswServiceImpl implements InswService{
     }
 
     public String createToken(){
-        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/token";
+//        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/token"; //Production Api
+        String curlLocUrl = "https://api-test.insw.go.id/login-svc/oauth2/token"; //Sandbox Api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -429,7 +432,8 @@ public class InswServiceImpl implements InswService{
     }
 
     public String getNewCode(){
-        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/authorize";
+//        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/authorize"; //Production Api
+        String curlLocUrl = "https://api-test.insw.go.id/login-svc/oauth2/authorize"; //Sandbox Api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
