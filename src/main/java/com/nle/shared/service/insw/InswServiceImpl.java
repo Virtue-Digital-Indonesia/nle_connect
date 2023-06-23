@@ -27,6 +27,7 @@ import com.nle.ui.model.response.insw.*;
 import com.nle.util.DateUtil;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +51,8 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
+@Transactional
 public class InswServiceImpl implements InswService{
 
     private final AppProperties appProperties;
@@ -109,13 +112,16 @@ public class InswServiceImpl implements InswService{
             try {
                 inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
                 listResponse.add(inswDTO);
+                log.info("Success send to insw with gatemove ID : "+ gateMove.getId());
             } catch (Exception e){
                 e.printStackTrace();
+                log.error("Failed to send insw with gatemove ID : "+ gateMove.getId());
             }
 
             //gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
             if (inswDTO.getStatusFeedback() != null && inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
                 gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
+                log.info("Success update field sync_to_insw with gatemove ID : "+ gateMove.getId());
             }
         }
         return listResponse;
@@ -273,15 +279,19 @@ public class InswServiceImpl implements InswService{
             sendParam.put("vessel", checkNullString(inswSyncDataDTO.getVessel()));
             sendParam.put("voyage", checkNullString(inswSyncDataDTO.getVoyage()));
             sendParam.put("amount", (inswSyncDataDTO.getAmount() != null)?inswSyncDataDTO.getAmount():0);
+            log.info("Success Convert element insw from gatemove.");
         } catch (JSONException e){
             e.printStackTrace();
+            log.error("Failed Convert element insw from gatemove.");
         }
 
         JSONObject sendData = new JSONObject();
         try {
             sendData.put("data", sendParam);
+            log.info("Success Convert element to object data.");
         } catch (JSONException e){
             e.printStackTrace();
+            log.error("Error Convert element to object data.");
         }
 
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -293,8 +303,10 @@ public class InswServiceImpl implements InswService{
         try {
             JsonNode root = objectMapper.readTree(result);
             feedBackMessage = root.path("message").asText();
+            log.info("Success send to insw from rest template.");
         } catch (JsonProcessingException e){
             e.printStackTrace();
+            log.error("Failed send to insw from rest template.");
         }
 
         System.out.println(result);
