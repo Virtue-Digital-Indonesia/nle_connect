@@ -107,22 +107,14 @@ public class InswServiceImpl implements InswService{
 
             //Get data from method convertToInswSyncDataDto
             InswSyncDataDTO inswDTO = this.convertToInswSyncDataDto(gateMove);
-
-            //method for Send data to insw
-            try {
-                inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
-                listResponse.add(inswDTO);
-                log.info("Success send to insw with gatemove ID : "+ gateMove.getId());
-            } catch (Exception e){
-                e.printStackTrace();
-                log.error("Failed to send insw with gatemove ID : "+ gateMove.getId());
-            }
+            inswDTO.setStatusFeedback(this.sendToInsw(inswDTO, gateMove.getId()));
+            listResponse.add(inswDTO);
 
             //gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
-            if (inswDTO.getStatusFeedback() != null && inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
-                gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
-                log.info("Success update field sync_to_insw with gatemove ID : "+ gateMove.getId());
-            }
+//            if (inswDTO.getStatusFeedback() != null && inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
+//                gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
+//                log.info("Success update field sync_to_insw with gatemove ID : "+ gateMove.getId());
+//            }
         }
         return listResponse;
     }
@@ -225,11 +217,53 @@ public class InswServiceImpl implements InswService{
         return response;
     }
 
-    public String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
+    public String sendToInsw(InswSyncDataDTO inswSyncDataDTO, Long gate_id){
         String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/do-sp2/container-status";
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
+        String bearerToken = getInswBearerToken();
+
+        httpHeaders.add("Authorization", "Bearer " + bearerToken);
+        httpHeaders.add("Content-Type", "application/json");
+
+        //Convert element insw from gatemove
+        JSONObject sendParam = createInswJson(inswSyncDataDTO);
+
+        JSONObject sendData = new JSONObject();
+        try {
+            sendData.put("data", sendParam);
+            log.info("Success Convert element to object data.");
+        } catch (JSONException e){
+            e.printStackTrace();
+            log.error("Error Convert element to object data.");
+        }
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+        HttpEntity<String> request = new HttpEntity<String>(sendData.toString(), httpHeaders);
+        String result = restTemplate.postForObject(inswUrl, request, String.class);
+
+        //get response from insw status
+        String feedBackMessage = null;
+        try {
+            JsonNode root = objectMapper.readTree(result);
+            feedBackMessage = root.path("message").asText();
+            log.info("Success send to insw from rest template.");
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+            log.error("Failed send to insw from rest template.");
+        }
+
+        System.out.println(result);
+
+        if (feedBackMessage != null && feedBackMessage.equalsIgnoreCase("Success!")){
+            gateMoveRepository.updateGateMoveStatusByInsw(gate_id, LocalDateTime.now());
+            log.info("Success update field sync_to_insw with gatemove ID : "+ gate_id);
+        }
+        return feedBackMessage;
+    }
+
+    private String getInswBearerToken(){
         String bearerToken        = null;
         Optional<InswToken> inswToken = Optional.ofNullable(inswTokenRepository.findByActiveStatus(AppConstant.VerificationStatus.ACTIVE));
 
@@ -245,11 +279,10 @@ public class InswServiceImpl implements InswService{
                 bearerToken = this.createToken();
             }
         }
+        return  bearerToken;
+    }
 
-        httpHeaders.add("Authorization", "Bearer " + bearerToken);
-        httpHeaders.add("Content-Type", "application/json");
-
-        //Convert element insw from gatemove
+    private JSONObject createInswJson(InswSyncDataDTO inswSyncDataDTO){
         JSONObject sendParam = new JSONObject();
         try {
             sendParam.put("activity", checkNullString(inswSyncDataDTO.getActivity()));
@@ -285,32 +318,7 @@ public class InswServiceImpl implements InswService{
             log.error("Failed Convert element insw from gatemove.");
         }
 
-        JSONObject sendData = new JSONObject();
-        try {
-            sendData.put("data", sendParam);
-            log.info("Success Convert element to object data.");
-        } catch (JSONException e){
-            e.printStackTrace();
-            log.error("Error Convert element to object data.");
-        }
-
-        final ObjectMapper objectMapper = new ObjectMapper();
-        HttpEntity<String> request = new HttpEntity<String>(sendData.toString(), httpHeaders);
-        String result = restTemplate.postForObject(inswUrl, request, String.class);
-
-        //get response from insw status
-        String feedBackMessage = null;
-        try {
-            JsonNode root = objectMapper.readTree(result);
-            feedBackMessage = root.path("message").asText();
-            log.info("Success send to insw from rest template.");
-        } catch (JsonProcessingException e){
-            e.printStackTrace();
-            log.error("Failed send to insw from rest template.");
-        }
-
-        System.out.println(result);
-        return feedBackMessage;
+        return sendParam;
     }
 
     public String convertDateManufacturing(String date){
