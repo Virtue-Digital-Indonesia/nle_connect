@@ -122,7 +122,7 @@ public class InswServiceImpl implements InswService{
         return listResponse;
     }
 
-    private InswSyncDataDTO convertToInswSyncDataDto(GateMove gateMove) {
+    public InswSyncDataDTO convertToInswSyncDataDto(GateMove gateMove) {
         InswSyncDataDTO inswSyncDataDTO = new InswSyncDataDTO();
         BeanUtils.copyProperties(gateMove, inswSyncDataDTO);
         inswSyncDataDTO.setContainerNumber(gateMove.getContainer_number());
