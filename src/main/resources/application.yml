@@ -48,9 +48,15 @@ app:
   xendit:
     API-Key: ${XENDIT_API_KEY}
   insw:
-    Client-Id: KwQ64CjPUeb1FMZ3aMKLeepfSG6p3YKb
-    Client-Secret: O3tKuM57AGU1es9JFDKMnu51dIDWInlh
-    Provision-Key: 6JIWH7osvOZIKpA8lxez0xq44FAEiOma
+    ##Production Credential
+#    Client-Id: KwQ64CjPUeb1FMZ3aMKLeepfSG6p3YKb
+#    Client-Secret: O3tKuM57AGU1es9JFDKMnu51dIDWInlh
+#    Provision-Key: 6JIWH7osvOZIKpA8lxez0xq44FAEiOma
+
+    ##Sandbox Credential
+    Client-Id: qvEEKu5VPD2g11Ljq5A3GqoBh38uFZkE
+    Client-Secret: z3WSamhc2tLXqODjVPRsEyqxQ70uJ2fn
+    Provision-Key: BwSTNx2j9RNyDKG8yEORhi6QFUBRcV42
     Redirect-URI: https://nle-connect.id/
 
 spring:
@@ -69,7 +75,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://210.247.245.143:3308/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://210.247.245.143:3308/nletes?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: ${DB_PASSWORD}
     hikari:
