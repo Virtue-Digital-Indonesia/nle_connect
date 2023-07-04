@@ -1,6 +1,5 @@
 package com.nle.shared.service.insw;
 
-import com.nle.io.entity.GateMove;
 import com.nle.shared.dto.insw.InswSyncDataDTO;
 import com.nle.ui.model.response.insw.InswResponse;
 
@@ -11,6 +10,4 @@ public interface InswService {
     InswResponse getBolData(String bolNumber, Long depoId);
 
     List<InswSyncDataDTO> syncInsw();
-    InswSyncDataDTO convertToInswSyncDataDto(GateMove gateMove);
-    String sendToInsw(InswSyncDataDTO inswSyncDataDTO);
 }

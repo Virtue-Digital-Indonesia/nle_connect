@@ -1,7 +1,6 @@
 package com.nle.io.repository;
 
 import com.nle.constant.enums.ItemTypeEnum;
-import com.nle.io.entity.DepoFleet;
 import com.nle.io.entity.Item;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
@@ -58,6 +57,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.item_name.id = :id")
     List<Item> getByIdAndDepo(@Param("depo_id") Long depo_id, @Param("id") Long id);
 
+    @Transactional
     @Query(value = "SELECT it FROM Item it WHERE it.depoOwnerAccount.id = :depo_id AND it.item_name.id = :id AND it.depoFleet.id = :depo_fleet_id")
     List<Item> getItemOfShipping(@Param("depo_id") Long depo_id, @Param("id") Long id, @Param("depo_fleet_id") Long depo_fleet_id);
 

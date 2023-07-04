@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ public interface DepoFleetRepository extends JpaRepository<DepoFleet, Long> {
     @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail and df.deleted = false")
     Page<DepoFleet> getAllDepoFleet(@Param("companyEmail") String companyEmail, Pageable pageable);
 
+    @Transactional
     @Query(value = "SELECT df FROM DepoFleet df WHERE df.depoOwnerAccount.companyEmail =:companyEmail AND df.fleet.code = :fleetCode AND df.deleted = false")
     Optional<DepoFleet> getFleetInDepo(@Param("companyEmail") String companyEmail, @Param("fleetCode") String fleetCode);
 
