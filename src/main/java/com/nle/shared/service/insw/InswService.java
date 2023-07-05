@@ -10,5 +10,4 @@ public interface InswService {
     InswResponse getBolData(String bolNumber, Long depoId);
 
     List<InswSyncDataDTO> syncInsw();
-
 }

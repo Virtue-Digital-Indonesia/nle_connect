@@ -6,6 +6,7 @@ import com.nle.ui.model.response.insw.InswResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/insw")
 @RequiredArgsConstructor
+@Slf4j
 public class InswController {
     private final InswService inswService;
 

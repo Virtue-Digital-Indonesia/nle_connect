@@ -27,6 +27,7 @@ import com.nle.ui.model.response.insw.*;
 import com.nle.util.DateUtil;
 import com.nle.util.NleUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -50,7 +50,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
+@Slf4j
 public class InswServiceImpl implements InswService{
 
     private final AppProperties appProperties;
@@ -96,7 +96,7 @@ public class InswServiceImpl implements InswService{
     }
 
     @Override
-//    @Scheduled(cron = "${app.scheduler.insw-sync-cron}", zone = "GMT+7")
+    @Scheduled(cron = "${app.scheduler.insw-sync-cron}", zone = "GMT+7")
     public List<InswSyncDataDTO> syncInsw() {
 
         List<GateMove> gateMoveList = gateMoveRepository.findAllBySyncToInswNull();
@@ -110,6 +110,7 @@ public class InswServiceImpl implements InswService{
             try {
                 inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
                 listResponse.add(inswDTO);
+                log.info("Success send data to INSW with ID : "+ gateMove.getId());
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -117,6 +118,7 @@ public class InswServiceImpl implements InswService{
             //gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
             if (inswDTO.getStatusFeedback() != null && inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
                 gateMoveRepository.updateGateMoveStatusByInsw(gateMove.getId(), LocalDateTime.now());
+                log.info("Success update field Sync_to_insw with ID : "+ gateMove.getId());
             }
         }
         return listResponse;
@@ -220,8 +222,8 @@ public class InswServiceImpl implements InswService{
         return response;
     }
 
-    public String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
-        String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/do-sp2/container-status";
+    private String sendToInsw(InswSyncDataDTO inswSyncDataDTO){
+        String inswUrl = "https://api-platform.insw.go.id/api/v1/services/transaksi/do-sp2/container-status"; //Production api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -339,7 +341,7 @@ public class InswServiceImpl implements InswService{
 
 
     public DataResponse getBolDataInsw(String bolNumber) {
-        String curlLocUrl = "https://api-platform.insw.go.id/api/v2/services/transaksi/do-sp2/container-depo?nomor_bl="+bolNumber;
+        String curlLocUrl = "https://api-platform.insw.go.id/api/v2/services/transaksi/do-sp2/container-depo?nomor_bl="+bolNumber; //Production Api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders   = new HttpHeaders();
@@ -385,7 +387,7 @@ public class InswServiceImpl implements InswService{
     }
 
     public String createToken(){
-        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/token";
+        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/token"; //Production Api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -429,7 +431,7 @@ public class InswServiceImpl implements InswService{
     }
 
     public String getNewCode(){
-        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/authorize";
+        String curlLocUrl = "https://api-platform.insw.go.id/login-svc/oauth2/authorize"; //Production Api
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();

@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
  * Spring Data SQL repository for the GateMove entity.
  */
 @Repository
+@Transactional
 public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
 
         static final String SEARCH_GATEMOVE_QUERY = "SELECT gm FROM GateMove gm " +

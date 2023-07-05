@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Optional;
  * Spring Data SQL repository for the DepoOwnerAccount entity.
  */
 @Repository
+@Transactional
 public interface DepoOwnerAccountRepository extends JpaRepository<DepoOwnerAccount, Long> {
 
     static final String DEPO_OWNER_SEARCH_QUERRY = "SELECT doa FROM DepoOwnerAccount doa " +
