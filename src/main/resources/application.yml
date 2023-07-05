@@ -88,6 +88,15 @@ server:
   port: 8080
   forward-headers-strategy: framework
 
+hibernate:
+  connection:
+    provider_class: org.hibernate.connection.C3P0ConnectionProvider
+  c3p0:
+    min_size: 3
+    max_size: 20
+    acquire_increment: 5
+    timeout: 1800
+
 feign:
   client:
     config:
