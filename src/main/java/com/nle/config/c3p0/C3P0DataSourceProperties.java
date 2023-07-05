@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@ConfigurationProperties(prefix = "demo.datasource.c3p0")
+@ConfigurationProperties(prefix = "hibernate.c3p0.datasource")
 public class C3P0DataSourceProperties {
     private String driverClassName;
     private String url;
@@ -14,8 +14,10 @@ public class C3P0DataSourceProperties {
     private String password;
     private String driverClass;
     private int initialPoolSize;
-    private int maxIdleTime;
-    private int maxPoolSize;
     private int minPoolSize;
+    private int maxPoolSize;
+    private int maxIdleTime;
     private int maxStatements;
+    private int acquireIncrement;
+    private int timeout;
 }

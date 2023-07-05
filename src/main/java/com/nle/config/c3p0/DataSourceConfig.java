@@ -14,13 +14,15 @@ public class DataSourceConfig {
 
         ComboPooledDataSource pooledDataSource = new ComboPooledDataSource();
 
-        pooledDataSource.setDriverClass("com.nle.config.c3p0.C3P0DataSourceProperties");
-        pooledDataSource.setUser("root");
-        pooledDataSource.setPassword("TXPSfYUiX9C4MmocXX0O");
-        pooledDataSource.setJdbcUrl("jdbc:mysql://210.247.245.143:3308/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true");
-        pooledDataSource.setMinPoolSize(5);
-        pooledDataSource.setMaxPoolSize(20);
-        pooledDataSource.setMaxIdleTime(1800);
+        pooledDataSource.setDriverClass(dataSourcePros.getDriverClass());
+        pooledDataSource.setUser(dataSourcePros.getUsername());
+        pooledDataSource.setPassword(dataSourcePros.getPassword());
+        pooledDataSource.setJdbcUrl(dataSourcePros.getUrl());
+        pooledDataSource.setInitialPoolSize(dataSourcePros.getInitialPoolSize());
+        pooledDataSource.setMinPoolSize(dataSourcePros.getMinPoolSize());
+        pooledDataSource.setMaxPoolSize(dataSourcePros.getMaxPoolSize());
+        pooledDataSource.setAcquireIncrement(dataSourcePros.getAcquireIncrement());
+        pooledDataSource.setCheckoutTimeout(dataSourcePros.getTimeout());
 
         return pooledDataSource;
     }
