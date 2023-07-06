@@ -87,6 +87,20 @@ server:
   port: 8080
   forward-headers-strategy: framework
 
+hibernate:
+  c3p0:
+    datasource:
+      url: jdbc:mysql://210.247.245.143:3308/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+      username: root
+      password: ${DB_PASSWORD}
+      driverClass: com.mysql.cj.jdbc.Driver
+      initialPoolSize: 5
+      minPoolSize: 5
+      maxPoolSize: 20
+      acquireIncrement: 5
+      timeout: 1800
+
+
 feign:
   client:
     config:
