@@ -10,7 +10,6 @@ import com.nle.exception.CommonException;
 import com.nle.io.entity.BankDepo;
 import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.XenditVA;
-import com.nle.io.entity.booking.BookingDetailUnloading;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.BankDepoRepository;
 import com.nle.io.repository.DepoOwnerAccountRepository;
@@ -54,7 +53,8 @@ public class XenditServiceImpl implements XenditService {
 
     private final AppProperties appProperties;
     private final String DATE_PATTERN = "yyyy-MM-dd";
-    private final String VA_CODE = "90566"; // kalo test 9999
+    private final String VA_CODE_GENERAL = "90566"; // kalo test 9999
+    private final String VA_CODE_MANDIRI = "9056";
     private final XenditRepository xenditRepository;
     private final BookingHeaderRepository bookingHeaderRepository;
     private final DepoOwnerAccountRepository depoOwnerAccountRepository;
@@ -120,9 +120,9 @@ public class XenditServiceImpl implements XenditService {
 
     @Override
     public XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo) {
+        //For initialization virtual account xendit
+        String va_number = this.initialVaNumber(request.getPhone_number(), request.getBank_code());
 
-        int va_index = request.getPhone_number().length();
-        String va_number = VA_CODE + request.getPhone_number().substring(va_index - 7, va_index);
         Optional<BookingHeader> optionalBookingHeader = bookingHeaderRepository
                 .findById(request.getBooking_header_id());
         if (optionalBookingHeader.isEmpty())
@@ -169,6 +169,26 @@ public class XenditServiceImpl implements XenditService {
             throw new RuntimeException(e);
         }
         return response;
+    }
+
+    private String initialVaNumber(String phoneNumber, String bankCode){
+        if (phoneNumber == null || phoneNumber.isEmpty() )
+            throw new BadRequestException("Phone number cannot be null!");
+
+        if (bankCode == null || bankCode.isEmpty())
+            throw new BadRequestException("Bank code cannot be null!");
+
+        String va_number;
+        int va_index = phoneNumber.length();
+            if (bankCode.equalsIgnoreCase("MANDIRI")){
+                va_number = VA_CODE_MANDIRI + phoneNumber.substring(va_index - 9, va_index);
+            } else if (bankCode.equalsIgnoreCase("BCA") || bankCode.equalsIgnoreCase("SAHABAT_SAMPOERNA")) {
+                va_number = VA_CODE_GENERAL + phoneNumber.substring(va_index - 6, va_index);
+            } else {
+                va_number = VA_CODE_GENERAL + phoneNumber.substring(va_index - 7, va_index);
+            }
+
+        return va_number;
     }
 
     private void BindWithInvoice(XenditResponse xenditResponse, String depo_Xendit_id, XenditVA xenditVA,
