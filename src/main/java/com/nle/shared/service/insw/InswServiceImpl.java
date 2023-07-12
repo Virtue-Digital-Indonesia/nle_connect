@@ -63,6 +63,8 @@ public class InswServiceImpl implements InswService{
     private final InswShippingService inswShippingService;
     private final BookingDetailUnloadingRepository bookingDetailUnloadingRepository;
     private final GateMoveRepository gateMoveRepository;
+    private final String FULL_DATE_PATTERN = "yyyy-MM-dd";
+    private final String MONTH_PATTERN = "yyyy-MM";
 
     @Override
     public InswResponse getBolData(String bolNumber, Long depoId) {
@@ -110,10 +112,11 @@ public class InswServiceImpl implements InswService{
             try {
                 inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
                 listResponse.add(inswDTO);
-                log.info("Success send data to INSW with ID : "+ gateMove.getId());
+                log.info("Success send data to INSW with ID : " + gateMove.getId());
             } catch (Exception e){
                 e.printStackTrace();
             }
+
 
             //gate move yang berhasil dikirim ke insw akan dicatat tanggal kirimnya
             if (inswDTO.getStatusFeedback() != null && inswDTO.getStatusFeedback().equalsIgnoreCase("Success!")){
@@ -122,6 +125,38 @@ public class InswServiceImpl implements InswService{
             }
         }
         return listResponse;
+    }
+
+    private Boolean checkTheDay(String date){
+        String getToday = DateUtil.getNowString(FULL_DATE_PATTERN);
+        String converDate;
+            try {
+                converDate = DateUtil.getDateOfPattern(date, FULL_DATE_PATTERN);
+            } catch (Exception e){
+                converDate = date;
+            }
+
+        Boolean result    = false;
+        if (getToday.equalsIgnoreCase(converDate))
+            result = true;
+
+        return result;
+    }
+
+    private Boolean checkTheMonth(String date){
+        String getThisMonth = DateUtil.getNowString(MONTH_PATTERN);
+        String converDate;
+            try {
+                converDate = DateUtil.getDateOfPattern(date, MONTH_PATTERN);
+            } catch (Exception e){
+                converDate = date;
+            }
+
+        Boolean result = false;
+        if (getThisMonth.equalsIgnoreCase(converDate))
+            result = true;
+
+        return result;
     }
 
     private InswSyncDataDTO convertToInswSyncDataDto(GateMove gateMove) {
@@ -272,7 +307,7 @@ public class InswServiceImpl implements InswService{
             sendParam.put("remark", checkNullString(inswSyncDataDTO.getRemarks()));
             sendParam.put("tare", inswSyncDataDTO.getTare());
             sendParam.put("transportNumber", checkNullString(inswSyncDataDTO.getTransportNumber()));
-            sendParam.put("txDate", DateUtil.getDateOfPattern(inswSyncDataDTO.getTxDate()));
+            sendParam.put("txDate", DateUtil.getDateOfPattern(inswSyncDataDTO.getTxDate(), FULL_DATE_PATTERN));
             sendParam.put("vessel", checkNullString(inswSyncDataDTO.getVessel()));
             sendParam.put("voyage", checkNullString(inswSyncDataDTO.getVoyage()));
             sendParam.put("amount", (inswSyncDataDTO.getAmount() != null)?inswSyncDataDTO.getAmount():0);
@@ -289,7 +324,10 @@ public class InswServiceImpl implements InswService{
 
         final ObjectMapper objectMapper = new ObjectMapper();
         HttpEntity<String> request = new HttpEntity<String>(sendData.toString(), httpHeaders);
-        String result = restTemplate.postForObject(inswUrl, request, String.class);
+        String result = null;
+        if (this.checkTheDay(inswSyncDataDTO.getTxDate()) || this.checkTheMonth(inswSyncDataDTO.getTxDate())) {
+            result = restTemplate.postForObject(inswUrl, request, String.class);
+        }
 
         //get response from insw status
         String feedBackMessage = null;
@@ -298,6 +336,7 @@ public class InswServiceImpl implements InswService{
             feedBackMessage = root.path("message").asText();
         } catch (JsonProcessingException e){
             e.printStackTrace();
+            log.error("Data out of date !");
         }
 
         System.out.println(result);

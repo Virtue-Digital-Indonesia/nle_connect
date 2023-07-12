@@ -46,8 +46,7 @@ public class DateUtil {
         return newDateTime;
     }
 
-    public static String getDateOfPattern(String date){
-        String pattern = "yyyy-MM-dd";
+    public static String getDateOfPattern(String date, String pattern){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         OffsetDateTime parseDateTime = OffsetDateTime.parse(date);
         String getDate = formatter.format(parseDateTime);
