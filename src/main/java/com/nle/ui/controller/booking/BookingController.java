@@ -125,7 +125,8 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.searchBooking(request, pageable));
     }
 
-    @Operation(description = "create virtual account for payment", operationId = "paymentBooking", summary = "create virtual account for payment")
+    @Operation(summary = "create virtual account for payment", operationId = "paymentBooking", description = "Available Bank Code : \n\n" +
+            "- BCA, BNI, BRI, BJB, BSI, MANDIRI, PERMATA, SAHABAT_SAMPOERNA")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/payment")
     public ResponseEntity<XenditResponse> paymentBooking(@RequestBody XenditRequest request) {
