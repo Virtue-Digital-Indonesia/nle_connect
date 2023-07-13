@@ -110,9 +110,15 @@ public class InswServiceImpl implements InswService{
 
             //method for Send data to insw
             try {
-                inswDTO.setStatusFeedback(this.sendToInsw(inswDTO));
+                String sendStatus = this.sendToInsw(inswDTO);
+                inswDTO.setStatusFeedback(sendStatus);
                 listResponse.add(inswDTO);
-                log.info("Success send data to INSW with ID : " + gateMove.getId());
+
+                if (sendStatus != null && sendStatus.equalsIgnoreCase("Success!"))
+                    log.info("Success send data to INSW with ID : " + gateMove.getId());
+
+                if (sendStatus != null && sendStatus.equalsIgnoreCase("Failed!"))
+                    log.error("ID : " + gateMove.getId() +" Not send to INSW, This data is Out of date!");
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -331,15 +337,18 @@ public class InswServiceImpl implements InswService{
 
         //get response from insw status
         String feedBackMessage = null;
-        try {
-            JsonNode root = objectMapper.readTree(result);
-            feedBackMessage = root.path("message").asText();
-        } catch (JsonProcessingException e){
-            e.printStackTrace();
-            log.error("Data out of date !");
+        if (result != null){
+            try {
+                JsonNode root = objectMapper.readTree(result);
+                feedBackMessage = root.path("message").asText();
+            } catch (JsonProcessingException e){
+                e.printStackTrace();
+            }
+            System.out.println(result);
+        } else {
+            feedBackMessage = "Failed!";
         }
 
-        System.out.println(result);
         return feedBackMessage;
     }
 
