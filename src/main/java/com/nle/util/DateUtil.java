@@ -54,4 +54,10 @@ public class DateUtil {
 
         return getDate;
     }
+
+    public static String getFirstDateOfMonth(String pattern) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        String now = formatter.format(LocalDateTime.now().withDayOfMonth(1));
+        return now;
+    }
 }

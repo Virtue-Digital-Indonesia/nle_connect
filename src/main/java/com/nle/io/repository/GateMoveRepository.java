@@ -95,8 +95,9 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
 
     List<GateMove> findAllByStatus(String status);
 
-    @Query("SELECT gm FROM GateMove gm WHERE gm.syncToInsw = null")
-    List<GateMove> findAllBySyncToInswNull();
+    @Query("SELECT gm FROM GateMove gm WHERE gm.syncToInsw = null AND (gm.tx_date BETWEEN :from AND :to)")
+    List<GateMove> findAllBySyncToInswNull(@Param("from") String from,
+                                           @Param("to") String to);
 
     @Modifying
     @Query("update GateMove gm set gm.status =:status, " +
