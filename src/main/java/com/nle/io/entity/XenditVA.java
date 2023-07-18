@@ -34,6 +34,7 @@ public class XenditVA extends AbstractAuditingEntity implements Serializable {
     @Column(name = "disbursement_id")
     private String disbursement_id;
 
+    //berfungsi sebagai payment date, ketika berhasil dibayar, tapi karena sudah id, jadi namanya id saja
     @Column(name = "payment_id")
     private String payment_id;
 

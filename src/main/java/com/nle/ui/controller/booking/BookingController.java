@@ -130,7 +130,7 @@ public class BookingController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/payment")
     public ResponseEntity<XenditResponse> paymentBooking(@RequestBody XenditRequest request) {
-        return ResponseEntity.ok(xenditService.CreateVirtualAccount(request));
+        return ResponseEntity.ok(xenditService.ControllerCreateVirtualAccount(request));
     }
 
     @Operation(hidden = true)
