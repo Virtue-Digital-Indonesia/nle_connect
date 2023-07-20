@@ -15,10 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.util.UrlPathHelper;
 
 @EnableWebSecurity
@@ -26,7 +24,6 @@ import org.springframework.web.util.UrlPathHelper;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private final TokenProvider tokenProvider;
-    private final CorsFilter corsFilter;
     private final DepoOwnerUserDetailsService depoOwnerUserDetailsService;
     private final SwitchUserAuthenticationSuccessHandler switchUserAuthenticationSuccessHandler;
 
@@ -38,20 +35,20 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-            .antMatchers(HttpMethod.OPTIONS, "/**")
-            .antMatchers("/resources/**")
-            .antMatchers("/facebook.png")
-            .antMatchers("/mail.png")
-            .antMatchers("/phone.png")
-            .antMatchers("/product-nle-connect.svg")
-            .antMatchers("/product-nle-connect-uppercase.png")
-            .antMatchers("/template-instagram.png")
-            .antMatchers("/template-linkedin.png")
-            .antMatchers("/Vector.png")
-            .antMatchers("/web.png")
-            .antMatchers("/tx_deponame_timestamp.csv")
-            .antMatchers("/v3/api-docs/**")
-            .antMatchers("/swagger-ui/**");
+                .antMatchers(HttpMethod.OPTIONS, "/**")
+                .antMatchers("/resources/**")
+                .antMatchers("/facebook.png")
+                .antMatchers("/mail.png")
+                .antMatchers("/phone.png")
+                .antMatchers("/product-nle-connect.svg")
+                .antMatchers("/product-nle-connect-uppercase.png")
+                .antMatchers("/template-instagram.png")
+                .antMatchers("/template-linkedin.png")
+                .antMatchers("/Vector.png")
+                .antMatchers("/web.png")
+                .antMatchers("/tx_deponame_timestamp.csv")
+                .antMatchers("/v3/api-docs/**")
+                .antMatchers("/swagger-ui/**");
     }
 
     @Bean
@@ -59,7 +56,6 @@ public class SecurityConfiguration {
         // @formatter:off
         http
             .csrf().disable()
-            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling()
             .and()
                 .sessionManagement()
