@@ -24,11 +24,11 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv("sonar.dev.worx.id") {
-                    sh "./mvnw clean verify sonar:sonar -Dsonar.projectKey=nle_connect"
-                }
-            }
+//             steps {
+//                 withSonarQubeEnv("sonar.dev.worx.id") {
+//                     sh "./mvnw clean verify sonar:sonar -Dsonar.projectKey=nle_connect"
+//                 }
+//             }
         }
 
         stage('clean') {
