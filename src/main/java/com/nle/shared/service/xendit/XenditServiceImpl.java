@@ -299,7 +299,8 @@ public class XenditServiceImpl implements XenditService {
 
         //jika VA sudah dibuat dan masih pending
         if (!optionalXenditPending.isEmpty()){
-            cancelOrderXendit(bookingHeader.getId());
+            XenditVA pending = optionalXenditPending.get();
+            cancelOrderXendit(pending.getBooking_header_id().getId());
         }
 
         //create VA, invoice, Entity, save db, return response
