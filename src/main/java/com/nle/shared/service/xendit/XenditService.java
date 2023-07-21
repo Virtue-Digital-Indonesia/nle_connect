@@ -8,13 +8,14 @@ import com.nle.ui.model.request.xendit.XenditDisCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
+import com.xendit.model.FixedVirtualAccount;
 
 import java.util.List;
 
 public interface XenditService {
     XenditResponse ControllerCreateVirtualAccount(XenditRequest request);
 
-    XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo, BookingHeader bookingHeader);
+    FixedVirtualAccount CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo, BookingHeader bookingHeader);
 
     void CallbackInvoice(XenditCallbackPayload payload);
 
