@@ -1,0 +1,41 @@
+version: '3.8'
+volumes:
+  mysql_nle_data:
+    driver: local
+services:
+  mysql-master:
+    image: mysql:8.0.28
+    container_name: mysql-master
+    restart: unless-stopped
+    command: mysqld --lower_case_table_names=1
+    ports:
+      - '3309:3306'
+    environment:
+      - MYSQL_DATABASE=nlebackendstage
+      - MYSQL_ROOT_PASSWORD=TXPSfYUiX9C4MmocXX0O
+    volumes:
+      - /opt/mysql/master/mysql_nle_data:/var/lib/mysql/
+      - /opt/mysql/master/my.cnf:/etc/my.cnf
+    cap_add:
+      - all
+    networks:
+      - mysql
+  mysql-slave:
+    image: mysql:8.0.28
+    container_name: mysql-slave
+    restart: unless-stopped
+    command: mysqld --lower_case_table_names=1
+    ports:
+      - '4000:3306'
+    environment:
+      - MYSQL_DATABASE=nlebackendstage
+      - MYSQL_ROOT_PASSWORD=TXPSfYUiX9C4MmocXX0O
+    volumes:
+      - /opt/mysql/slave/mysql_nle_data:/var/lib/mysql/
+      - /opt/mysql/slave/my.cnf:/etc/my.cnf
+    cap_add:
+      - all
+    networks:
+      - mysql
+networks:
+  mysql:

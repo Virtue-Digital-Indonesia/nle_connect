@@ -43,8 +43,11 @@ pipeline {
 
         stage('update secret') {
             steps {
+                script {
                 withCredentials([
                     string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'DB_URL', variable: 'DB_URL'),
+                    string(credentialsId: 'DB_URL1', variable: 'DB_URL1'),
                     string(credentialsId: 'TRIGGER_URL', variable: 'TRIGGER_URL'),
                     string(credentialsId: 'TRIGGER_TOKEN', variable: 'TRIGGER_TOKEN'),
                     string(credentialsId: 'TAX_MINISTRY_API_KEY', variable: 'TAX_MINISTRY_API_KEY'),
@@ -54,21 +57,42 @@ pipeline {
                     string(credentialsId: 'API_KEY', variable: 'API_KEY'),
                     string(credentialsId: 'XENDIT_API_KEY', variable: 'XENDIT_API_KEY')
                     ]) {
-                    sh """
-                        cd src/main/resources
-                        export DB_PASSWORD=$DB_PASSWORD
-                        export TRIGGER_URL=$TRIGGER_URL
-                        export TRIGGER_TOKEN=$TRIGGER_TOKEN
-                        export TAX_MINISTRY_API_KEY=$TAX_MINISTRY_API_KEY
-                        export FTP_USERNAME=$FTP_USERNAME
-                        export FTP_PASSWORD=$FTP_PASSWORD
-                        export EMAIL_CONTACT_US=$EMAIL_CONTACT_US
-                        export APP_ID=$APP_ID
-                        export API_KEY=$API_KEY
-                        export XENDIT_API_KEY=$XENDIT_API_KEY
-                        envsubst < application.yml > application_tmp.yml
-                        mv application_tmp.yml application.yml
-                    """
+                    if (env.BRANCH_NAME == "Staging") {
+                        sh """
+                            cd src/main/resources
+                            export DB_PASSWORD=$DB_PASSWORD
+                            export URL_DB=$DB_URL1
+                            export TRIGGER_URL=$TRIGGER_URL
+                            export TRIGGER_TOKEN=$TRIGGER_TOKEN
+                            export TAX_MINISTRY_API_KEY=$TAX_MINISTRY_API_KEY
+                            export FTP_USERNAME=$FTP_USERNAME
+                            export FTP_PASSWORD=$FTP_PASSWORD
+                            export EMAIL_CONTACT_US=$EMAIL_CONTACT_US
+                            export APP_ID=$APP_ID
+                            export API_KEY=$API_KEY
+                            export XENDIT_API_KEY=$XENDIT_API_KEY
+                            envsubst < application.yml > application_tmp.yml
+                            mv application_tmp.yml application.yml
+                        """
+                    } else if (env.BRANCH_NAME == "new_develop") {
+                        sh """
+                            cd src/main/resources
+                            export DB_PASSWORD=$DB_PASSWORD
+                            export URL_DB=$DB_URL
+                            export TRIGGER_URL=$TRIGGER_URL
+                            export TRIGGER_TOKEN=$TRIGGER_TOKEN
+                            export TAX_MINISTRY_API_KEY=$TAX_MINISTRY_API_KEY
+                            export FTP_USERNAME=$FTP_USERNAME
+                            export FTP_PASSWORD=$FTP_PASSWORD
+                            export EMAIL_CONTACT_US=$EMAIL_CONTACT_US
+                            export APP_ID=$APP_ID
+                            export API_KEY=$API_KEY
+                            export XENDIT_API_KEY=$XENDIT_API_KEY
+                            envsubst < application.yml > application_tmp.yml
+                            mv application_tmp.yml application.yml
+                        """
+                    }
+                }
                 }
             }
         }

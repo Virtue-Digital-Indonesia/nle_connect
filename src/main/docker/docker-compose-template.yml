@@ -5,27 +5,50 @@ volumes:
   elasticsearch_data:
     driver: local
 services:
-  mysql:
+  mysql-master:
     image: mysql:8.0.28
-    command:
-      - --lower_case_table_names=1
+    container_name: prod-mysql-master
+    restart: unless-stopped
+    command: mysqld --lower_case_table_names=1
     ports:
       - '3308:3306'
     environment:
       - MYSQL_DATABASE=nlebackend
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     volumes:
-      - mysql_nle_data:/var/lib/mysql/
+      - /opt/nledb/master/mysql_nle_data:/var/lib/mysql/
+      - /opt/nledb/master/master.cnf:/etc/my.cnf
+    networks:
+      - mysql
+
+  mysql-slave:
+    image: mysql:8.0.28
+    container_name: prod-mysql-slave
+    restart: unless-stopped
+    depends_on:
+      - mysql-master
+    command: mysqld --lower_case_table_names=1
+    ports:
+      - '3307:3306'
+    environment:
+      - MYSQL_DATABASE=nlebackend
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - /opt/nledb/slave/mysql_nle_data:/var/lib/mysql/
+      - /opt/nledb/slave/slave.cnf:/etc/my.cnf
+    networks:
+      - mysql
 
   nle-backend:
     image: 'nlebackend:${VERSION}'
     ports:
       - '8081:8080'
     depends_on:
-      - mysql
+      - mysql-master
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
@@ -68,3 +91,5 @@ services:
       - '--strict.perms=false'
     depends_on:
       - logstash
+networks:
+  mysql:
