@@ -25,6 +25,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                echo 'SonarQube'
 //                 withSonarQubeEnv("sonar.dev.worx.id") {
 //                     sh "./mvnw clean verify sonar:sonar -Dsonar.projectKey=nle_connect"
 //                 }
