@@ -106,7 +106,9 @@ public class OrderController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/payment")
     public ResponseEntity<XenditResponse> paymentOrder(@RequestBody XenditRequest request) {
-        return ResponseEntity.ok(xenditService.CreatePaymentOrder(request));
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        orderService.orderValidate(username);
+        return ResponseEntity.ok(xenditService.ControllerCreateVirtualAccount(request));
     }
 
     @Operation(description = "Export invoice by booking id", operationId = "exportInvoiceByBookingId", summary = "Export invoice by booking id")
