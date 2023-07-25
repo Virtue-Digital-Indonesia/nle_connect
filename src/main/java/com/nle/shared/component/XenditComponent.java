@@ -19,6 +19,7 @@ import com.xendit.Xendit;
 import com.xendit.model.FixedVirtualAccount;
 import com.xendit.model.Invoice;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @Component
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class XenditComponent {
     private final String VA_CODE_GENERAL = XenditServiceImpl.VA_CODE_GENERAL;
     private final String VA_CODE_MANDIRI = XenditServiceImpl.VA_CODE_MANDIRI;
@@ -97,6 +99,7 @@ public class XenditComponent {
                 if (bookingHeader.getBooking_type().equals(ItemTypeEnum.UNLOADING)){
                     bookingDetailUnloadingRepository.updatePaymentStatus(bookingHeader.getId(), PaymentStatusEnum.EXPIRED);
                 }
+                log.info("expired");
             } else if (invoice.getStatus().equalsIgnoreCase("PENDING")) {
                 FixedVirtualAccount fvAccount = XenditUtil.getVA(doa.getXenditVaId(), xenditVA.getXendit_id());
                 BeanUtils.copyProperties(fvAccount, response);

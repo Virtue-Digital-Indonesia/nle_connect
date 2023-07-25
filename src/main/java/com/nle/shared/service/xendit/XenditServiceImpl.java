@@ -80,12 +80,13 @@ public class XenditServiceImpl implements XenditService {
         Optional<XenditVA> optionalXenditPending = xenditRepository
                 .getVaWithPhoneAndBankAndPendingPayment(request.getPhone_number(), request.getBank_code());
 
-        //Check status xenditVA jika expired return null jika pending return data pending
+        //Check status xenditVA jika expired lanjut proses,jika pending return data pending
         XenditResponse response;
         if (!optionalXenditPending.isEmpty()) {
             XenditVA xenditVA = optionalXenditPending.get();
             response = xenditComponent.getXenditStatus(appProperties, doa, xenditVA);
-            return response;
+            if (response.getStatus() != null && response.getStatus().equalsIgnoreCase("PENDING"))
+                return response;
         }
 
         //create VA, invoice, Entity, save db, return response
