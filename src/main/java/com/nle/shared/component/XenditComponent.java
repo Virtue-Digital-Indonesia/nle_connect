@@ -13,7 +13,6 @@ import com.nle.io.repository.XenditRepository;
 import com.nle.io.repository.booking.BookingDetailUnloadingRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
 import com.nle.shared.service.xendit.XenditServiceImpl;
-import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditResponse;
 import com.nle.util.XenditUtil;
 import com.xendit.Xendit;

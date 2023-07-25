@@ -7,7 +7,6 @@ import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.io.entity.booking.BookingHeader;
 import com.nle.io.repository.DepoOwnerAccountRepository;
 import com.nle.io.repository.booking.BookingHeaderRepository;
-import com.nle.ui.model.response.XenditResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

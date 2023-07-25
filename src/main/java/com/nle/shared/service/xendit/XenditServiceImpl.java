@@ -25,7 +25,6 @@ import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
 import com.nle.util.DateUtil;
-import com.nle.util.XenditUtil;
 import com.xendit.Xendit;
 import com.xendit.exception.XenditException;
 import com.xendit.model.Balance;
@@ -36,8 +35,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -57,9 +54,7 @@ public class XenditServiceImpl implements XenditService {
     private final String DATE_PATTERN = "yyyy-MM-dd";
     public static String VA_CODE_GENERAL = "90566"; // kalo test 9999
     public static String VA_CODE_MANDIRI = "9056";
-    private final String VA_CODE = "9999"; // kalo live 90566
-    //    private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
-    private final String feeRule = "xpfeeru_37136bb4-e471-4d00-a464-a371997d7008";
+    private final String feeRule = "xpfeeru_1cb70def-7bdc-43e4-9495-6b81cd5bdedb";
 
     //Repository
     private final XenditRepository xenditRepository;
@@ -76,6 +71,7 @@ public class XenditServiceImpl implements XenditService {
     @Override
     public XenditResponse ControllerCreateVirtualAccount(XenditRequest request) {
 
+        //Validate
         DepoOwnerAccount doa = validateComponent.ValidateDepoAccount(request.getDepo_id());
         validateComponent.ValidateXenditVA(doa);
         BookingHeader bookingHeader = validateComponent.ValidateBookingHeader(request.getBooking_header_id(),
@@ -84,6 +80,7 @@ public class XenditServiceImpl implements XenditService {
         Optional<XenditVA> optionalXenditPending = xenditRepository
                 .getVaWithPhoneAndBankAndPendingPayment(request.getPhone_number(), request.getBank_code());
 
+        //Check status xenditVA jika expired return null jika pending return data pending
         XenditResponse response;
         if (!optionalXenditPending.isEmpty()) {
             XenditVA xenditVA = optionalXenditPending.get();
@@ -91,7 +88,7 @@ public class XenditServiceImpl implements XenditService {
             return response;
         }
 
-        //Create va
+        //create VA, invoice, Entity, save db, return response
         FixedVirtualAccount closedVA = CreateNewVirtualAccount(request,doa);
         Invoice invoice =BindWithInvoice(closedVA,doa.getXenditVaId(), bookingHeader.getEmail());
         XenditVA xenditVA = xenditComponent.FactoryXenditVA(closedVA, bookingHeader, invoice);
@@ -104,9 +101,7 @@ public class XenditServiceImpl implements XenditService {
     @Override
     public FixedVirtualAccount CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo) {
         //For initialization virtual account xendit
-//        String va_number = xenditComponent.initialVaNumber(request.getPhone_number(), request.getBank_code());
-        int va_index = request.getPhone_number().length();
-        String va_number = VA_CODE + request.getPhone_number().substring(va_index - 6, va_index);
+        String va_number = xenditComponent.initialVaNumber(request.getPhone_number(), request.getBank_code());
 
         Xendit.apiKey = appProperties.getXendit().getApiKey();
         Map<String, Object> params = new HashMap<>();
