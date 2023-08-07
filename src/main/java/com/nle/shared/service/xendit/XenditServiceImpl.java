@@ -69,10 +69,11 @@ public class XenditServiceImpl implements XenditService {
     private final RestTemplate restTemplate;
 
     @Override
-    public XenditResponse ControllerCreateVirtualAccount(XenditRequest request) {
-
+    public XenditResponse ControllerCreateVirtualAccount(XenditRequest request, DepoOwnerAccount doa) {
         //Validate
-        DepoOwnerAccount doa = validateComponent.ValidateDepoAccount(request.getDepo_id());
+        if (!doa.getId().equals(request.getDepo_id()))
+            throw new BadRequestException("Depo Id not match!");
+
         validateComponent.ValidateXenditVA(doa);
         BookingHeader bookingHeader = validateComponent.ValidateBookingHeader(request.getBooking_header_id(),
                 request.getDepo_id());

@@ -107,8 +107,8 @@ public class OrderController {
     @PostMapping(value = "/payment")
     public ResponseEntity<XenditResponse> paymentOrder(@RequestBody XenditRequest request) {
         Optional<String> username = SecurityUtils.getCurrentUserLogin();
-        orderService.orderValidate(username);
-        return ResponseEntity.ok(xenditService.ControllerCreateVirtualAccount(request));
+        DepoOwnerAccount doa = orderService.orderValidate(username);
+        return ResponseEntity.ok(xenditService.ControllerCreateVirtualAccount(request, doa));
     }
 
     @Operation(description = "Export invoice by booking id", operationId = "exportInvoiceByBookingId", summary = "Export invoice by booking id")

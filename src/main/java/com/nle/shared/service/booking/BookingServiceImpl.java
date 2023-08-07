@@ -162,7 +162,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void bookingValidate(Optional<String> phone, Long booking_id) {
+    public DepoOwnerAccount bookingValidate(Optional<String> phone, Long booking_id) {
         if (phone.isEmpty())
             throw new BadRequestException("You must login!");
 
@@ -181,6 +181,8 @@ public class BookingServiceImpl implements BookingService {
         DepoOwnerAccount doa = bookingHeader.getDepoOwnerAccount();
         if (doa.getXenditVaId() == null)
             throw new BadRequestException("This depo is not active!");
+
+        return doa;
     }
 
     private BookingHeader saveBookingHeader(BookingHeaderRequest request, ItemTypeEnum booking_type) {

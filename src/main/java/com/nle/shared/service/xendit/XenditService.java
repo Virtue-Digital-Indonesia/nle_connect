@@ -12,7 +12,7 @@ import com.xendit.model.FixedVirtualAccount;
 import java.util.List;
 
 public interface XenditService {
-    XenditResponse ControllerCreateVirtualAccount(XenditRequest request);
+    XenditResponse ControllerCreateVirtualAccount(XenditRequest request, DepoOwnerAccount doa);
 
     FixedVirtualAccount CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo);
 
