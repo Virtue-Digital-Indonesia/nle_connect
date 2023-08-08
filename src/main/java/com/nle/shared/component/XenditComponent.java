@@ -19,7 +19,6 @@ import com.xendit.Xendit;
 import com.xendit.model.FixedVirtualAccount;
 import com.xendit.model.Invoice;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

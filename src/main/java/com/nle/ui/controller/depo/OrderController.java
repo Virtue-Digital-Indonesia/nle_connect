@@ -102,7 +102,8 @@ public class OrderController {
         return ResponseEntity.ok(orderService.searchOrderDepo(request,pageable));
     }
 
-    @Operation(description = "create virtual account for payment order", operationId = "paymentOrder", summary = "create virtual account for payment order")
+    @Operation(summary = "create virtual account for payment order", operationId = "paymentOrder", description = "Available Bank Code : \n\n" +
+            "- BCA, BNI, BRI, BJB, BSI, MANDIRI, PERMATA, SAHABAT_SAMPOERNA")
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/payment")
     public ResponseEntity<XenditResponse> paymentOrder(@RequestBody XenditRequest request) {
