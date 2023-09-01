@@ -91,7 +91,7 @@ hibernate:
   c3p0:
     datasource:
       url: jdbc:mysql://192.168.50.85:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
-      username: root
+      username: nle
       password: ${DB_PASSWORD}
       driverClass: com.mysql.cj.jdbc.Driver
       initialPoolSize: 5
