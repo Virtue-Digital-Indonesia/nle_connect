@@ -21,8 +21,8 @@ services:
     image: 'nlebackend:${VERSION}'
     ports:
       - '8081:8080'
-    depends_on:
-      - mysql
+#    depends_on:
+#      - mysql
     labels:
       collect_logs_with_filebeat: 'true'
       decode_log_event_to_json_object: 'true'
