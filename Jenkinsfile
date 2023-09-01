@@ -101,11 +101,14 @@ pipeline {
                         cp Dockerfile target/
                         cd target/
                         docker image build --build-arg JAR_FILE=nlebackend.jar -t nlebackend:${shortGitCommit} .
+                        pwd
                         cd ../
+                        pwd
                         export VERSION=${shortGitCommit}
                         export DB_PASSWORD=$DB_PASSWORD
-                        cd src/main/docker/
                         ls -la
+                        cd src/main/docker/
+                        pwd
                         ls -alF
                         envsubst < docker-compose-template.yml > docker-compose.yml
                     """
