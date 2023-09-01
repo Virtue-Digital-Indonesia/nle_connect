@@ -68,8 +68,8 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-#    url: jdbc:mysql://210.247.248.133:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
-    url: jdbc:mysql://210.247.248.133:3306/nlebackend?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://210.247.248.133:3308/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+#    url: jdbc:mysql://210.247.248.133:3306/nlebackend?useUnicode=true&characterEncoding=UTF-8
     username: nle
     password: ${DB_PASSWORD}
     hikari:
