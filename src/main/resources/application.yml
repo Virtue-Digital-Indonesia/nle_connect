@@ -90,7 +90,7 @@ server:
 hibernate:
   c3p0:
     datasource:
-      url: jdbc:mysql://192.168.50.85:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://210.247.245.149:3306/nlebackend?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
       username: root
       password: ${DB_PASSWORD}
       driverClass: com.mysql.cj.jdbc.Driver
