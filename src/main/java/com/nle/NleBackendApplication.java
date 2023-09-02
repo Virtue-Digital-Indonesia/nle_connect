@@ -28,7 +28,9 @@ public class NleBackendApplication {
 
     public static void main(String[] args) throws Exception {
         Connection connLocalhost = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3308/nlebackend?enabledTLSProtocols=TLSv1.2", "root", "valid1235");
+                "jdbc:mysql://localhost:3308/nlebackend?useUnicode=yes&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true",
+                "root",
+                "valid1235");
 
 //        Connection connAPI = DriverManager.getConnection(
 //                "jdbc:mysql://210.247.248.133:3308/nlebackend?enabledTLSProtocols=TLSv1.2", "root", "valid1235");
