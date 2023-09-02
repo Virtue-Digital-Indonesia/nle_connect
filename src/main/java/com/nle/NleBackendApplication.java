@@ -27,8 +27,11 @@ import java.sql.DriverManager;
 public class NleBackendApplication {
 
     public static void main(String[] args) throws Exception {
-        Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://210.247.248.133:3308/nlebackend?enabledTLSProtocols=TLSv1.2");
+        Connection connLocalhost = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3308/nlebackend?enabledTLSProtocols=TLSv1.2", "root", "valid1235");
+
+//        Connection connAPI = DriverManager.getConnection(
+//                "jdbc:mysql://210.247.248.133:3308/nlebackend?enabledTLSProtocols=TLSv1.2", "root", "valid1235");
 
         System.out.println("Connected?");
         SpringApplication.run(NleBackendApplication.class, args);
