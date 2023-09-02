@@ -10,7 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
@@ -24,7 +26,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 )
 public class NleBackendApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        Connection conn = DriverManager.getConnection(
+                "jdbc:mysql://210.247.248.133:3308/nlebackend?enabledTLSProtocols=TLSv1.2");
+
+        System.out.println("Connected?");
         SpringApplication.run(NleBackendApplication.class, args);
     }
 
