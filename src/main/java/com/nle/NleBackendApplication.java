@@ -23,7 +23,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 )
 public class NleBackendApplication {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SpringApplication.run(NleBackendApplication.class, args);
     }
 
