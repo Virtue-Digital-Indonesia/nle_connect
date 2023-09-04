@@ -3,6 +3,7 @@ package com.nle.shared.service.gatemove;
 
 import com.nle.config.prop.AppProperties;
 import com.nle.constant.enums.GateMoveSource;
+import com.nle.exception.BadRequestException;
 import com.nle.shared.service.inventory.InventoryService;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.CreateGateMoveReqDTO;
@@ -342,7 +343,18 @@ public class GateMoveServiceImpl implements GateMoveService {
                 .total_moves(totalAll)
                 .list_moves(lists)
                 .build();
-    };
+    }
+
+    @Override
+    public PagingResponseModel<GateMoveResponseDTO> getAllGateMove(Pageable pageable) {
+        Optional<String> username = SecurityUtils.getCurrentUserLogin();
+        if (username.isEmpty())
+            throw new BadRequestException("invalid token");
+
+        Page<GateMove> gateMoves = gateMoveRepository.getAllGatemove(username.get(), pageable);
+
+        return new PagingResponseModel<>(gateMoves.map(this::convertToGateMoveResponseDTO));
+    }
 
     private List<GateMove> getListGateMoveByDuration (Long duration, String email) {
         LocalDateTime now = LocalDateTime.now();

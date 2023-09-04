@@ -71,11 +71,19 @@ public class GateMoveController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(description = "Get list of gate move with paging", operationId = "findAllGateMoves", summary = "Get list of gate move with paging")
+    @Operation(description = "Get list of gate move with paging", operationId = "getAllGateMoves", summary = "Get list of gate move with paging")
     @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter(in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter(in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
     @GetMapping
-    public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> findAllGateMoves(Pageable pageable) {
-        return ResponseEntity.ok(gateMoveService.findAll(pageable, null, null));
+    public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> findAllGateMoves(
+            @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+            @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) @Parameter(hidden = true) Pageable pageable) {
+        return ResponseEntity.ok(gateMoveService.getAllGateMove(pageable));
     }
 
     @Operation(description = "Update date Gate Move", operationId = "updateGateMove", summary = "Update date Gate Move")

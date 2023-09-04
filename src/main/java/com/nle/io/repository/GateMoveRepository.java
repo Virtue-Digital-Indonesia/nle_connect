@@ -178,4 +178,6 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                     "and (:loc is null or lower(gm.depot) like lower(concat('%', :loc, '%'))) "+
                     "group by gm.depot")
     List<GateMovesStatistic> countGateMovesByDepot(@Param("from") String from, @Param("to") String to, @Param("loc") String loc);
+    @Query("SELECT gm FROM GateMove gm WHERE gm.depoOwnerAccount.companyEmail = :email ORDER BY gm.id DESC")
+    Page<GateMove> getAllGatemove(String email, Pageable pageable);
 }
