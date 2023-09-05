@@ -37,4 +37,5 @@ public interface GateMoveService {
 
     CountResponse countTotalGateMoveByDuration(Long duration);
     CountResponse countTotalGateMoveByDurationWithFleetManager(Long duration);
+    PagingResponseModel<GateMoveResponseDTO> getAllGateMove(Pageable pageable);
 }
