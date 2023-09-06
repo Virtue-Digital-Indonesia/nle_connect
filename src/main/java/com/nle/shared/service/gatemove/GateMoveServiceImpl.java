@@ -142,11 +142,11 @@ public class GateMoveServiceImpl implements GateMoveService {
         if (currentUserLogin.isEmpty())
             throw new BadRequestException("invalid token");
 
-            if (from == null)
-                from = EPOCH_TIME;
+        if (from == null)
+            from = EPOCH_TIME;
 
-            if (to == null)
-                to = LocalDateTime.now();
+        if (to == null)
+            to = LocalDateTime.now();
 
         Page<GateMove> gateMoves = gateMoveRepository.getAllByTxDateFormattedBetween(
                 currentUserLogin.get(), from, to, pageable);
