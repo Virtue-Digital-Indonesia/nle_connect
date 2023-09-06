@@ -114,8 +114,63 @@ public class XenditServiceImpl implements XenditService {
             }
         }
 
+        //Call change payment function
+        this.changePayment(request);
+
         response = CreateNewVirtualAccount(request, doa);
         return response;
+    }
+
+    private void changePayment(XenditRequest request){
+        Optional<XenditVA> optionalXenditPending = xenditRepository
+                .getVaWithPhonePendingPayment(request.getPhone_number());
+
+        if (!optionalXenditPending.isEmpty()){
+            XenditVA xenditVA   = optionalXenditPending.get();
+            String xenditId     = xenditVA.getXendit_id();
+            String depoXenditId = xenditVA.getBooking_header_id().getDepoOwnerAccount().getXenditVaId();
+            String invoiceId    = xenditVA.getInvoice_id();
+
+            //Expired virtual account
+            String updateVa = "https://api.xendit.co/callback_virtual_accounts/"+xenditId;
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            String username     = appProperties.getXendit().getApiKey();
+            String auth         = username + ":";
+            String encodedAuth  = Base64.getEncoder().encodeToString(auth.getBytes());
+
+            httpHeaders.add("Authorization", "Basic " + encodedAuth);
+            httpHeaders.add("Content-Type", "application/json");
+            httpHeaders.add("for-user-id", depoXenditId);
+
+            JSONObject paramBody = new JSONObject();
+            try {
+                paramBody.put("expiration_date", DateUtil.getCancelExpiration(DATE_PATTERN, 1));
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+
+            try {
+                 HttpEntity<String> requestParam = new HttpEntity<String>(paramBody.toString(), httpHeaders);
+                 restTemplate.patchForObject(updateVa, requestParam, String.class);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            //Expired invoice
+            Xendit.apiKey = appProperties.getXendit().getApiKey();
+            Map<String, String> headers = new HashMap<>();
+            headers.put("for-user-id", depoXenditId);
+            try {
+                Invoice.expire(headers, invoiceId);
+            } catch (XenditException e){
+                e.printStackTrace();
+            }
+
+            //Update payment status on xendit va
+            xenditVA.setPayment_status(XenditEnum.EXPIRED);
+            xenditRepository.save(xenditVA);
+        }
     }
 
     @Override
@@ -593,7 +648,7 @@ public class XenditServiceImpl implements XenditService {
 
         JSONObject paramBody = new JSONObject();
         try {
-            paramBody.put("expiration_date", DateUtil.getCancelExpiration(DATE_PATTERN));
+            paramBody.put("expiration_date", DateUtil.getCancelExpiration(DATE_PATTERN,3));
         } catch (JSONException e){
             e.printStackTrace();
         }

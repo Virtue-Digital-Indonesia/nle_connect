@@ -25,10 +25,10 @@ public class DateUtil {
         return yesterday;
     }
 
-    public static String getCancelExpiration(String pattern) {
+    public static String getCancelExpiration(String pattern, long seconds) {
         String dateTimePattern = pattern+"'T'HH:mm:ss";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
-        String cancelExpiration = formatter.format(LocalDateTime.now().plusSeconds(3));
+        String cancelExpiration = formatter.format(LocalDateTime.now().plusSeconds(seconds));
 
         return cancelExpiration;
     }
