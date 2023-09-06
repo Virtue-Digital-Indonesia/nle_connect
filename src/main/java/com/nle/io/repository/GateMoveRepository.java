@@ -81,11 +81,12 @@ public interface GateMoveRepository extends JpaRepository<GateMove, Long> {
                         "OR LOWER(gm.status) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
                         "OR LOWER(gm.source) LIKE LOWER(concat('%', :#{#request.globalSearch}, '%')) " +
                         ") ";
-
-    Page<GateMove> findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(String depoOwnerAccount,
-                                                                                   LocalDateTime from,
-                                                                                   LocalDateTime to,
-                                                                                   Pageable pageable);
+    @Query(value = "SELECT gm FROM GateMove gm WHERE gm.depoOwnerAccount.companyEmail = :depoOwnerAccount " +
+            "AND (gm.txDateFormatted BETWEEN :from AND :to) ORDER BY gm.txDateFormatted")
+    Page<GateMove> getAllByTxDateFormattedBetween(String depoOwnerAccount,
+                                                   LocalDateTime from,
+                                                   LocalDateTime to,
+                                                   Pageable pageable);
 
     @Query("select new com.nle.io.repository.dto.ShippingLineStatistic(gm.fleet_manager, count (gm.fleet_manager)) " +
             "from GateMove gm " +

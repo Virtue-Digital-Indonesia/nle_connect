@@ -137,20 +137,21 @@ public class GateMoveServiceImpl implements GateMoveService {
     }
 
     @Override
-    public PagingResponseModel<GateMoveResponseDTO> findAll(Pageable pageable, LocalDateTime from, LocalDateTime to) {
+    public PagingResponseModel<GateMoveResponseDTO> getAllGatemoveByDate(Pageable pageable, LocalDateTime from, LocalDateTime to) {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        if (currentUserLogin.isPresent()) {
-            if (from == null) {
-                from = EPOCH_TIME;
-            }
-            if (to == null) {
-                to = LocalDateTime.now();
-            }
-            Page<GateMove> gateMoves = gateMoveRepository.findAllByDepoOwnerAccount_CompanyEmailAndTxDateFormattedBetween(currentUserLogin.get(), from, to, pageable);
-            return new PagingResponseModel<>(gateMoves.map(this::convertToGateMoveResponseDTO));
-        }
-        return new PagingResponseModel<>();
+        if (currentUserLogin.isEmpty())
+            throw new BadRequestException("invalid token");
 
+        if (from == null)
+            from = EPOCH_TIME;
+
+        if (to == null)
+            to = LocalDateTime.now();
+
+        Page<GateMove> gateMoves = gateMoveRepository.getAllByTxDateFormattedBetween(
+                currentUserLogin.get(), from, to, pageable);
+
+        return new PagingResponseModel<>(gateMoves.map(this::convertToGateMoveResponseDTO));
     }
 
     @Override

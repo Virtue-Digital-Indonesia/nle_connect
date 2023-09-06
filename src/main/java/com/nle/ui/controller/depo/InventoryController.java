@@ -50,14 +50,22 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.getAllInventory(pageable));
     }
 
-    @Operation(description = "Get list of inventory move with paging", operationId = "findAllInventories", summary = "Get list of inventory move with paging")
+    @Operation(description = "Get list of inventory move with paging", operationId = "getAllInventories", summary = "Get list of inventory move with paging")
     @SecurityRequirement(name = "nleapi")
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "page", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 0"),
+            @Parameter (in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int"), allowEmptyValue = true, description = "default value 10"),
+            @Parameter (in = ParameterIn.QUERY, name = "sort", schema = @Schema(type = "string"), allowEmptyValue = true, description = "default value id, cannot have null data")
+    })
     @GetMapping(value = "/{from}/{to}")
     public ResponseEntity<PagingResponseModel<GateMoveResponseDTO>> findAllInventories(
+        @PageableDefault(page = 0, size = 10) @SortDefault.SortDefaults({
+                @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+        })
+        @Parameter(hidden = true) Pageable pageable,
         @PathVariable(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-        @PathVariable(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-        Pageable pageable) {
-        return ResponseEntity.ok(gateMoveService.findAll(pageable, from, to));
+        @PathVariable(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
+        return ResponseEntity.ok(gateMoveService.getAllGatemoveByDate(pageable, from, to));
     }
 
     @Operation(description = "global search for inventory", operationId = "searchByCondition", summary = "global search for inventory")
