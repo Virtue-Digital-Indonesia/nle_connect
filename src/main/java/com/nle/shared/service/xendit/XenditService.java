@@ -7,21 +7,20 @@ import com.nle.ui.model.request.xendit.XenditDisCallbackPayload;
 import com.nle.ui.model.request.xendit.XenditRequest;
 import com.nle.ui.model.response.XenditListResponse;
 import com.nle.ui.model.response.XenditResponse;
+import com.xendit.model.FixedVirtualAccount;
 
 import java.util.List;
 
 public interface XenditService {
-    XenditResponse CreateVirtualAccount(XenditRequest request);
+    XenditResponse ControllerCreateVirtualAccount(XenditRequest request, DepoOwnerAccount doa);
 
-    XenditResponse CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo);
+    FixedVirtualAccount CreateNewVirtualAccount(XenditRequest request, DepoOwnerAccount depo);
 
     void CallbackInvoice(XenditCallbackPayload payload);
 
     String createXenditAccount(DepoOwnerAccount depoOwnerAccount);
 
     XenditResponse getXenditByBookingId(Long booking_id);
-
-    XenditResponse CreatePaymentOrder(XenditRequest request);
 
     List<XenditListResponse> getMultipleXenditByPhone();
 

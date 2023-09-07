@@ -2,6 +2,7 @@ package com.nle.ui.controller.booking;
 
 import com.nle.constant.enums.ItemTypeEnum;
 import com.nle.exception.BadRequestException;
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.security.SecurityUtils;
 import com.nle.shared.service.applicant.ApplicantService;
 import com.nle.shared.service.booking.BookingService;
@@ -130,7 +131,9 @@ public class BookingController {
     @SecurityRequirement(name = "nleapi")
     @PostMapping(value = "/payment")
     public ResponseEntity<XenditResponse> paymentBooking(@RequestBody XenditRequest request) {
-        return ResponseEntity.ok(xenditService.CreateVirtualAccount(request));
+        Optional<String> phone = SecurityUtils.getCurrentUserLogin();
+        DepoOwnerAccount doa = bookingService.bookingValidate(phone, request.getBooking_header_id());
+        return ResponseEntity.ok(xenditService.ControllerCreateVirtualAccount(request, doa));
     }
 
     @Operation(hidden = true)

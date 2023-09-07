@@ -1,5 +1,6 @@
 package com.nle.shared.service.booking;
 
+import com.nle.io.entity.DepoOwnerAccount;
 import com.nle.ui.model.pageable.PagingResponseModel;
 import com.nle.ui.model.request.booking.CreateBookingLoading;
 import com.nle.ui.model.request.booking.CreateBookingUnloading;
@@ -16,5 +17,5 @@ public interface BookingService {
     BookingResponse createBookingUnloading(CreateBookingUnloading request);
     BookingResponse createBookingLoading(CreateBookingLoading request);
     PagingResponseModel<BookingResponse> searchBooking(BookingSearchRequest request, Pageable pageable);
-    void bookingValidate(Optional<String> phone, Long booking_id);
+    DepoOwnerAccount bookingValidate(Optional<String> phone, Long booking_id);
 }
