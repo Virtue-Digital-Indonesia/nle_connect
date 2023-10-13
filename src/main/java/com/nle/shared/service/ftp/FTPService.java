@@ -54,7 +54,7 @@ public class FTPService {
     private final Validator validator;
     private final InventoryService inventoryService;
 
-//    @Scheduled(cron = "${app.scheduler.ftp-sync-cron}", zone = "GMT+7")
+    @Scheduled(cron = "${app.scheduler.ftp-sync-cron}", zone = "GMT+7")
     public void syncDataFromFtpServer() {
         // find all active depo owner account
         List<DepoOwnerAccount> activeDepoOwner = depoOwnerAccountService.findAllByStatus(AccountStatus.ACTIVE);
@@ -173,7 +173,7 @@ public class FTPService {
                     } catch (IOException e) {
 //                        throw new RuntimeException(e);
                         log.error("Error while delete file in ftp server", e);
-                    }
+                    } 
                 }
             }
         }
