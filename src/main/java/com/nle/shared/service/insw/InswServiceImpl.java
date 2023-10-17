@@ -98,10 +98,15 @@ public class InswServiceImpl implements InswService{
     @Override
     @Scheduled(cron = "${app.scheduler.insw-sync-cron}", zone = "GMT+7")
     public List<InswSyncDataDTO> syncInsw() {
-        String getFirstDateOfMonth = DateUtil.getFirstDateOfMonth("yyyy-MM-dd 00:00:00");
-        String getToday = DateUtil.getNowString("yyyy-MM-dd HH:mm:ss");
+//        String getFirstDateOfMonth = DateUtil.getFirstDateOfMonth("yyyy-MM-dd 00:00:00");
+//        String getToday = DateUtil.getNowString("yyyy-MM-dd HH:mm:ss");
 
-        List<GateMove> gateMoveList = gateMoveRepository.findAllBySyncToInswNull(getFirstDateOfMonth,getToday);
+        //June send to insw again
+        String from = "2023-06-01 00:00:00";
+        String to = "2023-06-30 23:59:59";
+        List<GateMove> gateMoveList = gateMoveRepository.findAllBySyncToInswNull(from,to);
+
+//        List<GateMove> gateMoveList = gateMoveRepository.findAllBySyncToInswNull(getFirstDateOfMonth,getToday);
         List<InswSyncDataDTO> listResponse = new ArrayList<>();
         for (GateMove gateMove : gateMoveList) {
 
