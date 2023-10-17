@@ -11,6 +11,4 @@ public class FleetResponse {
     private Long id;
     private String code;
     private String fleet_manager_company;
-    private String city;
-    private String country;
 }
